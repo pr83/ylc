@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+
+</head>
+
+<body>
+
+<h1>If test</h1>
+<div id="ifTest">
+    <button data-ylcEvents="click: flip">Flip</button>
+    <div>
+        <p>Unconditioned.</p>
+    </div>
+    <button data-ylcEvents="click: flip">Flip</button>
+    <div data-ylcIf="condition" class="ylcInvisibleTemplate">
+        <p>Conditioned.</p>
+    </div>
+    <button data-ylcEvents="click: flip">Flip</button>
+    <div>
+        <p>Unconditioned.</p>
+    </div>
+    <button data-ylcEvents="click: flip">Flip</button>
+</div>
+
+<script>
+
+    var controller = {
+        init: function(model) {
+            model.condition = false;
+        },
+
+        flip: function(model) {
+            model.condition = !(model.condition);
+        }
+    };
+
+    $("#ifTest").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

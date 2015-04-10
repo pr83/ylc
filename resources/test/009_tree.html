@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Tree</h1>
+    <div id="tree">
+        <ul data-ylcLoop="level1node,level1status: level1nodes">
+            <li>
+            <span data-ylcBind="text: level1status.index + ') '"></span>
+            <span data-ylcBind="text: level1node.name"></span>
+            <ul data-ylcLoop="level2node,level2status: level1node.level2nodes">
+                <li>
+                    <span data-ylcBind="text: level2status.index + ') '"></span>
+                    <span data-ylcBind="text: level2node.name"></span>
+                    <ul data-ylcLoop="level3node,level3status: level2node.level3nodes">
+                        <span data-ylcBind="text: level3status.index + ') '"></span>
+                        <span data-ylcBind="text: level3node.name"></span>
+                    </ul>
+                </li>
+            </ul>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+
+                model.level1nodes = [];
+
+                model.level1nodes.push({
+                    name: "AAAAA",
+                    level2nodes: [
+                        {name: "11111", level3nodes: [{name: "xxx"}, {name: "yyy"}]},
+                        {name: "22222", level3nodes: [{name: "xxx"}, {name: "yyy"}]},
+                        {name: "33333", level3nodes: [{name: "xxx"}, {name: "yyy"}]},
+                        {name: "44444", level3nodes: [{name: "xxx"}, {name: "yyy"}]},
+                        {name: "55555", level3nodes: [{name: "xxx"}, {name: "yyy"}]}
+                    ]
+                });
+
+                model.level1nodes.push({
+                    name: "BBBBB",
+                    level2nodes: [
+                        {name: "11111", level3nodes: [{name: "xxx"}, {name: "yyy"}]},
+                        {name: "22222", level3nodes: [{name: "xxx"}, {name: "yyy"}]},
+                        {name: "33333", level3nodes: [{name: "xxx"}, {name: "yyy"}]},
+                        {name: "44444", level3nodes: [{name: "xxx"}, {name: "yyy"}]},
+                        {name: "55555", level3nodes: [{name: "xxx"}, {name: "yyy"}]}
+                    ]
+                });
+
+                model.level1nodes.push({
+                    name: "CCCCC",
+                    level2nodes: [
+                        {name: "11111", level3nodes: [{name: "xxx"}, {name: "yyy"}]},
+                        {name: "22222", level3nodes: [{name: "xxx"}, {name: "yyy"}]},
+                        {name: "33333", level3nodes: [{name: "xxx"}, {name: "yyy"}]},
+                        {name: "44444", level3nodes: [{name: "xxx"}, {name: "yyy"}]},
+                        {name: "55555", level3nodes: [{name: "xxx"}, {name: "yyy"}]}
+                    ]
+                });
+            }
+        };
+
+        $("#tree").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>

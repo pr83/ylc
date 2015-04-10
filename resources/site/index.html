@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="description" content="'Yellow code' is a jQuery plugin for 2-way data binding. The user doesn't have to manipulate the DOM. They only manipulate a model - a plain JavaScript object. Changes in the model are propagated to the view, which is defined as an HTML template. Changes in the view input elements are propagated back to the model. The element attributes which can be bound to the model variables include the text, input field values, CSS properties and others. The HTML template can also contain loops (corresponding to the model arrays) and conditional elements (shown / hidden according to the value of a boolean model variable). Distributed under the BSD license." />
+    <title>Yellow code - jQuery plugin for 2-way data binding</title>
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="common.css"/>
+    <link href="prism.css" rel="stylesheet" type="text/css" />
+
+    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <script src="prism.js"></script>
+
+    <script src="code_example.js"></script>
+
+</head>
+
+<body data-spy="scroll" data-target="#myScrollspy">
+
+<div id="wrapper">
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <h1 class="pull-right">Yellow code</h1>
+            </div>
+        </div>
+    </div>
+
+    <ul class="bs-docs-sidenav" id="sidenav">
+    </ul>
+
+    <div class="container" id="content">
+        <div class="row">
+
+            <nav class="col-xs-3 bs-docs-sidebar">
+                <ul id="sidebar" class="nav nav-stacked fixed">
+                    <li>
+                        <a href="#overview">Overview</a>
+                    </li>
+                    <li>
+                        <a href="#basicExample">Basic Example</a>
+                        <ul class="nav nav-stacked">
+                            <li><a href="#basicExample_controller">Controller</a></li>
+                            <li><a href="#basicExample_events">Events</a></li>
+                            <li><a href="#basicExample_attributes">Attributes</a></li>
+                            <li><a href="#basicExample_loops">Loops</a></li>
+                            <li><a href="#basicExample_puttingItAllTogether">Putting it all together</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#advancedFeatures">Advanced features</a>
+                        <ul class="nav nav-stacked">
+                            <li><a href="#advancedFeatures_expressionEvaluation">Expression evaluation</a></li>
+                            <li><a href="#advancedFeatures_writableExpression">Writable expression</a></li>
+                            <li><a href="#advancedFeatures_conditionals">Conditional elements</a></li>
+                            <li><a href="#advancedFeatures_externalEvents">External events</a></li>
+                            <li><a href="#advancedFeatures_asynchronousModelUpdate">Asynchronous model update</a></li>
+                            <li><a href="#advancedFeatures_jqueryWithinYlc">Using a jQuery plugin from within the view</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#moreExamples">More examples</a>
+                        <ul class="nav nav-stacked">
+                            <li><a href="#moreExamples_nestedLoop">Nested loop</a></li>
+                            <li><a href="#moreExamples_dynamicSum">Dynamic sum</a></li>
+                            <li><a href="#moreExamples_passwordStrength">Password strength</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#download">Download</a>
+                    </li>
+                    <li>
+                        <a href="#license">License</a>
+                    </li>
+                    <li>
+                        <a href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="col-xs-9">
+
+                <h2 id="overview">Overview</h2>
+                <p>
+                    <em>Yellow code</em> is jQuery plugin for 2-way data binding.
+                </p>
+
+                <ul>
+                    <li>You don't have to manipulate the DOM.</li>
+                    <li>You only manipulate a <em>model</em> - a plain JavaScript object.</li>
+                    <li>Changes in the model are propagated to the <em>view</em> - defined as an HTML template.</li>
+                    <li>Changes in the view input elements are propagated back to the model.</li>
+                    <li>Dynamic view attributes: text, input value, CSS and much more.</li>
+                    <li>View can also contain loops and conditional elements.</li>
+                </ul>
+
+                <h2 id="basicExample">Basic Example</h2>
+
+                <div class="jqExample" data-sourceUrl="examples/basic_example.html">
+                </div>
+
+                <h3 id="basicExample_controller">Controller</h3>
+                <p>
+                    All the model manipulation is done from within
+                    the <em>controller</em>. The controller is a plain JavaScript
+                    object which consists of methods.
+                </p>
+                <p>
+                    The <code>init</code> method is called automatically when the
+                    plugin initializes. Its task is to initialize the model.
+                    It takes the model as its first parameter.
+                </p>
+                <p>
+                    The other methods are event handlers. They are called when an
+                    event is triggered. Their task is to update the model accordingly.
+                    The event handlers also take the model as their first parameter.
+                </p>
+
+                <h3 id="basicExample_events">Events</h3>
+                <p>
+                    To specify the event handler, add an attribute called
+                    <code>data-ylcEvents</code> to the element which triggers
+                    the event.
+                    <ul>
+                        <li>
+                            To the left of the colon specify the <em>event name</em>.
+                            The event name is the same as used by jQuery.
+                            That means that you can even specify your own event, such as
+                            <code>data-ylcEvents="myEvent:&nbsp;myHandler"</code>
+                            and trigger it via jQuery:
+                            <code>$("myElement").trigger("myEvent")</code>.
+                        </li>
+                        <li>
+                            To the right of the colon specify the <em>event handler</em>. That is just
+                            the name of the controller object property which contains
+                            the handler function.
+                        </li>
+                    </ul>
+                    You can specify more event mappings, simply separate them
+                    by semicolon:
+                    <code>data-ylcEvents="event1: handler1; event2: handler2"</code>
+                </p>
+
+                <h3 id="basicExample_attributes">Attributes</h3>
+                <p>
+                    To specify a mapping of an element attribute onto a model
+                    variable, add an attribute called <code>data-ylcBind</code>
+                    to the element.
+                    <ul>
+                        <li>
+                            To the left of the colon specify the <em>attribute name</em>.
+                            The attribute name is the same as the name of the jQuery
+                            getter / setter for that attribute. So to map the inner text
+                            of the element, use <code>text</code>, to manipulate the
+                            value of an input field, use <code>val</code>, etc.
+                            For some attributes jQuery uses getters / setters with a fairly
+                            generic name and the the first argument of the
+                            getter / setter further specifies the exact attribute to change.
+                            (For example take
+                            <code><a href="http://api.jquery.com/css/" target="_blank">css</a></code>
+                            or
+                            <code><a href="http://api.jquery.com/attr/" target="_blank">attr</a></code>.)
+                            In Yellow code such attributes are defined using a dot notation:
+                            to the left of the dot is the getter / setter name and to the
+                            right there is the first argument passed to the getter / setter.
+                            So for example if your model contains a variable called
+                            <code>color</code> and you wish to map it to a paragraph color,
+                            your mapping will look like this:
+                            <code>
+                                data-ylcBind="css.color:&nbsp;color"
+                            </code>.
+                            <br />
+                            If you create a jQuery plugin which follows the standard jQuery
+                            getter / setter convention, you can refer to the associated property
+                            from the Yellow code bindings:
+                            <code>data-ylcBind="myProperty: myModelVariable"</code>. This means
+                            that you can easily extend Yellow code simply by extending jQuery.
+                        </li>
+                        <li>
+                            To the right of the colon is the model variable name.
+                        </li>
+                    </ul>
+                </p>
+
+                <h3 id="basicExample_loops">Loops</h3>
+                <p>
+                    Yellow code allows you to generate some of the DOM elements
+                    dynamically. In the example above the model contains an array
+                    and we want to have one <code>&lt;li&gt;</code>
+                    element (with children) for each array element.
+                </p>
+                <p>
+                    To specify that an element should be generated for each model
+                    array element, add an attribute
+                    <code>data-ylcLoop="element,status:&nbsp;list"</code>
+                    to the corresponding view element. The <code>status</code>
+                    variable is optional, you don't have to specify it:
+                    <code>data-ylcLoop="element:&nbsp;list"</code>.
+                </p>
+                <dl>
+                    <dt><code>list</code></dt>
+                    <dd>
+                        Replace this with the name of the model variable which
+                        represents the array to iterate through.
+                    </dd>
+
+                    <dt><code>element</code></dt>
+                    <dd>
+                        Replace this with the name of the variable which will refer
+                        to the current element. This is <em>not</em> the model
+                        variable, but it can be used anywhere where a model variable
+                        would be used (such as in the <code>data-ylcBind</code> binding).
+                        The variable is writable - changing it will change the corresponding
+                        array element.
+                    </dd>
+
+                    <dt><code>status</code></dt>
+                    <dd>
+                        Replace this with the name of the variable which will refer
+                        to the current iteration status. This is <em>not</em> the model
+                        variable, but it can be used anywhere where a model variable
+                        would be used (such as in the <code>data-ylcBind</code> binding).
+                        The variable is read-only. It encapsulates the iteration index,
+                        which can be accessed like this: <code>status.index</code>.
+                        <br/>
+                        Also note that the status variable is accessible from within
+                        the controller method. The second parameter passed to the controller
+                        method is the <em>context</em>, which contains a field called
+                        <code>loopStatuses</code>. Because our status variable defined
+                        in the view is called <code>status</code>, we can access the status object
+                        like this: <code>context.loopStatuses.status</code>. The value of the status
+                        object will be the iteration status valid for the element which triggered
+                        the event. Note that <code>context.loopStatuses</code> may contain
+                        multiple status objects - this will happen if you have a nested loop
+                        in your view and both the parent and the child loop define a status
+                        variable.
+                    </dd>
+                </dl>
+
+                <h3 id="basicExample_puttingItAllTogether">Putting it all together</h3>
+                <p>
+                    Once you have your view and controller ready, initialize
+                    the plugin by calling:<br/>
+                    <code>$("<em>your_view_selector</em>").yellowCode(controller);</code>.<br/>
+
+                    Note one more detail: the definition of the "ylcInvisibleTemplate" CSS class.
+                    This class is used internally by Yellow code to denote parts of the DOM which
+                    serve as the template and should not be rendered directly; an example being the
+                    elements with the <code>data-ylcLoop</code> and <code>data-ylcIf</code>
+                    attributes.
+
+                    Also note that we use the "ylcInvisibleTemplate" class for the root element
+                    of the view. This is not strictly necessary, but if the page loads slowly,
+                    it will prevent the browser from showing the template instead of the generated
+                    markup before the Yellow code plugin initializes.
+                </p>
+
+                <h2 id="advancedFeatures">Advanced features</h2>
+
+                <h3 id="advancedFeatures_expressionEvaluation">Expression evaluation</h3>
+                <div class="jqExample" data-sourceUrl="examples/expression_evaluation.html">
+                </div>
+                <p>
+                    An element attribute can be bound not only to a model variable,
+                    but to an expression consisting of model variables.
+                    The example above illustrates what kinds of operators may be used.
+                </p>
+                <p>
+                    Note that if you need to define a custom utility function, that must
+                    go to the controller, not to the model.
+                </p>
+
+                <h3 id="advancedFeatures_writableExpression">Writable expression</h3>
+                <div class="jqExample" data-sourceUrl="examples/writable_expression.html">
+                </div>
+                <p>
+                    This example shows that the value of the view element attribute
+                    may be not only computed from an expression, but that the value
+                    may also be assigned to that expression. If the values of the
+                    above input fields are changed, their values will be assigned
+                    to the corresponding expressions. Not all expressions are
+                    assignable. One may write a value to the expression
+                    <code>persons[0].name</code>, but not to
+                    <code>"Mrs. " + persons[0].name + " " + persons[0].surname</code>.
+                </p>
+
+                <h3 id="advancedFeatures_conditionals">Conditional elements</h3>
+                <div class="jqExample" data-sourceUrl="examples/conditionals.html">
+                </div>
+                <p>
+                    To show an element only if a certain condition is fulfilled,
+                    add the following attribute:
+                    <code>data-ylcIf="<em>condition</em>"</code>.
+                </p>
+
+                <h3 id="advancedFeatures_externalEvents">External events</h3>
+                <div class="jqExample" data-sourceUrl="examples/external_events.html">
+                </div>
+                <p>
+                    Sometimes it's useful to read or update the model upon an event
+                    which is not triggered by any Yellow code view element.
+                    For example, if only a fraction of your page uses Yellow
+                    code and the rest uses conventional jQuery or plain JavaScript,
+                    it's useful if the parts outside the Yellow code view can
+                    somehow read and/or manipulate the model and refresh the
+                    view accordingly.
+                </p>
+                <p>
+                    That's exactly what the concept of <em>external events</em> is for.
+                </p>
+                <p>
+                    To invoke an external event, first get so called <em>model adapter</em>.
+                    Model adapter is a JavaScript object which for every controller method
+                    contains exactly one method with the same name as the controller.
+                    The adapter method, however, doesn't take the two parameters that every controller
+                    method gets - neither <code>model</code> nor <code>context</code>.
+                </p>
+                <p>
+                    Example: If the controller contains methods<br/>
+                    <code>myMethod1(model, context, additionalArg1, additionalArg2)</code> and<br/>
+                    <code>myMethod2(model, context, additionalArg1)</code>, the
+                    controller adapter object will contain methods<br/>
+                    <code>myMethod1(additionalArg1, additionalArg2)</code> and<br/>
+                    <code>myMethod2(additionalArg1)</code>.
+                </p>
+                <p>
+                    If you call the adapter method, Yellow code will call the corresponding
+                    controller method on your behalf, passing it the up-to-date model
+                    and the context object. After the controller method finishes, Yellow code
+                    will automatically redraw the view and apply all the changes the
+                    controller method did to the model.
+                </p>
+                <p>
+                    If the controller method returns a value, this value will be also returned
+                    by the corresponding adapter method.
+                </p>
+                <p>
+                    To get the adapter object, call<br/>
+                    <code>$(<em>your_view_selector</em>).yellowCode("getAdapter")</code>
+                    passing the root element of the view <strong>after</strong> the
+                    Yellow code plugin was initialized on that element by passing it
+                    the controller.
+                </p>
+
+                <h3 id="advancedFeatures_asynchronousModelUpdate">Asynchronous model update</h3>
+                <div class="jqExample" data-sourceUrl="examples/asynch_update.html">
+                </div>
+                <p>
+                    Normally the view is redrawn as soon as the controller method exits.
+                    Sometimes, however, the controller method can't update the model
+                    before it exists, and in that case the changes to the model
+                    would not be reflected in the view. The most notable example
+                    is an AJAX call. If the controller method calls AJAX and
+                    updates the model according to the result of the call,
+                    the model will be updated long after the controller method exists.
+                </p>
+                <p>
+                    That's exactly the problem the asynchronous model solves.
+                    In the above example we simulate an AJAX call. In the controller method
+                    we synchronously set a model variable value to "(please wait)" and
+                    trigger an asynchronous event. Upon that event we can't simply change
+                    the model, because it's too late. The changes would not be reflected
+                    in the view. Instead, we call <code>context.updateModel</code>
+                    (remember <code>context</code> is the second parameter passed to
+                    every controller method). We pass an updater function to it.
+                    The updater function takes the same parameters as the controller
+                    methods do. When it exists, changes in the model it makes will be
+                    propagated to the view.
+                </p>
+
+                <h3 id="advancedFeatures_jqueryWithinYlc">Using a jQuery plugin from within the view</h3>
+                <div class="jqExample" data-sourceUrl="examples/jquery_within_ylc.html">
+                </div>
+                <p>
+                    The above example shows how to install the
+                    <code>datepicker</code> jQuery plugin
+                    as soon as a (potentially dynamic) view element becomes visible.
+                    First, mark the element with the following attribute:<br/>
+                    <code>data-ylcEvents="ylcElementInitialized: <em>controller_method</em>"</code>.
+                    <br/>
+                    The <code>ylcElementInitialized</code> is a special Yellow code
+                    event which will be triggered just when the view element is
+                    initialized. For static element this happens after installing
+                    the Yellow code plugin, for dynamic elements (elements within
+                    loops and conditional elements) this happens when they are added
+                    to the view and become visible. Replace <code><em>controller_method</em></code>
+                    with the name of the controller method which will install your desired
+                    jQuery plugin. To install the plugin the controller method needs the DOM
+                    element. It will get it through the context object (passed to it as its
+                    second parameter):
+                    <code>context.domElement</code>.
+                </p>
+                <p>
+                    Also note that the controller method in the above example makes
+                    use of asynchronous events to react to an event which is triggered
+                    by the <code>datepicker</code> plugin.
+                </p>
+
+                <h2 id="moreExamples">More examples</h2>
+
+                <h3 id="moreExamples_nestedLoop">Nested loop</h3>
+                <div class="jqExample" data-sourceUrl="examples/nested_loops.html">
+                </div>
+
+                <h3 id="moreExamples_dynamicSum">Dynamic sum</h3>
+                <div class="jqExample" data-sourceUrl="examples/dynamic_sum.html">
+                </div>
+
+                <h3 id="moreExamples_passwordStrength">Password strength</h3>
+                <div class="jqExample" data-sourceUrl="examples/password_strength.html">
+                </div>
+
+                <h2 id="download">Download (version {{VERSION}})</h2>
+                <p>
+                    <ul>
+                        <li><a href="yellowCode.min.js" download>download minified</a></li>
+                        <li><a href="yellowCode.js" download>download source</a></li>
+                    </ul>
+                </p>
+
+                <h2 id="license">License</h2>
+                <p>
+                    Yellow code is licensed under the
+                    <a href="http://en.wikipedia.org/wiki/BSD_licenses#2-clause_license_.28.22Simplified_BSD_License.22_or_.22FreeBSD_License.22.29">
+                    2-clause BSD licence</a>.
+                </p>
+
+                <h2 id="contact">Contact</h2>
+                <p>
+                    If you have any questions, comments, or suggestions, please send
+                    us an email to <a href="mailto: ylc@any3w.com">ylc@any3w.com</a>.
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(".jqExample").codeExample();
+    $('body').scrollspy({
+        target: '.bs-docs-sidebar',
+        offset: 200
+    });
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Dynamic children</h1>
+    <div id="groupOfDynamicChildren" class="ylcInvisibleTemplate">
+        <p>static child: <span data-ylcBind="text: staticChild"></span></p>
+        <p data-ylcLoop="dynamicChild: dynamicChildren">
+            dynamic child: <span data-ylcBind="text: dynamicChild.name">Some child</span>
+        </p>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+                model.staticChild = "I am a static child.";
+                model.dynamicChildren = [];
+
+                for (var index = 0; index < 7; index++) {
+                    model.dynamicChildren.push({
+                        name: "Dynamic child #" + index
+                    });
+                }
+            }
+        };
+
+        $("#groupOfDynamicChildren").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>

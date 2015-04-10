@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+<h1>Expression evaluation</h1>
+<dl id="expressionEvaluation">
+    <dt>str</dt>
+    <dd><span data-ylcBind="text: str"></span></dd>
+
+    <dt>num</dt>
+    <dd><span data-ylcBind="text: num"></span></dd>
+
+    <dt>obj.str</dt>
+    <dd><span data-ylcBind="text: obj.str"></span></dd>
+
+    <dt>obj.num</dt>
+    <dd><span data-ylcBind="text: obj.num"></span></dd>
+
+    <dt>arr[0]</dt>
+    <dd><span data-ylcBind="text: arr[0]"></span></dd>
+
+    <dt>arr[index2]</dt>
+    <dd><span data-ylcBind="text: arr[index2]"></span></dd>
+
+    <dt>name + ' ' + surname</dt>
+    <dd><span data-ylcBind="text: name + ' ' + surname"></span></dd>
+
+    <dt>x1 + x2 + x3 + x4</dt>
+    <dd><span data-ylcBind="text: x1 + x2 + x3 + x4"></span></dd>
+
+    <dt>1000 - 1</dt>
+    <dd><span data-ylcBind="text: 1000 - 1"></span></dd>
+
+    <dt>(2 * 1000 + 0 * 100 + 1 * 10 + 4 * 1) - (1 * 1000 + 9 * 100 + 8 * 10 + 3 * 1)</dt>
+    <dd><span data-ylcBind="
+            text:
+                (2 * 1000 + 0 * 100 + 1 * 10 + 4 * 1) - (1 * 1000 + 9 * 100 + 8 * 10 + 3 * 1)
+            "></span></dd>
+
+    <dt>5 &gt; 2</dt>
+    <dd><span data-ylcBind="text: 5 > 2"></span></dd>
+
+    <dt>x === y</dt>
+    <dd><span data-ylcBind="text: x === y"></span></dd>
+
+    <dt>x !== y</dt>
+    <dd><span data-ylcBind="text: x !== y"></span></dd>
+
+    <dt>true && false</dt>
+    <dd><span data-ylcBind="text: true && false"></span></dd>
+
+    <dt>true || false</dt>
+    <dd><span data-ylcBind="text: true || false"></span></dd>
+
+    <dt>true ? 'YES' : 'NO'</dt>
+    <dd><span data-ylcBind="text: true ? 'YES' : 'NO'"></span></dd>
+
+    <dt>false ? 'YES' : 'NO'</dt>
+    <dd><span data-ylcBind="text: false ? 'YES' : 'NO'"></span></dd>
+
+    <dt>+10</dt>
+    <dd><span data-ylcBind="text: +10"></span></dd>
+
+    <dt>-10</dt>
+    <dd><span data-ylcBind="text: -10"></span></dd>
+
+    <dt>!(5 &gt; 2)</dt>
+    <dd><span data-ylcBind="text: !(5 > 2)"></span></dd>
+
+    <dt>myFunction(1, 2, x, y)</dt>
+    <dd><span data-ylcBind="text: myFunction(1, 2, x, y)"></span></dd>
+
+</dl>
+
+
+<script>
+
+    var controller = {
+        init: function(model) {
+            model.str = "This is a string.";
+            model.num = 333;
+
+            model.obj = {
+                str: "String inside object",
+                num: 333333
+            };
+
+            model.arr = ["A", "B", "C", "D"];
+            model.index2 = 2;
+
+            model.name = "John";
+            model.surname = "Smith";
+
+            model.x1 = 2000;
+            model.x2 = 0;
+            model.x3 = 10;
+            model.x4 = 4;
+
+            model.x = 15;
+            model.y = 17;
+        },
+
+        myFunction: function(arg1, arg2, arg3, arg4) {
+            return  "arg1: " + arg1 + ", " +
+                    "arg2: " + arg2 + ", " +
+                    "arg3: " + arg3 + ", " +
+                    "arg4: " + arg4 + ", ";
+        }
+    };
+
+    $("#expressionEvaluation").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

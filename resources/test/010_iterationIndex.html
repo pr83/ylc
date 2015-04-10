@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Iteration index</h1>
+    <div id="iterating">
+        <ul data-ylcLoop="element,status: list">
+            <li>
+                <span data-ylcBind="text: status.index">1</span>:
+                <span data-ylcBind="text: element.name">something</span>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+
+                model.list = [
+                    {name: "red"},
+                    {name: "green"},
+                    {name: "blue"},
+                    {name: "pink"},
+                    {name: "white"},
+                    {name: "black"},
+                    {name: "yellow"}
+                ];
+            }
+        };
+
+        $("#iterating").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>

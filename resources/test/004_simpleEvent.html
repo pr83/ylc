@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <h1>Dynamic children</h1>
+    <div id="divWithEvent">
+        <a href="#" data-ylcEvents="click: printMessage">Click me!</a>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+                model.message = "Good morning starshine.";
+            },
+
+            printMessage: function(model) {
+                console.log(model.message);
+            }
+        };
+
+        $("#divWithEvent").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>

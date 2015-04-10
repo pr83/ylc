@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+    <h1>Deletable dynamic input</h1>
+    <div id="form">
+        <button data-ylcEvents="click: addElement">+</button><br />
+        <div data-ylcLoop="dynamicInput,dynamicInputStatus: dynamicInputs" class="ylcInvisibleTemplate">
+            <input data-ylcBind="val: dynamicInput.value" data-ylcEvents="keyup: sumUp" />
+            <button data-ylcEvents="click: remove">-</button>
+        </div>
+        <p>sum: <span data-ylcBind="text: sum">xx</span></p>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+                model.dynamicInputs = [];
+                model.sum = 0;
+            },
+
+            addElement: function(model) {
+                model.dynamicInputs.push({});
+            },
+
+            remove: function(model, context) {
+                var index = context.loopStatuses["dynamicInputStatus"].index;
+                model.dynamicInputs.splice(index, 1);
+                this.sumUp(model);
+            },
+
+            sumUp: function(model) {
+
+                var sum = 0;
+
+                for (var i = 0; i < model.dynamicInputs.length; i++) {
+                    if (model.dynamicInputs[i].value) {
+                        sum = sum + parseInt(model.dynamicInputs[i].value);
+                    }
+                }
+
+                model.sum = sum;
+            }
+        };
+
+        $("#form").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>

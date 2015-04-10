@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+
+</head>
+
+<body>
+
+<h1>Loop at root</h1>
+
+<div id="loopAtRoot" data-ylcLoop="item,status: list" class="ylcInvisibleTemplate">
+    <input data-ylcBind="val: item" data-ylcEvents="keyup: printThem"></div>
+</div>
+
+<script>
+
+    var controller = {
+        init: function(model) {
+            model.list = [0, 0, 0, 0, 0];
+        },
+
+        printThem: function(model) {
+            var index,
+                sbPrintout = [];
+            for (index = 0; index < model.list.length; index += 1) {
+                sbPrintout.push(model.list[index] + " ");
+            }
+            console.log(sbPrintout.join(""));
+        }
+    };
+
+    $("#loopAtRoot").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

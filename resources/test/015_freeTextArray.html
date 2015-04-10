@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+
+</head>
+
+<body>
+
+<h1>Free text array</h1>
+<div id="groupOfDynamicChildren">
+    <ul data-ylcLoop="string: strings" class="ylcInvisibleTemplate">
+        <li data-ylcBind="text: string">Some child</li>
+    </ul>
+</div>
+
+<script>
+
+    var controller = {
+        init: function(model) {
+            model.strings = [
+                    "one",
+                    "two",
+                    "three",
+                    "four",
+                    "five"
+            ];
+        }
+    };
+
+    $("#groupOfDynamicChildren").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

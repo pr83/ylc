@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+</head>
+
+<body>
+<h1>Subproperties</h1>
+
+<div id="subproperties">
+    <p>1: <span data-ylcBind="css.color: color1">xxx</span></p>
+    <p>2: <span data-ylcBind="css.color: color2">yyy</span></p>
+    <p>3: <span data-ylcBind="css.color: color3">zzz</span></p>
+</div>
+
+<script>
+
+    var controller = {
+        init: function(model) {
+            model.color1 = "red";
+            model.color2 = "green";
+            model.color3 = "blue";
+        }
+    };
+
+    $("#subproperties").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

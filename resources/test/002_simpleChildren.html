@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+</head>
+
+<body>
+    <h1>Simple children</h1>
+
+    <div id="groupOfChildren">
+        <p>child 1: <span data-ylcBind="text: child1"></span></p>
+        <p>child 2: <span data-ylcBind="text: child2"></span></p>
+        <p>child 3: <span data-ylcBind="text: child3"></span></p>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+                model.child1 = "I am child 1.";
+                model.child2 = "I am child 2.";
+                model.child3 = "I am child 3.";
+            }
+        };
+
+        $("#groupOfChildren").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+    <h1>Dynamic input</h1>
+    <div id="form" class="ylcInvisibleTemplate">
+        <button data-ylcEvents="click: addElement">Add element</button>
+        <ul>
+            <li data-ylcLoop="dynamicInput: dynamicInputs">
+                <input data-ylcBind="val: dynamicInput.value" />
+            </li>
+        </ul>
+        <button data-ylcEvents="click: sumUp">Sum up</button>
+        <p>sum: <span data-ylcBind="text: sum"></span></p>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+                model.dynamicInputs = [];
+                model.sum = 0;
+            },
+
+            addElement: function(model) {
+                model.dynamicInputs.push({});
+            },
+
+            sumUp: function(model) {
+                var sum = 0;
+
+                for (var i = 0; i < model.dynamicInputs.length; i++) {
+                    if (model.dynamicInputs[i].value) {
+                        sum = sum + parseInt(model.dynamicInputs[i].value);
+                    }
+                }
+
+                model.sum = sum;
+            }
+        };
+
+        $("#form").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+
+</head>
+
+<body>
+
+<h1>Errors</h1>
+
+<div id="nonexistentModelVariable">
+    <h2>Nonexistent model variable</h2>
+    <p data-ylcBind="text: nonExistent"></p>
+</div>
+
+<div id="nonexistentProperty">
+    <h2>Nonexistent property</h2>
+    <p data-ylcBind="nonexistentProperty: existingVariable"></p>
+</div>
+
+<div id="nonexistentModelList">
+    <h2>Nonexistent model list</h2>
+    <p data-ylcLoop="item: list" class="ylcInvisibleTemplate">
+        item: <span data-ylcBind="text: item">Some child</span>
+    </p>
+</div>
+
+<div id="nonexistentEvent">
+    <h2>Nonexistent event</h2>
+    <a href="#" data-ylcEvents="nonexistentEvent: existingHandler">Click me!</a>
+</div>
+
+<div id="nonexistentEventHandler">
+    <h2>Nonexistent event handler</h2>
+    <a href="#" data-ylcEvents="click: nonExistentHandler">Click me!</a>
+</div>
+
+<div id="invalidExpression">
+    <h2>Invalid expression</h2>
+    <p data-ylcBind="text: }';fsd!@#$"></p>
+</div>
+
+<div id="invalidProperty">
+    <h2>Invalid property</h2>
+    <p data-ylcBind="*&((&: existingVariable"></p>
+</div>
+
+<div id="invalidYlcBind">
+    <h2>Invalid YLC bind</h2>
+    <p data-ylcBind="fsdafdsfds"></p>
+</div>
+
+<div id="invalidYlcBind2">
+    <h2>Invalid YLC bind 2</h2>
+    <p data-ylcBind=":::"></p>
+</div>
+
+<div id="invalidYlcBind3">
+    <h2>Invalid YLC bind 3</h2>
+    <p data-ylcBind=";;;;"></p>
+</div>
+
+<div id="iterationStatusUsed">
+    <h2>Iteration status used</h2>
+
+    <div data-ylcLoop="sublist,status: multilevelList" class="ylcInvisibleTemplate">
+        <div>
+            <div data-ylcLoop="nestedItem,status: sublist" class="ylcInvisibleTemplate">
+                <p data-ylcBind="text: nestedItem"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="iterationVariableUsed">
+    <h2>Iteration variable used</h2>
+
+    <div data-ylcLoop="sublist,status1: multilevelList" class="ylcInvisibleTemplate">
+        <div>
+            <div data-ylcLoop="sublist,status2: sublist" class="ylcInvisibleTemplate">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="iterationVariableNotArray">
+    <h2>Iteration variable not array</h2>
+
+    <div data-ylcLoop="item: notAList" class="ylcInvisibleTemplate">
+    </div>
+</div>
+
+
+<script>
+
+    var controller = {
+        init: function(model) {
+            model.existingVariable = 0;
+            model.multilevelList = [["a", "b"]];
+            model.notAList = "notAList";
+        },
+
+        existingHandler: function(model) {
+        }
+    };
+
+    $("#nonexistentModelVariable").yellowCode(controller);
+    $("#nonexistentProperty").yellowCode(controller);
+    $("#nonexistentModelList").yellowCode(controller);
+    $("#existingHandler").yellowCode(controller);
+    $("#nonexistentEventHandler").yellowCode(controller);
+    $("#invalidExpression").yellowCode(controller);
+    $("#invalidProperty").yellowCode(controller);
+    $("#invalidYlcBind").yellowCode(controller);
+    $("#invalidYlcBind2").yellowCode(controller);
+    $("#invalidYlcBind3").yellowCode(controller);
+    $("#iterationStatusUsed").yellowCode(controller);
+    $("#iterationVariableUsed").yellowCode(controller);
+    $("#iterationVariableNotArray").yellowCode(controller);
+
+    alert("Done.");
+
+</script>
+
+</body>
+
+</html>

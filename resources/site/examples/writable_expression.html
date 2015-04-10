@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+<h1>Writable expression</h1>
+<div id="writableExpression">
+    <strong>Person 1:</strong><br/>
+    Name: <input data-ylcBind="val: persons[0].name" /><br/>
+    Surname: <input data-ylcBind="val: persons[0].surname" /><br/>
+    <br/>
+    <strong>Person 2:</strong><br/>
+    Name: <input data-ylcBind="val: persons[1].name" /><br/>
+    Surname: <input data-ylcBind="val: persons[1].surname" /><br/>
+    <br/>
+    <button data-ylcEvents="click: print">Print</button>
+</div>
+
+
+<script>
+
+    var controller = {
+        init: function(model) {
+            model.persons = [
+                {name: "", surname: ""},
+                {name: "", surname: ""}
+            ];
+        },
+
+        print: function(model) {
+            alert(
+                model.persons[0].name + " " + model.persons[0].surname +
+                        " and " +
+                        model.persons[1].name + " " + model.persons[1].surname
+            );
+        }
+    };
+
+    $("#writableExpression").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

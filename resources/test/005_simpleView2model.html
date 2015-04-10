@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <h1>Simple view-to-model synchronization</h1>
+    <input id="inputField" data-ylcEvents="keyup: printContent" data-ylcBind="val: content" />
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+                model.content = "Change me...";
+            },
+
+            printContent: function(model) {
+                console.log(model.content);
+            }
+        };
+
+        $("#inputField").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>

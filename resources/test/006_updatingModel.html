@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <h1>Updating model</h1>
+    <div id="dynamicList" class="ylcInvisibleTemplate">
+        <button data-ylcEvents="click: addElement">Add element</button>
+        <ul data-ylcLoop="element: listOfElements">
+            <li data-ylcBind="text: element.text">Some dynamic element...</li>
+        </ul>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+                model.listOfElements = [];
+            },
+
+            addElement: function(model) {
+                var order = model.listOfElements.length + 1;
+                model.listOfElements.push({
+                    text: "I am a dynamically generated string #" + order + "."
+                });
+            }
+        };
+
+        $("#dynamicList").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>

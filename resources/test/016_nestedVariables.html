@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+
+</head>
+
+<body>
+
+<h1>Nested variables</h1>
+<div id="nestedVariables">
+    <input data-ylcBind="val: a.b.c.d.e" data-ylcEvents="keyup: update" />
+    <br />
+    <span data-ylcBind="text: a.b.c.d.f"></span>
+</div>
+
+<script>
+
+    var controller = {
+        init: function(model) {
+            model.a = {
+                b: {
+                    c: {
+                        d: {
+                            e: "hey"
+                        }
+                    }
+                }
+            };
+        },
+
+        update: function(model, context) {
+            model.a.b.c.d.f = model.a.b.c.d.e;
+        }
+
+    };
+
+    $("#nestedVariables").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

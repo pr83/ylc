@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <div id="view">
+        <ul>
+            <div data-ylcBind="text: variable1"></div>
+            <div data-ylcBind="text: variable2"></div>
+            <div data-ylcBind="text: variable3"></div>
+        </ul>
+    </div>
+
+    <button id="button">External event</button>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+                model.variable1 = "";
+                model.variable2 = "";
+                model.variable3 = "";
+            },
+
+            myMethod: function(model, context, arg1, arg2, arg3) {
+                model.variable1 = arg1;
+                model.variable2 = arg2;
+                model.variable3 = arg3;
+            }
+        };
+
+        $("#view").yellowCode(controller);
+
+        $("#button").click(function() {
+            $("#view").yellowCode("getAdapter").myMethod("aaa", "bbb", "ccc");
+        });
+
+    </script>
+
+
+</body>
+
+</html>

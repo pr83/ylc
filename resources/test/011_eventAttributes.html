@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Event attributes</h1>
+    <div id="eventAttributes">
+        <ul data-ylcLoop="element,status: list" class="ylcInvisibleTemplate">
+            <li>
+                <a
+                    data-ylcBind="text: element.name"
+                    href="#"
+                    data-ylcEvents="click: clicked">
+                    Link
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+
+                model.list = [
+                    {name: "red"},
+                    {name: "green"},
+                    {name: "blue"},
+                    {name: "pink"},
+                    {name: "white"},
+                    {name: "black"},
+                    {name: "yellow"}
+                ];
+            },
+
+            clicked: function(model, context) {
+                var index = context.loopStatuses.status.index;
+                alert(model.list[index].name);
+            }
+        };
+
+        $("#eventAttributes").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>
