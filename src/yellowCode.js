@@ -1266,11 +1266,10 @@
 
         var adapter = {},
             controllerMethodNames = getProperties(controller),
-            currentControllerMethod,
             adapterMethodArguments;
 
         $.each(controllerMethodNames, function (idxProperty, currentMethodName) {
-            currentControllerMethod = controller[currentMethodName];
+            var currentControllerMethod = controller[currentMethodName];
 
             if (currentControllerMethod instanceof Function) {
                 adapter[currentMethodName] = function () {
