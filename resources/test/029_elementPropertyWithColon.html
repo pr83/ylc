@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:mynamespace="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <div id="view">
+        <span
+            id="spanWithProperty"
+            data-ylcBind="attr.mynamespace\:myproperty: propertyValue">
+            xxx
+        </span>
+        <button data-ylcEvents="click: setProperty">Set new value</button>
+        <button onclick="alert($('#spanWithProperty').attr('mynamespace:myproperty'));">
+            Check current value
+        </button>
+    </div>
+
+    <script>
+
+        var controller = {
+
+            init: function (model, context) {
+                model.propertyValue = "old value";
+            },
+
+            setProperty: function(model, context) {
+                model.propertyValue = "new value";
+            }
+
+        };
+
+        $("#view").yellowCode(controller);
+
+    </script>
+
+
+</body>
+
+</html>

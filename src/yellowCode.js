@@ -361,8 +361,14 @@
 
     function readPropertyAndSuproperty(strYlcBind, index, sbPropertyAndSubproperty) {
         while (index < strYlcBind.length && strYlcBind[index] !== ":") {
-            sbPropertyAndSubproperty.push(strYlcBind[index]);
-            index += 1;
+            if (strYlcBind[index] === "\\" && index + 1 < strYlcBind.length) {
+                sbPropertyAndSubproperty.push(strYlcBind[index + 1]);
+                index += 2;
+
+            } else {
+                sbPropertyAndSubproperty.push(strYlcBind[index]);
+                index += 1;
+            }
         }
 
         if (index === strYlcBind.length) {
