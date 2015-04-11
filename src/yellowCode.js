@@ -1105,6 +1105,8 @@
         fnUpdateMethod
     ) {
 
+        var returnValue;
+
         v2mProcessElement(
             context.newWithEmptyLoopVariables(),
             domView,
@@ -1113,7 +1115,7 @@
         );
 
         try {
-            fnUpdateMethod.call(controller, context.getModel(), publicContext);
+            returnValue = fnUpdateMethod.call(controller, context.getModel(), publicContext);
 
         } catch (error) {
             printError(error);
@@ -1127,6 +1129,8 @@
             false
         );
 
+        return returnValue;
+
     }
 
     function createPublicContext(context, domView, domElement, controller) {
@@ -1135,7 +1139,7 @@
         publicContext.domElement = domElement;
         publicContext.loopStatuses = context.getLoopStatusesSnapshot();
         publicContext.updateModel = function (fnUpdateMethod) {
-            callModelUpdatingMethod(
+            return callModelUpdatingMethod(
                 context,
                 publicContext,
                 domView,
@@ -1149,7 +1153,7 @@
 
     function createHandler(context, publicContext, domView, controller, fnHandler) {
         return function () {
-            callModelUpdatingMethod(
+            return callModelUpdatingMethod(
                 context,
                 publicContext,
                 domView,
