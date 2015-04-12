@@ -60,6 +60,22 @@ module.exports = function(grunt) {
           {
             from: /\{\{AUTHOR\}\}/g,
             to: "<%= pkg.author.name %>"
+          },
+          {
+            from: /\{\{LICENSE_URL\}\}/g,
+            to: "<%= pkg.ylc.licenseUrl %>"
+          },
+          {
+            from: /\{\{LICENSE_NAME\}\}/g,
+            to: "<%= pkg.ylc.licenseName %>"
+          },
+          {
+            from: /\{\{EMAIL\}\}/g,
+            to: "<%= pkg.author.email %>"
+          },
+          {
+            from: /\{\{REPOSITORY_URL\}\}/g,
+            to: "<%= pkg.repository.url %>"
           }
         ]
       }
@@ -73,8 +89,8 @@ module.exports = function(grunt) {
               '/*\n' +
               '<%= pkg.description %>, version <%= pkg.version %> ' +
               '(<%= pkg.homepage %>). ' +
-              'Distributed under the 2-clause BSD license ' +
-              '(<%= pkg.homepage %>/LICENSE.txt). ' +
+              'Distributed under the <%= pkg.ylc.licenseName %> ' +
+              '(<%= pkg.ylc.licenseUrl %>). ' +
               'Internally uses JavaScript Expression Parser (JSEP) ' +
               ' 0.3.0 distributed under the MIT License (http://jsep.from.so/).' +
               '\n*/\n\n',

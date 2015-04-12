@@ -3,10 +3,21 @@
   "description": "Yellow code - a jQuery plugin for 2-way data binding",
   "homepage": "http://any3w.com/ylc",
   "version": "0.99.5",
+  "licence": "BSD-2-Clause",
   "author": {
-    "name" : "Pavel Rimsky",
-    "email" : "ylc@any3w.com"
+    "name": "Pavel Rimsky",
+    "email": "ylc@any3w.com"
   },
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/pr83/ylc"
+  },
+
+  "ylc": {
+    "licenseUrl": "http://any3w.com/ylc/LICENSE.txt",
+    "licenseName": "the BSD 2-Clause License"
+  },
+
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-browserify": "~3.6.0",
