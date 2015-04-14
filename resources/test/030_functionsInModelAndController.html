@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:mynamespace="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <table id="view">
+        <tr data-ylcLoop="row,rowStatus: data">
+            <td data-ylcLoop="cell,cellStatus: row">
+                <input data-ylcBind="val: cell" data-ylcEvents="keyup: dummy" />
+            </td>
+            <td>
+                <input readonly data-ylcBind="val: decorateSum(rowSum(rowStatus.index))" />
+            </td>
+            <td>
+                <input readonly data-ylcBind="val: decorateProduct(rowProduct(rowStatus.index))" />
+            </td>
+        </tr>
+    </table>
+
+    <script>
+
+        var controller = {
+
+            init: function (model, context) {
+                model.data = [
+                    [1, 4, 3, 1, 8],
+                    [7, 2, 2, 3, 4],
+                    [7, 5, 6, 9, 5],
+                    [5, 4, 6, 7, 1]
+                ];
+
+                model.rowSum = function (rowIndex) {
+                    var sum = 0,
+                        row = model.data[rowIndex],
+                        cellIndex;
+
+                    for (cellIndex = 0; cellIndex < row.length; cellIndex += 1) {
+                        sum += parseInt(row[cellIndex]);
+                    }
+
+                    return sum;
+                };
+
+                model.rowProduct = function (rowIndex) {
+                    var sum = 1,
+                        row = model.data[rowIndex],
+                        cellIndex;
+
+                    for (cellIndex = 0; cellIndex < row.length; cellIndex += 1) {
+                        sum *= parseInt(row[cellIndex]);
+                    }
+
+                    return sum;
+                };
+
+            },
+
+            dummy: function () {
+            },
+
+            decorateSum: function (sum) {
+                return "sum = " + sum;
+            },
+
+            decorateProduct: function (product) {
+                return "product = " + product;
+            }
+
+        };
+
+        $("#view").yellowCode(controller);
+
+    </script>
+
+
+</body>
+
+</html>

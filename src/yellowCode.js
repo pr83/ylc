@@ -166,11 +166,20 @@
         }
 
         function callFunction(functionName, functionArguments) {
-            var fn = my.controller[functionName],
+            var parentObject,
+                fn,
                 evaluatedArguments = [],
                 idxArgument;
 
-            if (!(fn instanceof Function)) {
+            if (my.controller[functionName] instanceof Function) {
+                parentObject = my.controller;
+                fn = my.controller[functionName];
+
+            } else if (my.model[functionName] instanceof Function) {
+                parentObject = my.model;
+                fn = my.model[functionName];
+
+            } else {
                 throw createError("Function not found: " + functionName);
             }
 
@@ -178,7 +187,7 @@
                 evaluatedArguments.push(gsAstValue(functionArguments[idxArgument]));
             }
 
-            return fn.apply(controller, evaluatedArguments);
+            return fn.apply(parentObject, evaluatedArguments);
         }
 
         function gsAstValue(ast, valueToSet) {
