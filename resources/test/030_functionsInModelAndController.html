@@ -41,7 +41,7 @@
 
                 model.rowSum = function (rowIndex) {
                     var sum = 0,
-                        row = model.data[rowIndex],
+                        row = this.data[rowIndex],
                         cellIndex;
 
                     for (cellIndex = 0; cellIndex < row.length; cellIndex += 1) {
@@ -53,7 +53,7 @@
 
                 model.rowProduct = function (rowIndex) {
                     var sum = 1,
-                        row = model.data[rowIndex],
+                        row = this.data[rowIndex],
                         cellIndex;
 
                     for (cellIndex = 0; cellIndex < row.length; cellIndex += 1) {
