@@ -1167,7 +1167,8 @@
     }
 
     function createHandler(context, publicContext, domView, controller, fnHandler) {
-        return function () {
+        return function (eventObject) {
+            publicContext.eventObject = eventObject;
             return callModelUpdatingMethod(
                 context,
                 publicContext,
