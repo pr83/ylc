@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:mynamespace="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <div id="view">
+
+        <span data-ylcBind="text: person # address # delivery # street" ></span>
+        <br />
+
+        <span data-ylcBind="text: persons[10] # address # delivery # street" ></span>
+        <br />
+
+        <span data-ylcBind="text: existingObject.nonexistentObject # member" ></span>
+        <br />
+
+        <span data-ylcBind="text: a # b # c" ></span>
+        <br />
+
+        <span data-ylcBind="text: ddd ||| 'hej'" ></span>
+        <br />
+
+        <span data-ylcBind="text <- a ||| 'hola'" ></span>
+        <br />
+
+        <span data-ylcBind="text: b ||| 'hola'" ></span>
+        <br />
+
+        <span data-ylcBind="text: arr@5#x" ></span>
+        <br />
+
+        <button data-ylcEvents="click: printModel">Print model</button>
+
+    </div>
+
+    <script>
+
+        $("#view").yellowCode({
+
+            init: function (model) {
+                model.persons = [];
+                model.existingObject = {};
+                model.a = null;
+                model.b = "sousede";
+            },
+
+            printModel: function (model) {
+                console.log(model);
+            }
+
+        });
+
+    </script>
+
+
+</body>
+
+</html>

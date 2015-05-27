@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:mynamespace="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <dl>
+        <dt>a + b</dt>
+        <dd id="addition" data-ylcBind="text: a + b"></dd>
+
+        <dt>a * b</dt>
+        <dd id="multiplication" data-ylcBind="text: a * b"></dd>
+
+        <dt>a.b</dt>
+        <dd id="navigation" data-ylcBind="text: a.b"></dd>
+
+        <dt>n.b</dt>
+        <dd id="nullNavigation" data-ylcBind="text: n.b"></dd>
+
+        <dt>a # b</dt>
+        <dd id="adHocNavigation" data-ylcBind="text: a # b"></dd>
+
+        <dt>n # b</dt>
+        <dd id="adHocNullNavigation" data-ylcBind="text: n # b"></dd>
+
+        <dt>arr[0]</dt>
+        <dd id="arrayAccess" data-ylcBind="text: arr[0]"></dd>
+
+        <dt>a === b</dt>
+        <dd id="comparison" data-ylcBind="text: a === b"></dd>
+
+        <dt>a < b</dt>
+        <dd id="comparisonLess" data-ylcBind="text: a < b"></dd>
+
+        <dt>(a ||| 'default1') === (b ||| 'default2')</dt>
+        <dd id="comparisonDefaults" data-ylcBind="text: (a ||| 'default1') === (b ||| 'default2')"></dd>
+
+        <dt>(a ||| 'default1') < (b ||| 'default2')</dt>
+        <dd id="comparisonDefaultsLess" data-ylcBind="text: (a ||| 'default1') < (b ||| 'default2')"></dd>
+
+        <dt>(a ||| 'default1') > (b ||| 'default2')</dt>
+        <dd id="comparisonDefaultsGreater" data-ylcBind="text: (a ||| 'default1') > (b ||| 'default2')"></dd>
+
+        <dt>!a</dt>
+        <dd id="not" data-ylcBind="text: !a"></dd>
+
+        <dt>555#xxx</dt>
+        <dd id="nonObjectMember" data-ylcBind="text: 555#xxx"></dd>
+
+        <dt>555#xxx</dt>
+        <dd id="nonObjectMemberWrite">
+            <input data-ylcBind="val -> 555#xxx" data-ylcEvents="keyup: dummy" />
+        </dd>
+
+        <dt>555@xxx</dt>
+        <dd id="nonArrayElement" data-ylcBind="text: 555@xxx"></dd>
+
+        <dt>555@xxx</dt>
+        <dd id="nonArrayElementWrite">
+            <input data-ylcBind="val -> 555@xxx" data-ylcEvents="keyup: dummy" />
+        </dd>
+
+    </dl>
+
+    <script>
+
+        var controller = {
+            init: function (model) {
+                model.n = null;
+            },
+
+            dummy: function(model) {
+            }
+        };
+
+        $("#addition").yellowCode(controller);
+        $("#multiplication").yellowCode(controller);
+        $("#navigation").yellowCode(controller);
+        $("#nullNavigation").yellowCode(controller);
+        $("#adHocNavigation").yellowCode(controller);
+        $("#adHocNullNavigation").yellowCode(controller);
+        $("#arrayAccess").yellowCode(controller);
+        $("#comparison").yellowCode(controller);
+        $("#comparisonLess").yellowCode(controller);
+        $("#comparisonDefaults").yellowCode(controller);
+        $("#comparisonDefaultsLess").yellowCode(controller);
+        $("#comparisonDefaultsGreater").yellowCode(controller);
+        $("#nonObjectMember").yellowCode(controller);
+        $("#nonObjectMemberWrite").yellowCode(controller);
+        $("#nonArrayElement").yellowCode(controller);
+        $("#nonArrayElementWrite").yellowCode(controller);
+        $("#not").yellowCode(controller);
+
+    </script>
+
+
+</body>
+
+</html>

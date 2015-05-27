@@ -16,8 +16,8 @@
 <body>
 
 <div id="view">
-    <p data-ylcBind=":paragraph1">Hey!</p>
-    <p data-ylcBind=":paragraph2">Oh!</p>
+    <p data-ylcBind="=> paragraph1">Hey!</p>
+    <p data-ylcBind="=> paragraph2">Oh!</p>
     <button data-ylcEvents="click: print">Click me</button>
 </div>
 
@@ -25,6 +25,7 @@
 
     var controller = {
         init: function(model) {
+            model.paragraph1 = model.paragraph2 = null;
         },
 
         print: function(model, context) {

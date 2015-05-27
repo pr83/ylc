@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:mynamespace="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <div id="view">
+        <input data-ylcBind="val -> value; val <- capitalizeFirstLetter(value)" />
+        <br />
+        <button data-ylcEvents="click: printModel">Click me</button>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function (model) {
+                model.value = "";
+            },
+
+            capitalizeFirstLetter: function (string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            },
+
+            printModel: function(model){
+                console.log(model);
+            }
+        };
+
+        $("#view").yellowCode(controller);
+
+    </script>
+
+
+</body>
+
+</html>

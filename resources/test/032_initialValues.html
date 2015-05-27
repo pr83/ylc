@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:mynamespace="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <div id="view">
+        value1: <input value="Value 1" data-ylcBind="val: value1" /><br />
+        value2: <input value="Value 2" data-ylcBind="val: value2" /><br />
+        value3: <input value="Value 3" data-ylcBind="val: value3" /><br />
+        <button data-ylcEvents="click: printValues">Print values</button>
+    </div>
+    <button id="initButton">Init!</button>
+
+    <script>
+
+        $("#initButton").click(function() {
+            this.disabled = true;
+
+            $("#view").yellowCode({
+
+                init: function (model, context) {
+                    model.value1 = context.PREFIELD;
+                    model.value2 = context.PREFIELD;
+                    model.value3 = context.PREFIELD;
+                },
+
+                printValues: function (model) {
+                    alert(model.value1 + "; " + model.value2 + "; " + model.value3);
+                }
+
+
+            });
+        });
+
+
+    </script>
+
+
+</body>
+
+</html>

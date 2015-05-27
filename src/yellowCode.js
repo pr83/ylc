@@ -5,7 +5,19 @@
 
     "use strict";
 
-    var jsep = require('jsep');
+    var MAPPING_BIDIRECTIONAL = ":",
+        MAPPING_V2M_ONLY = "->",
+        MAPPING_V2M_ONLY_FORCED = "=>",
+        MAPPING_M2V_ONLY = "<-";
+
+    var PREFIELD = {},
+        jsep = require('jsep');
+
+    // ad hoc operators
+    jsep.addBinaryOp("|||", 10);
+    jsep.addBinaryOp("#", 10);
+    jsep.addBinaryOp("@", 10);
+
 
     function createError(message, element) {
         var errorObject = new Error(message);
@@ -56,7 +68,11 @@
          * PRIVATE FUNCTIONS:
          */
 
-        function gsVariable(strName, valueToSet) {
+        function hasValue(value) {
+            return (value !== undefined) && (value !== null);
+        }
+
+        function gsVariable(strName, valueToSet, adHocValue, forceSet) {
 
             var valueToReturn,
                 arrCollection,
@@ -78,7 +94,7 @@
                     valueToReturn =  my.loopStatuses[strName];
                 }
 
-            } else if (my.model[strName] !== undefined) {
+            } else if (hasValue(my.model[strName])) {
                 if (valueToSet === undefined) {
                     valueToReturn = my.model[strName];
                 } else {
@@ -86,15 +102,19 @@
                 }
 
             } else {
-                if (valueToSet === undefined) {
-                    throw createError("Unknown model variable: " + strName);
+                if (adHocValue !== undefined) {
+                    return (my.model[strName] = adHocValue);
+
+                } else if (valueToSet !== undefined) {
+                    if (forceSet) {
+                        my.model[strName] = valueToSet;
+                    } else {
+                        throw createError("Invalid model variable: " + strName);
+                    }
                 }
-                my.model[strName] = valueToSet;
             }
 
-            if (valueToReturn !== undefined) {
-                return valueToReturn;
-            }
+            return valueToReturn;
 
         }
 
@@ -190,75 +210,305 @@
             return fn.apply(parentObject, evaluatedArguments);
         }
 
-        function gsAstValue(ast, valueToSet) {
+        var AST_EVALUATORS = [
 
-            var valueToReturn;
+            // literal
+            {
+                condition: function(ast) {
+                    return ast.type === "Literal";
+                },
 
-            if (ast.type === "Literal") {
-                if (valueToSet === undefined) {
-                    valueToReturn = ast.value;
+                getter: function (ast) {
+                    return ast.value;
                 }
+            },
 
-            } else if (ast.type === "Identifier") {
-                if (valueToSet === undefined) {
-                    valueToReturn = gsVariable(ast.name);
-                } else {
-                    gsVariable(ast.name, valueToSet);
+            // variable name
+            {
+                condition: function(ast) {
+                    return ast.type === "Identifier";
+                },
+
+                getter: function(ast, adHocValue) {
+                    return gsVariable(ast.name, undefined, adHocValue);
+                },
+
+                setter: function(ast, value, forceSet) {
+                    gsVariable(ast.name, value, undefined, forceSet);
                 }
+            },
 
-            } else if (ast.type === "MemberExpression" && ast.computed) {
-                if (valueToSet === undefined) {
-                    valueToReturn = gsAstValue(ast.object)[gsAstValue(ast.property)];
-                } else {
-                    gsAstValue(ast.object)[gsAstValue(ast.property)] = valueToSet;
+            // referring to an array member, e.g. "myArray[x + 3]"
+            {
+                condition: function(ast) {
+                    return ast.type === "MemberExpression" && ast.computed;
+                },
+
+                getter: function (ast, adHocValue) {
+                    var objectValue = gsAstValue(ast.object),
+                        indexValue = gsAstValue(ast.property);
+
+                    if (!$.isArray(objectValue)) {
+                        throw createError("The [] operator can only be used on arrays.");
+                    }
+
+                    if (hasValue(objectValue[indexValue])) {
+                        return objectValue[indexValue];
+
+                    } else if (adHocValue !== undefined) {
+                        return (objectValue[indexValue] = adHocValue);
+
+                    } else {
+                        return undefined;
+                    }
+                },
+
+                setter: function(ast, value, forceSet) {
+                    var objectValue = gsAstValue(ast.object, undefined, forceSet ? [] : undefined),
+                        indexValue = gsAstValue(ast.property);
+
+                    if (!$.isArray(objectValue)) {
+                        throw createError("The [] operator can only be used on arrays.");
+                    }
+
+                    objectValue[indexValue] = value;
                 }
+            },
 
-            } else if (ast.type === "MemberExpression" && !(ast.computed)) {
-                if (valueToSet === undefined) {
-                    valueToReturn = gsAstValue(ast.object)[ast.property.name];
-                } else {
-                    gsAstValue(ast.object)[ast.property.name] = valueToSet;
+            // referring to an array member using and ad hoc operator, e.g. "myArray@(x + 3)"
+            {
+                condition: function(ast) {
+                    return ast.type === "BinaryExpression" && ast.operator === "@";
+                },
+
+                getter: function (ast, adHocValue) {
+                    var array =
+                            gsAstValue(
+                                ast.left,
+                                undefined,
+                                adHocValue !== undefined ? [] : undefined
+                            ),
+                        indexValue = gsAstValue(ast.right);
+
+                    if (array === undefined) {
+                        return undefined;
+
+                    } else if (array === null) {
+                        return null;
+
+                    } else if (!$.isArray(array)) {
+                        throw createError("The '@' operator can only be used on arrays, null and undefined.");
+
+                    } else {
+
+                        if (!hasValue(array[indexValue]) && (adHocValue !== undefined)) {
+                            array[indexValue] = adHocValue;
+                        }
+
+                        return array[indexValue];
+
+                    }
+                },
+
+                setter: function(ast, value) {
+                    var array = gsAstValue(ast.left, undefined, []);
+                    if (!$.isArray(array)) {
+                        throw createError("The '@' operator can only be used on arrays, null and undefined.");
+                    }
+                    array[gsAstValue(ast.right)] = value;
                 }
+            },
 
-            } else if (ast.type === "BinaryExpression" || ast.type === "LogicalExpression") {
-                if (valueToSet === undefined) {
-                    valueToReturn = calculateBinary(
+            // referring to an object member, e.g. "myObj.x"
+            {
+                condition: function(ast) {
+                    return ast.type === "MemberExpression" && !(ast.computed);
+                },
+
+                getter: function (ast, adHocValue) {
+                    var objectValue = gsAstValue(ast.object),
+                        propertyName = ast.property.name;
+
+                    if (!$.isPlainObject(objectValue)) {
+                        throw createError("Left hand side of the '.' operator must be an object.");
+                    }
+
+                    if (hasValue(objectValue[ast.property.name])) {
+                        return objectValue[propertyName];
+
+                    } else if (adHocValue !== undefined) {
+                        return (objectValue[propertyName] = adHocValue);
+
+                    } else {
+                        return undefined;
+                    }
+                },
+
+                setter: function(ast, value, forceSet) {
+                    var objectValue = gsAstValue(ast.object, undefined, forceSet ? {} : undefined),
+                        propertyName = ast.property.name;
+
+                    if (!(objectValue instanceof Object)) {
+                        throw createError("Left hand side of the '.' operator must be an object.");
+                    }
+
+                    objectValue[propertyName] = value;
+                }
+            },
+
+            // referring to an object member where the object can be null, e.g. "myObj#x"
+            {
+                condition: function(ast) {
+                    return ast.type === "BinaryExpression" &&
+                        ast.operator === "#" &&
+                        ast.right &&
+                        ast.right.type === "Identifier";
+                },
+
+                getter: function (ast, adHocValue) {
+
+                    var objectValue =
+                            gsAstValue(
+                                ast.left,
+                                undefined,
+                                adHocValue !== undefined ? {} : undefined
+                            ),
+                        propertyName = ast.right.name;
+
+                    if (objectValue === undefined) {
+                        return undefined;
+
+                    } else if (objectValue === null) {
+                        return null;
+
+                    } else if (!$.isPlainObject(objectValue)) {
+                        throw createError("Left hand side of the '#' operator must be an object, null or undefined.");
+
+                    } else {
+                        if (!hasValue(objectValue[propertyName]) && (adHocValue !== undefined)) {
+                            objectValue[propertyName] = adHocValue;
+                        }
+
+                        return objectValue[propertyName];
+                    }
+                },
+
+                setter: function(ast, value) {
+                    var objectValue = gsAstValue(ast.left, undefined, {});
+                    if (!$.isPlainObject(objectValue)) {
+                        throw createError("Left hand side of the '#' operator must be an object, null or undefined.");
+                    }
+                    objectValue[ast.right.name] = value;
+                }
+            },
+
+            // coalescence operator, e.g. "astCanBeNull ||| 'N/A'"
+            {
+                condition: function(ast) {
+                    return ast.type === "BinaryExpression" && ast.operator === "|||";
+                },
+                getter: function(ast, adHocValue) {
+                    var leftValue;
+
+                    if (adHocValue === undefined) {
+                        leftValue = gsAstValue(ast.left);
+                        return hasValue(leftValue) ? leftValue : gsAstValue(ast.right);
+
+                    } else {
+                        return gsAstValue(ast.left, undefined, gsAstValue(ast.right));
+
+                    }
+                },
+                setter: function(ast, value) {
+                    gsAstValue(ast.left, value, undefined, true);
+                }
+            },
+
+            // binary expression, including logical operators, e.g. "num + 1" or "a || b"
+            {
+                condition: function(ast) {
+                    return ast.type === "BinaryExpression" || ast.type === "LogicalExpression";
+                },
+                getter: function(ast) {
+                    return calculateBinary(
                         gsAstValue(ast.left),
                         ast.operator,
                         gsAstValue(ast.right)
                     );
                 }
+            },
 
-            } else if (ast.type === "UnaryExpression") {
-                if (valueToSet === undefined) {
-                    valueToReturn = calculateUnary(
+            // unary expression, e.g. "-x"
+            {
+                condition: function(ast) {
+                    return ast.type === "UnaryExpression";
+                },
+                getter: function(ast) {
+                    return calculateUnary(
                         ast.operator,
                         gsAstValue(ast.argument)
                     );
                 }
+            },
 
-            } else if (ast.type === "ConditionalExpression") {
-                if (valueToSet === undefined) {
-                    valueToReturn =
-                        gsAstValue(ast.test) ?
-                                gsAstValue(ast.consequent) : gsAstValue(ast.alternate);
+            // ternary operator, e.g. "(a === 1) ? b : c"
+            {
+                condition: function(ast) {
+                    return ast.type === "ConditionalExpression";
+                },
+                getter: function(ast) {
+                    return gsAstValue(ast.test) ?
+                        gsAstValue(ast.consequent) : gsAstValue(ast.alternate);
                 }
+            },
 
-            } else if (ast.type === "CallExpression") {
-                if (valueToSet === undefined) {
-                    valueToReturn = callFunction(ast.callee.name, ast.arguments);
+            // calling a function, e.g. "myFn(a, b, 2, 3)"
+            {
+                condition: function(ast) {
+                    return ast.type === "CallExpression";
+                },
+                getter: function(ast) {
+                    return callFunction(ast.callee.name, ast.arguments);
+                }
+            }
+        ];
+
+        function gsAstValue(ast, valueToSet, adHocValue, forceSet) {
+
+            var evaluatorIndex,
+                currentEvaluator,
+                matchingEvaluator,
+                valueToReturn;
+
+            for (evaluatorIndex = 0; evaluatorIndex < AST_EVALUATORS.length; evaluatorIndex += 1) {
+                currentEvaluator = AST_EVALUATORS[evaluatorIndex];
+                if (currentEvaluator.condition.call(currentEvaluator, ast)) {
+                    matchingEvaluator = currentEvaluator;
+                    break;
                 }
             }
 
-            if (valueToReturn !== undefined) {
-                return valueToReturn;
+            if (!matchingEvaluator) {
+                throw createError("Invalid expression." );
             }
+
+            if (valueToSet === undefined) {
+                return matchingEvaluator.getter.call(currentEvaluator, ast, adHocValue);
+
+            } else if (matchingEvaluator.setter) {
+                matchingEvaluator.setter.call(currentEvaluator, ast, valueToSet, forceSet);
+            }
+
+            /*
+             * If the setter doesn't exist for the given expression type, don't do anything.
+             * It means the expression is not a L-value, so we just ignore the write.
+             */
 
         }
 
-        function gsExpressionValue(strExpression, value) {
+        function gsExpressionValue(strExpression, value, forceSet) {
             var ast = jsep(strExpression);
-            return gsAstValue(ast, value);
+            return gsAstValue(ast, value, undefined, forceSet);
         }
 
         /*
@@ -336,8 +586,8 @@
         /*
          * setValue:
          */
-        that.setValue = function (strExpression, value) {
-            gsExpressionValue(strExpression, value);
+        that.setValue = function (strExpression, value, forceSet) {
+            gsExpressionValue(strExpression, value, forceSet);
         };
 
         that.newWithEmptyLoopVariables = function () {
@@ -366,10 +616,38 @@
 
     // parameter parsers
 
+    function poke(strSearchIn, intSearchAt, arrSearchFor) {
+        var strSearchFor,
+            idxSearchFor;
 
+        for (idxSearchFor = 0; idxSearchFor < arrSearchFor.length; idxSearchFor += 1) {
+            strSearchFor = arrSearchFor[idxSearchFor];
+            if (strSearchIn.substr(intSearchAt, strSearchFor.length) === strSearchFor) {
+                return strSearchFor;
+            }
+        }
 
-    function readPropertyAndSuproperty(strYlcBind, index, sbPropertyAndSubproperty) {
-        while (index < strYlcBind.length && strYlcBind[index] !== ":") {
+        return "";
+
+    }
+
+    function pokeMappingOperator(strYlcBind, index) {
+        return poke(
+            strYlcBind,
+            index,
+            [
+                MAPPING_BIDIRECTIONAL,
+                MAPPING_V2M_ONLY,
+                MAPPING_V2M_ONLY_FORCED,
+                MAPPING_M2V_ONLY
+            ]
+        );
+    }
+
+    function readPropertyAndSubproperty(strYlcBind, index, sbPropertyAndSubproperty) {
+
+        while (index < strYlcBind.length && pokeMappingOperator(strYlcBind, index) === "") {
+
             if (strYlcBind[index] === "\\" && index + 1 < strYlcBind.length) {
                 sbPropertyAndSubproperty.push(strYlcBind[index + 1]);
                 index += 2;
@@ -378,6 +656,7 @@
                 sbPropertyAndSubproperty.push(strYlcBind[index]);
                 index += 1;
             }
+
         }
 
         if (index === strYlcBind.length) {
@@ -415,7 +694,7 @@
         return index;
     }
 
-    function pushBinding(sbPropertyAndSubproperty, sbExpression, result) {
+    function pushBinding(sbPropertyAndSubproperty, sbExpression, strMappingOperator, result) {
 
         var strPropertyAndSubproperty = $.trim(sbPropertyAndSubproperty.join("")),
             strPropertyName,
@@ -433,6 +712,7 @@
         result.push({
             strPropertyName: strPropertyName,
             strSubpropertyName: strSubpropertyName,
+            strMappingOperator: strMappingOperator,
             strBindingExpression: $.trim(sbExpression.join(""))
         });
 
@@ -447,20 +727,21 @@
         var result = [],
             index = 0,
             sbPropertyAndSubproperty,
+            strMappingOperator,
             sbExpression;
 
         while (index < strYlcBind.length) {
 
             sbPropertyAndSubproperty = [];
-            index = readPropertyAndSuproperty(strYlcBind, index, sbPropertyAndSubproperty);
+            index = readPropertyAndSubproperty(strYlcBind, index, sbPropertyAndSubproperty);
 
-            // eat the colon
-            index += 1;
+            strMappingOperator = pokeMappingOperator(strYlcBind, index);
+            index += strMappingOperator.length;
 
             sbExpression = [];
             index = readExpression(strYlcBind, index, sbExpression);
 
-            pushBinding(sbPropertyAndSubproperty, sbExpression, result);
+            pushBinding(sbPropertyAndSubproperty, sbExpression, strMappingOperator, result);
 
             if (strYlcBind[index] === ";") {
                 index += 1;
@@ -598,10 +879,19 @@
             idxYlcBind,
             currentYlcBinding,
             fnGetter,
-            value;
+            value,
+            forceSet;
 
         for (idxYlcBind = 0; idxYlcBind < arrYlcBind.length; idxYlcBind += 1) {
             currentYlcBinding = arrYlcBind[idxYlcBind];
+
+            if (currentYlcBinding.strMappingOperator !== MAPPING_BIDIRECTIONAL &&
+                    currentYlcBinding.strMappingOperator !== MAPPING_V2M_ONLY &&
+                    currentYlcBinding.strMappingOperator !== MAPPING_V2M_ONLY_FORCED) {
+                continue;
+            }
+
+            forceSet = currentYlcBinding.strMappingOperator === MAPPING_V2M_ONLY_FORCED;
 
             if (isEmpty(currentYlcBinding.strPropertyName)) {
                 value = jqElement.get();
@@ -624,7 +914,12 @@
                 }
             }
 
-            context.setValue(currentYlcBinding.strBindingExpression, value);
+            try {
+                context.setValue(currentYlcBinding.strBindingExpression, value, forceSet);
+
+            } catch (err) {
+                throw elementToError(err, domElement);
+            }
         }
     }
 
@@ -814,6 +1109,11 @@
         for (index = 0; index < arrYlcBind.length; index += 1) {
             currentYlcBinding = arrYlcBind[index];
 
+            if (currentYlcBinding.strMappingOperator !== MAPPING_BIDIRECTIONAL &&
+                    currentYlcBinding.strMappingOperator !== MAPPING_M2V_ONLY) {
+                continue;
+            }
+
             // an empty property maps straight to the DOM element, which is read only
             if (isEmpty(currentYlcBinding.strPropertyName)) {
                 continue;
@@ -835,13 +1135,14 @@
                 throw elementToError(err, domElement);
             }
 
-            if (currentYlcBinding.strSubpropertyName === undefined) {
-                fnSetter.call(jqElement, value);
+            if (value !== PREFIELD) {
+                if (currentYlcBinding.strSubpropertyName === undefined) {
+                    fnSetter.call(jqElement, value);
 
-            } else {
-                fnSetter.call(jqElement, currentYlcBinding.strSubpropertyName, value);
+                } else {
+                    fnSetter.call(jqElement, currentYlcBinding.strSubpropertyName, value);
+                }
             }
-
 
         }
 
@@ -1122,27 +1423,28 @@
 
         var returnValue;
 
-        v2mProcessElement(
-            context.newWithEmptyLoopVariables(),
-            domView,
-            domView,
-            controller
-        );
-
         try {
+
+            v2mProcessElement(
+                context.newWithEmptyLoopVariables(),
+                domView,
+                domView,
+                controller
+            );
+
             returnValue = fnUpdateMethod.call(controller, context.getModel(), publicContext);
+
+            m2vProcessElement(
+                context.newWithEmptyLoopVariables(),
+                domView,
+                domView,
+                controller,
+                false
+            );
 
         } catch (error) {
             printError(error);
         }
-
-        m2vProcessElement(
-            context.newWithEmptyLoopVariables(),
-            domView,
-            domView,
-            controller,
-            false
-        );
 
         return returnValue;
 
@@ -1150,6 +1452,8 @@
 
     function createPublicContext(context, domView, domElement, controller) {
         var publicContext = {};
+
+        publicContext.PREFIELD = PREFIELD;
 
         publicContext.domElement = domElement;
         publicContext.loopStatuses = context.getLoopStatusesSnapshot();

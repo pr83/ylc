@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:mynamespace="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <div id="view">
+        Name: <input data-ylcBind="val -> name ||| ''" data-ylcEvents="keyup: dummy" /><br/>
+        Surname: <input data-ylcBind="val -> surname ||| ''" data-ylcEvents="keyup: dummy" /><br/>
+        <hr/>
+        Name: <input data-ylcBind="val <- name ||| ''" readonly /><br/>
+        Surname: <input data-ylcBind="val <- surname ||| ''" readonly /><br/>
+        <input data-ylcBind="val <- (name ||| '') + ' ' + (surname ||| '')" readonly />
+    </div>
+
+    <script>
+
+        var controller = {
+            dummy: function (model) {
+            }
+        };
+
+        $("#view").yellowCode(controller);
+
+    </script>
+
+
+</body>
+
+</html>
