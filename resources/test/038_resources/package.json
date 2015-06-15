@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "devDependencies": {
+    "grunt-browserify": "~3.6.0",
+    "html2js-browserify": "~1.0.0"
+  }
+}

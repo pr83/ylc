@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:mynamespace="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+    <script src="038_resources/colorWidget.all.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none !important;}
+    </style>
+</head>
+
+<body>
+
+    <div id="colors">
+        <div data-ylcLoop="color: colors"
+            data-ylcEvents="ylcElementInitialized: initColorWidgetPlugin"
+            data-ylcBind="colorWidget.color: color"></div>
+        <button data-ylcEvents="click: reverse">Click</button>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function (model) {
+                model.colors = [
+                        "red",
+                        "black",
+                        "blue",
+                        "brown",
+                        "yellow",
+                        "crimson",
+                        "green",
+                        "orange",
+                        "violet",
+                        "white"
+                ];
+            },
+
+            initColorWidgetPlugin: function (model, context) {
+                $(context.domElement).colorWidget();
+            },
+
+            reverse: function(model, context) {
+                console.log(model);
+                var idxLeft = 0,
+                    idxRight = model.colors.length - 1,
+                    newLeft,
+                    newRight;
+                while (idxLeft < idxRight) {
+                    newLeft = model.colors[idxRight];
+                    newRight = model.colors[idxLeft];
+                    model.colors[idxLeft] = newLeft;
+                    model.colors[idxRight] = newRight;
+                    idxLeft += 1;
+                    idxRight -= 1;
+                }
+                console.log(model);
+            }
+        };
+
+        $("#colors").yellowCode(controller);
+
+    </script>
+
+
+</body>
+
+</html>

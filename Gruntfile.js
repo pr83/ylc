@@ -15,7 +15,10 @@ module.exports = function(grunt) {
     uglify: {
       dist: {
         src: 'tmp/yellowCode.js',
-        dest: 'tmp/yellowCode.min.js'
+        dest: 'tmp/yellowCode.min.js',
+        options: {
+          sourceMap: true
+        }
       }
     },
 
@@ -24,8 +27,14 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
+            cwd: "resources/test",
+            src: ["**"],
+            dest: "dist/tests"
+          },
+          {
+            expand: true,
             flatten: true,
-            src: ["resources/test/*", "tmp/yellowCode.min.js"],
+            src: ["tmp/yellowCode.min.js", "tmp/yellowCode.min.js.map"],
             dest: "dist/tests"
           },
           {
@@ -41,6 +50,14 @@ module.exports = function(grunt) {
             dest: "dist/site/examples"
           }
         ]
+      }
+    },
+
+    subgrunt: {
+      dist: {
+        projects: {
+          "dist/tests/038_resources": "default"
+        }
       }
     },
 
@@ -119,6 +136,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-text-replace');
   grunt.loadNpmTasks('grunt-banner');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-subgrunt');
 
   grunt.registerTask(
       'default',
@@ -128,6 +146,7 @@ module.exports = function(grunt) {
         'uglify',
         'usebanner',
         'copy',
+        'subgrunt',
         'replace',
         'clean:after_dist'
       ]

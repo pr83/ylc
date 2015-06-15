@@ -863,6 +863,7 @@
     function jqCreateElementFromTemplate(jqTemplate) {
         var jqClone = jqTemplate.clone();
         jqClone.addClass("_ylcDynamicallyGenerated");
+        jqClone.removeAttr("data-_ylcViewRoot");
         jqClone.attr("data-_ylcDynamicallyGenerated", "true");
 
         return jqClone;
@@ -1000,6 +1001,9 @@
                 $(domElement),
                 controller
             );
+
+        } else if (domElement !== domView && $(domElement).attr("data-_ylcViewRoot") === "true") {
+            nElementsProcessed = 1;
 
         } else {
             v2mSetValues(context, domView, domElement);
@@ -1169,6 +1173,7 @@
                 ylcLoop.strStatusVariable,
                 index
             );
+
             index +=
                 m2vProcessElement(
                     context,
@@ -1177,6 +1182,7 @@
                     controller,
                     false
                 );
+
             context.exitIteration(ylcLoop.strLoopVariable, ylcLoop.strStatusVariable);
         }
     }
@@ -1524,6 +1530,7 @@
     function m2vProcessElement(context, domView, domElement, controller, bBindEvents) {
         var nElementsProcessed;
 
+
         if (isTemplate(domElement)) {
             nElementsProcessed = m2vProcessDynamicElements(
                 context,
@@ -1532,16 +1539,21 @@
                 controller
             );
 
+        } else if (domElement !== domView && $(domElement).attr("data-_ylcViewRoot") === "true") {
+            nElementsProcessed = 1;
+
         } else {
-            m2vSetValues(context, domElement);
             if (bBindEvents) {
                 m2vBindEvents(context, domView, domElement, controller);
             }
+            m2vSetValues(context, domElement);
             $(domElement).removeClass("ylcInvisibleTemplate");
             m2vProcessChildren(context, domView, domElement, controller, bBindEvents);
 
             nElementsProcessed = 1;
         }
+
+
 
         return nElementsProcessed;
     }
@@ -1560,6 +1572,7 @@
 
         $(domView).find(":not([data-ylcIf=''])").addClass("ylcInvisibleTemplate");
         $(domView).find(":not([data-ylcLoop=''])").addClass("ylcInvisibleTemplate");
+        $(domView).attr("data-_ylcViewRoot", "true");
 
         m2vProcessElement(
             context,
@@ -1635,6 +1648,7 @@
             "_ylcExternalEvent",
             function (event, communicationObject) {
                 processExternalEvent(context, domView, controller, communicationObject);
+                return false;
             }
         );
     }

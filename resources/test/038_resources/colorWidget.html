@@ -1,0 +1,23 @@
+<div style="width: 500px; min-height: 30px; border: 1px solid; margin: 10px; padding: 10px">
+
+    <div>
+        <strong>current color:</strong>
+        <div
+            style="width: 40px; height: 20px; border: 2px solid; margin-left: auto; margin-right: auto; display: inline-block; vertical-align: middle;"
+            data-ylcBind="css.background-color: currentColor"
+            data-ylcEvents="click: enableEdit">
+        </div>
+    </div>
+
+    <div data-ylcIf="edit">
+
+        <div
+            data-ylcLoop="color,colorStatus: colors"
+            style="width: 20px; height: 20px; border: 2px solid; display: inline-block; margin: 3px"
+            data-ylcBind="css.background-color: color"
+            data-ylcEvents="click: changeColor">
+        </div>
+
+    </div>
+
+</div>
