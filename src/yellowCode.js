@@ -8,9 +8,11 @@
     var MAPPING_BIDIRECTIONAL = ":",
         MAPPING_V2M_ONLY = "->",
         MAPPING_V2M_ONLY_FORCED = "=>",
-        MAPPING_M2V_ONLY = "<-";
+        MAPPING_M2V_ONLY = "<-",
 
-    var PREFIELD = {},
+        PREFIELD = {},
+        EMPTY_FUNCTION = function () {},
+
         jsep = require('jsep');
 
     // ad hoc operators
@@ -1501,7 +1503,13 @@
 
         for (index = 0; index < arrYlcEvents.length; index += 1) {
             currentYlcEvent = arrYlcEvents[index];
-            fnHandler = controller[currentYlcEvent.strMethodName];
+
+            if (currentYlcEvent.strMethodName.length === 0) {
+                fnHandler = EMPTY_FUNCTION;
+
+            } else {
+                fnHandler = controller[currentYlcEvent.strMethodName];
+            }
 
             if (!(fnHandler instanceof Function)) {
                 throw createError(
