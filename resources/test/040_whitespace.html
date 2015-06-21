@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:mynamespace="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none !important;}
+    </style>
+</head>
+
+<body>
+
+    <div id="view">
+        <div
+            data-ylcBind="
+                /* this is a comment */
+                css.color <-
+                    color /* this is another comment */
+            "
+            data-ylcEvents="
+
+                click: /* This is a comment too. */
+
+                    printMessage
+
+            "
+            data-ylcLoop="
+                /* comment 1 */
+                color:
+                    /* comment 2 */
+                    colors
+                    /* comment 3 */
+            "
+            >
+            XXXXX
+            <span data-ylcBind="
+                /* comment */
+                text:
+                    '|' + /* comment */
+                    color + /* comment */
+                    '|' /* comment */
+            "> !!!BLUE!!! </span>
+            <span data-ylcIf="
+                /* comment */
+                color ===
+                    'blue'
+            "> !!!BLUE!!! </span>
+        </div>
+    </div>
+
+    <script>
+        $("#view").yellowCode({
+            init: function (model) {
+                model.colors = ["red", "black", "blue", "brown", "crimson"];
+            },
+
+            printMessage: function () {
+                console.log("hello");
+            }
+        });
+    </script>
+
+</body>
+
+</html>

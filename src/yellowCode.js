@@ -668,28 +668,74 @@
         return index;
     }
 
-    function readExpression(strYlcBind, index, sbExpression) {
-        var bInsideQuotes = false,
-            bInsideDoubleQuotes = false,
-            char;
+    function echoCharacter(str, index, sbResult) {
+        if (index >= str.length) {
+            throw createError(
+                "Premature end of string: '" + str + "'."
+            );
+        }
 
-        while (index < strYlcBind.length &&
-                (strYlcBind[index] !== ";" || bInsideQuotes || bInsideDoubleQuotes)) {
+        if (str[index] === '\\') {
+            sbResult.push(str[index]);
+            index += 1;
+        }
 
-            char = strYlcBind[index];
+        if (index >= str.length) {
+            throw createError(
+                "Escape sequence not terminated at the end of string '" + str + "'."
+            );
+        }
 
-            if (!bInsideQuotes && !bInsideDoubleQuotes && /\s/.test(char)) {
-                sbExpression.push(" ");
+        sbResult.push(str[index]);
+        index += 1;
+
+        return index;
+    }
+
+    function normalizeWhitespace(str) {
+        var WHITESPACE = /\s/,
+            index = 0,
+            sbResult = [];
+
+        while (index < str.length) {
+            if (str[index] === '\'') {
+                index = echoCharacter(str, index, sbResult);
+                while (index < str.length && str[index] !== '\'') {
+                    index = echoCharacter(str, index, sbResult);
+                }
+                index = echoCharacter(str, index, sbResult);
+
+            } else if (str[index] === '"') {
+                index = echoCharacter(str, index, sbResult);
+                while (index < str.length && str[index] !== '"') {
+                    index = echoCharacter(str, index, sbResult);
+                }
+                index = echoCharacter(str, index, sbResult);
+
+            } else if (str.substr(index, 2) === "/*") {
+                while (index < str.length && str.substr(index, 2) !== "*/") {
+                    index += 1;
+                }
+                index += 2;
+
+            } else if (WHITESPACE.test(str[index])) {
+                while (WHITESPACE.test(str[index])) {
+                    index += 1;
+                }
+                sbResult.push(" ");
+
             } else {
-                sbExpression.push(char);
+                index = echoCharacter(str, index, sbResult);
             }
 
-            if (char === "'" && !bInsideDoubleQuotes) {
-                bInsideQuotes = !bInsideQuotes;
-            } else if (char === "\"" && !bInsideQuotes) {
-                bInsideDoubleQuotes = !bInsideDoubleQuotes;
-            }
+        }
 
+        return sbResult.join("");
+    }
+
+    function readExpression(strYlcBind, index, sbExpression) {
+        while (index < strYlcBind.length && strYlcBind[index] !== ";") {
+            sbExpression.push(strYlcBind[index]);
             index += 1;
         }
 
@@ -722,15 +768,17 @@
 
     function parseYlcBind(strYlcBind) {
 
-        if (!strYlcBind) {
-            return [];
-        }
-
         var result = [],
             index = 0,
             sbPropertyAndSubproperty,
             strMappingOperator,
             sbExpression;
+
+        if (!strYlcBind) {
+            return [];
+        }
+
+        strYlcBind = normalizeWhitespace(strYlcBind);
 
         while (index < strYlcBind.length) {
 
@@ -767,7 +815,7 @@
                     "Invalid format of the data-ylcLoop parameter: " + strYlcLoop
                 );
             },
-            arrParts = strYlcLoop.split(":"),
+            arrParts = normalizeWhitespace(strYlcLoop).split(":"),
             strLoopAndStatusVariables,
             strCollectionName,
             strLoopVariable,
@@ -810,7 +858,7 @@
         }
 
         var result = [],
-            arrEvents = strYlcEvents.split(";"),
+            arrEvents = normalizeWhitespace(strYlcEvents).split(";"),
             index,
 
             strEvent,
@@ -1303,7 +1351,7 @@
         controller,
         strYlcIf
     ) {
-        var ifExpressionValue = context.getValue(strYlcIf),
+        var ifExpressionValue = context.getValue(normalizeWhitespace(strYlcIf)),
             domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate),
             jqNewDynamicElement,
             nElementsProcessed;
