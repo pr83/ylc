@@ -32,7 +32,7 @@
         return error;
     }
 
-    function printError(error) {
+    function printAndRethrow(error) {
         if (typeof console === 'object') {
             console.error(error);
             if (error.element !== undefined) {
@@ -40,6 +40,8 @@
             }
             console.log("\n");
         }
+
+        throw error;
     }
 
     function assert(condition, message) {
@@ -1499,7 +1501,7 @@
             );
 
         } catch (error) {
-            printError(error);
+            printAndRethrow(error);
         }
 
         return returnValue;
@@ -1750,7 +1752,7 @@
             return objectToReturn;
 
         } catch (error) {
-            printError(error);
+            printAndRethrow(error);
         }
     };
 

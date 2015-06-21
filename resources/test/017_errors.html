@@ -113,19 +113,19 @@
         }
     };
 
-    $("#nonexistentModelVariable").yellowCode(controller);
-    $("#nonexistentProperty").yellowCode(controller);
-    $("#nonexistentModelList").yellowCode(controller);
-    $("#existingHandler").yellowCode(controller);
-    $("#nonexistentEventHandler").yellowCode(controller);
-    $("#invalidExpression").yellowCode(controller);
-    $("#invalidProperty").yellowCode(controller);
-    $("#invalidYlcBind").yellowCode(controller);
-    $("#invalidYlcBind2").yellowCode(controller);
-    $("#invalidYlcBind3").yellowCode(controller);
-    $("#iterationStatusUsed").yellowCode(controller);
-    $("#iterationVariableUsed").yellowCode(controller);
-    $("#iterationVariableNotArray").yellowCode(controller);
+    try {$("#nonexistentModelVariable").yellowCode(controller);} catch (err) {}
+    try {$("#nonexistentProperty").yellowCode(controller);} catch (err) {}
+    try {$("#nonexistentModelList").yellowCode(controller);} catch (err) {}
+    try {$("#existingHandler").yellowCode(controller);} catch (err) {}
+    try {$("#nonexistentEventHandler").yellowCode(controller);} catch (err) {}
+    try {$("#invalidExpression").yellowCode(controller);} catch (err) {}
+    try {$("#invalidProperty").yellowCode(controller);} catch (err) {}
+    try {$("#invalidYlcBind").yellowCode(controller);} catch (err) {}
+    try {$("#invalidYlcBind2").yellowCode(controller);} catch (err) {}
+    try {$("#invalidYlcBind3").yellowCode(controller);} catch (err) {}
+    try {$("#iterationStatusUsed").yellowCode(controller);} catch (err) {}
+    try {$("#iterationVariableUsed").yellowCode(controller);} catch (err) {}
+    try {$("#iterationVariableNotArray").yellowCode(controller);} catch (err) {}
 
     alert("Done.");
 
