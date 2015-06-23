@@ -1746,6 +1746,14 @@
                 }
 
             } else if (typeof parameter1 === "string") {
+                if ($(domView).attr("data-_ylcViewRoot") !== "true") {
+                    throw createError(
+                        "Cannot get an adapter. This element is not a YLC view root. " +
+                        "Make sure Yellow Code has been properly initialized with this " +
+                        "element as a view root.",
+                        domView
+                    );
+                }
                 objectToReturn = triggerExternalEvent(domView, parameter1, parameter2);
             }
 

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:mynamespace="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none !important;}
+    </style>
+</head>
+
+<body>
+
+    <div id="view">
+        <div data-ylcIf="show">
+            <span data-ylcEvents="ylcElementInitialized: doSomething"></span>
+        </div>
+        <button data-ylcEvents="click: show">Click</button>
+        <span data-ylcBind="text: greeting ||| ''"></span>
+    </div>
+
+    <script>
+        $("#view").yellowCode({
+
+            show: function (model){
+                model.show = true;
+            },
+
+            doSomething: function (model, context) {
+                context.updateModel(function(model) {
+                    model.greeting = "hello";
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>
