@@ -12,15 +12,8 @@
 
         domAnnotator = require('./domAnnotator'),
         contextFactory = require('./contextFactory'),
-        errorUtil = require('./errorUtil');
-
-    function isEmpty(string) {
-        return $.trim(string).length === 0;
-    }
-
-    function strGetData(jqElement, strDataParameterName) {
-        return jqElement.attr("data-" + strDataParameterName);
-    }
+        errorUtil = require('./errorUtil'),
+        stringUtil = require('./stringUtil');
 
 
     // parameter parsers
@@ -75,70 +68,7 @@
         return index;
     }
 
-    function echoCharacter(str, index, sbResult) {
-        if (index >= str.length) {
-            throw errorUtil.createError(
-                "Premature end of string: '" + str + "'."
-            );
-        }
 
-        if (str[index] === '\\') {
-            sbResult.push(str[index]);
-            index += 1;
-        }
-
-        if (index >= str.length) {
-            throw errorUtil.createError(
-                "Escape sequence not terminated at the end of string '" + str + "'."
-            );
-        }
-
-        sbResult.push(str[index]);
-        index += 1;
-
-        return index;
-    }
-
-    function normalizeWhitespace(str) {
-        var WHITESPACE = /\s/,
-            index = 0,
-            sbResult = [];
-
-        while (index < str.length) {
-            if (str[index] === '\'') {
-                index = echoCharacter(str, index, sbResult);
-                while (index < str.length && str[index] !== '\'') {
-                    index = echoCharacter(str, index, sbResult);
-                }
-                index = echoCharacter(str, index, sbResult);
-
-            } else if (str[index] === '"') {
-                index = echoCharacter(str, index, sbResult);
-                while (index < str.length && str[index] !== '"') {
-                    index = echoCharacter(str, index, sbResult);
-                }
-                index = echoCharacter(str, index, sbResult);
-
-            } else if (str.substr(index, 2) === "/*") {
-                while (index < str.length && str.substr(index, 2) !== "*/") {
-                    index += 1;
-                }
-                index += 2;
-
-            } else if (WHITESPACE.test(str[index])) {
-                while (WHITESPACE.test(str[index])) {
-                    index += 1;
-                }
-                sbResult.push(" ");
-
-            } else {
-                index = echoCharacter(str, index, sbResult);
-            }
-
-        }
-
-        return sbResult.join("");
-    }
 
     function readExpression(strYlcBind, index, sbExpression) {
         while (index < strYlcBind.length && strYlcBind[index] !== ";") {
@@ -185,7 +115,7 @@
             return [];
         }
 
-        strYlcBind = normalizeWhitespace(strYlcBind);
+        strYlcBind = stringUtil.normalizeWhitespace(strYlcBind);
 
         while (index < strYlcBind.length) {
 
@@ -222,7 +152,7 @@
                     "Invalid format of the data-ylcLoop parameter: " + strYlcLoop
                 );
             },
-            arrParts = normalizeWhitespace(strYlcLoop).split(":"),
+            arrParts = stringUtil.normalizeWhitespace(strYlcLoop).split(":"),
             strLoopAndStatusVariables,
             strCollectionName,
             strLoopVariable,
@@ -265,7 +195,7 @@
         }
 
         var result = [],
-            arrEvents = normalizeWhitespace(strYlcEvents).split(";"),
+            arrEvents = stringUtil.normalizeWhitespace(strYlcEvents).split(";"),
             index,
 
             strEvent,
@@ -309,8 +239,8 @@
 
     function isTemplate(domElement) {
         var jqElement = $(domElement),
-            strYlcLoop = strGetData(jqElement, "ylcLoop"),
-            strIf = strGetData(jqElement, "ylcIf");
+            strYlcLoop = stringUtil.strGetData(jqElement, "ylcLoop"),
+            strIf = stringUtil.strGetData(jqElement, "ylcIf");
 
         return (strYlcLoop || strIf) ?
                 !isDynamicallyGenerated(domElement) :
@@ -332,7 +262,7 @@
     function v2mSetValues(context, domView, domElement) {
 
         var jqElement = $(domElement),
-            strYlcBind = strGetData(jqElement, "ylcBind"),
+            strYlcBind = stringUtil.strGetData(jqElement, "ylcBind"),
             arrYlcBind = parseYlcBind(strYlcBind),
             idxYlcBind,
             currentYlcBinding,
@@ -351,7 +281,7 @@
 
             forceSet = currentYlcBinding.strMappingOperator === MAPPING_V2M_ONLY_FORCED;
 
-            if (isEmpty(currentYlcBinding.strPropertyName)) {
+            if (stringUtil.isEmpty(currentYlcBinding.strPropertyName)) {
                 value = jqElement.get();
 
             } else {
@@ -416,8 +346,8 @@
         controller
     ) {
 
-        var strYlcLoop = strGetData(jqTemplate, "ylcLoop"),
-            strYlcIf = strGetData(jqTemplate, "ylcIf");
+        var strYlcLoop = stringUtil.strGetData(jqTemplate, "ylcLoop"),
+            strYlcIf = stringUtil.strGetData(jqTemplate, "ylcIf");
 
         if (strYlcLoop && strYlcIf) {
             throw errorUtil.createError(
@@ -478,7 +408,7 @@
         controller
     ) {
         var idxWithinDynamicallyGenerated,
-            ylcLoop = parseYlcLoop(strGetData(jqTemplate, "ylcLoop")),
+            ylcLoop = parseYlcLoop(stringUtil.strGetData(jqTemplate, "ylcLoop")),
             arrCollection = context.getValue(ylcLoop.strCollectionName),
             domarrGeneratedElements = getGeneratedElements(jqTemplate),
             domDynamicallyGeneratedElement,
@@ -559,7 +489,7 @@
 
     function m2vSetValues(context, domElement) {
         var jqElement = $(domElement),
-            strYlcBind = strGetData(jqElement, "ylcBind"),
+            strYlcBind = stringUtil.strGetData(jqElement, "ylcBind"),
             arrYlcBind = parseYlcBind(strYlcBind),
 
             index,
@@ -576,7 +506,7 @@
             }
 
             // an empty property maps straight to the DOM element, which is read only
-            if (isEmpty(currentYlcBinding.strPropertyName)) {
+            if (stringUtil.isEmpty(currentYlcBinding.strPropertyName)) {
                 continue;
             }
 
@@ -758,7 +688,7 @@
         controller,
         strYlcIf
     ) {
-        var ifExpressionValue = context.getValue(normalizeWhitespace(strYlcIf)),
+        var ifExpressionValue = context.getValue(stringUtil.normalizeWhitespace(strYlcIf)),
             domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate),
             jqNewDynamicElement,
             nElementsProcessed;
@@ -805,8 +735,8 @@
         controller
     ) {
 
-        var strYlcLoop = strGetData(jqTemplate, "ylcLoop"),
-            strYlcIf = strGetData(jqTemplate, "ylcIf");
+        var strYlcLoop = stringUtil.strGetData(jqTemplate, "ylcLoop"),
+            strYlcIf = stringUtil.strGetData(jqTemplate, "ylcIf");
 
         if (strYlcLoop && strYlcIf) {
             throw errorUtil.createError(
@@ -948,7 +878,7 @@
 
     function m2vBindEvents(context, domView, domElement, controller) {
         var jqElement = $(domElement),
-            strYlcEvents = strGetData(jqElement, "ylcEvents"),
+            strYlcEvents = stringUtil.strGetData(jqElement, "ylcEvents"),
             arrYlcEvents = parseYlcEvents(strYlcEvents),
 
             index,
