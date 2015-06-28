@@ -1,4 +1,5 @@
-var jsep = require('jsep');
+var jsep = require('jsep'),
+    errorUtil = require('./errorUtil');
 
 jsep.addBinaryOp("|||", 10);
 jsep.addBinaryOp("#", 10);
@@ -62,7 +63,7 @@ module.exports.newContext = function newContext(model, controller) {
                 if (forceSet) {
                     my.model[strName] = valueToSet;
                 } else {
-                    throw createError("Invalid model variable: " + strName);
+                    throw errorUtil.createError("Invalid model variable: " + strName);
                 }
             }
         }
@@ -153,7 +154,7 @@ module.exports.newContext = function newContext(model, controller) {
             fn = my.model[functionName];
 
         } else {
-            throw createError("Function not found: " + functionName);
+            throw errorUtil.createError("Function not found: " + functionName);
         }
 
         for (idxArgument = 0; idxArgument < functionArguments.length; idxArgument += 1) {
@@ -202,7 +203,7 @@ module.exports.newContext = function newContext(model, controller) {
                     indexValue = gsAstValue(ast.property);
 
                 if (!$.isArray(objectValue)) {
-                    throw createError("The [] operator can only be used on arrays.");
+                    throw errorUtil.createError("The [] operator can only be used on arrays.");
                 }
 
                 if (hasValue(objectValue[indexValue])) {
@@ -221,7 +222,7 @@ module.exports.newContext = function newContext(model, controller) {
                     indexValue = gsAstValue(ast.property);
 
                 if (!$.isArray(objectValue)) {
-                    throw createError("The [] operator can only be used on arrays.");
+                    throw errorUtil.createError("The [] operator can only be used on arrays.");
                 }
 
                 objectValue[indexValue] = value;
@@ -250,7 +251,9 @@ module.exports.newContext = function newContext(model, controller) {
                     return null;
 
                 } else if (!$.isArray(array)) {
-                    throw createError("The '@' operator can only be used on arrays, null and undefined.");
+                    throw errorUtil.createError(
+                        "The '@' operator can only be used on arrays, null and undefined."
+                    );
 
                 } else {
 
@@ -266,7 +269,9 @@ module.exports.newContext = function newContext(model, controller) {
             setter: function(ast, value) {
                 var array = gsAstValue(ast.left, undefined, []);
                 if (!$.isArray(array)) {
-                    throw createError("The '@' operator can only be used on arrays, null and undefined.");
+                    throw errorUtil.createError(
+                        "The '@' operator can only be used on arrays, null and undefined."
+                    );
                 }
                 array[gsAstValue(ast.right)] = value;
             }
@@ -283,7 +288,9 @@ module.exports.newContext = function newContext(model, controller) {
                     propertyName = ast.property.name;
 
                 if (!$.isPlainObject(objectValue)) {
-                    throw createError("Left hand side of the '.' operator must be an object.");
+                    throw errorUtil.createError(
+                        "Left hand side of the '.' operator must be an object."
+                    );
                 }
 
                 if (hasValue(objectValue[ast.property.name])) {
@@ -302,7 +309,9 @@ module.exports.newContext = function newContext(model, controller) {
                     propertyName = ast.property.name;
 
                 if (!(objectValue instanceof Object)) {
-                    throw createError("Left hand side of the '.' operator must be an object.");
+                    throw errorUtil.createError(
+                        "Left hand side of the '.' operator must be an object."
+                    );
                 }
 
                 objectValue[propertyName] = value;
@@ -335,7 +344,9 @@ module.exports.newContext = function newContext(model, controller) {
                     return null;
 
                 } else if (!$.isPlainObject(objectValue)) {
-                    throw createError("Left hand side of the '#' operator must be an object, null or undefined.");
+                    throw errorUtil.createError(
+                        "Left hand side of the '#' operator must be an object, null or undefined."
+                    );
 
                 } else {
                     if (!hasValue(objectValue[propertyName]) && (adHocValue !== undefined)) {
@@ -349,7 +360,9 @@ module.exports.newContext = function newContext(model, controller) {
             setter: function(ast, value) {
                 var objectValue = gsAstValue(ast.left, undefined, {});
                 if (!$.isPlainObject(objectValue)) {
-                    throw createError("Left hand side of the '#' operator must be an object, null or undefined.");
+                    throw errorUtil.createError(
+                        "Left hand side of the '#' operator must be an object, null or undefined."
+                    );
                 }
                 objectValue[ast.right.name] = value;
             }
@@ -442,7 +455,7 @@ module.exports.newContext = function newContext(model, controller) {
         }
 
         if (!matchingEvaluator) {
-            throw createError("Invalid expression." );
+            throw errorUtil.createError("Invalid expression." );
         }
 
         if (valueToSet === undefined) {
@@ -488,7 +501,7 @@ module.exports.newContext = function newContext(model, controller) {
             my.loopStatuses[strLoopVariableName] !== undefined;
 
         if (bLoopVariableUsed) {
-            throw createError("Loop variable '" + strLoopVariableName + "' is already used.");
+            throw errorUtil.createError("Loop variable '" + strLoopVariableName + "' is already used.");
         }
 
         my.loopVariables[strLoopVariableName] = {
@@ -506,7 +519,7 @@ module.exports.newContext = function newContext(model, controller) {
                 my.loopVariables[strStatusVariableName] !== undefined;
 
             if (bStatusVariableUsed) {
-                throw createError(
+                throw errorUtil.createError(
                     "Loop status variable '" + strStatusVariableName + "' is already used."
                 );
             }

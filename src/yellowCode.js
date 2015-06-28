@@ -11,36 +11,8 @@
         EMPTY_FUNCTION = function () {},
 
         domAnnotator = require('./domAnnotator'),
-        contextFactory = require('./contextFactory');
-
-    function createError(message, element) {
-        var errorObject = new Error(message);
-        errorObject.element = element;
-        return errorObject;
-    }
-
-    function elementToError(error, element) {
-        error.element = element;
-        return error;
-    }
-
-    function printAndRethrow(error) {
-        if (typeof console === 'object') {
-            console.error(error);
-            if (error.element !== undefined) {
-                console.log(error.element);
-            }
-            console.log("\n");
-        }
-
-        throw error;
-    }
-
-    function assert(condition, message) {
-        if (!condition) {
-            throw createError("Assertion failed: " + message);
-        }
-    }
+        contextFactory = require('./contextFactory'),
+        errorUtil = require('./errorUtil');
 
     function isEmpty(string) {
         return $.trim(string).length === 0;
@@ -97,7 +69,7 @@
         }
 
         if (index === strYlcBind.length) {
-            throw createError("Premature end of binding expression: " + strYlcBind);
+            throw errorUtil.createError("Premature end of binding expression: " + strYlcBind);
         }
 
         return index;
@@ -105,7 +77,7 @@
 
     function echoCharacter(str, index, sbResult) {
         if (index >= str.length) {
-            throw createError(
+            throw errorUtil.createError(
                 "Premature end of string: '" + str + "'."
             );
         }
@@ -116,7 +88,7 @@
         }
 
         if (index >= str.length) {
-            throw createError(
+            throw errorUtil.createError(
                 "Escape sequence not terminated at the end of string '" + str + "'."
             );
         }
@@ -246,7 +218,7 @@
     function parseYlcLoop(strYlcLoop) {
 
         var throwException = function () {
-                throw createError(
+                throw errorUtil.createError(
                     "Invalid format of the data-ylcLoop parameter: " + strYlcLoop
                 );
             },
@@ -307,7 +279,7 @@
             if (strEvent) {
                 arrParts = strEvent.split(":");
                 if (arrParts.length !== 2) {
-                    throw createError(
+                    throw errorUtil.createError(
                         "Invalid format of the data-ylcEvents parameter: " + strYlcEvents
                     );
                 }
@@ -386,7 +358,7 @@
                 fnGetter = jqElement[currentYlcBinding.strPropertyName];
 
                 if (!fnGetter instanceof Function) {
-                    throw createError(
+                    throw errorUtil.createError(
                         "Cannot find jQuery getter/setter called '" +
                             currentYlcBinding.strPropertyName + "'.",
                         domView
@@ -404,7 +376,7 @@
                 context.setValue(currentYlcBinding.strBindingExpression, value, forceSet);
 
             } catch (err) {
-                throw elementToError(err, domElement);
+                throw errorUtil.elementToError(err, domElement);
             }
         }
     }
@@ -430,7 +402,7 @@
 
     function checkIterable(arrCollection) {
         if (!(arrCollection instanceof Array)) {
-            throw createError(
+            throw errorUtil.createError(
                 "Attempt to iterate through a non-array value: " +
                     arrCollection
             );
@@ -448,7 +420,7 @@
             strYlcIf = strGetData(jqTemplate, "ylcIf");
 
         if (strYlcLoop && strYlcIf) {
-            throw createError(
+            throw errorUtil.createError(
                 "An element contains both data-ylcLoop and data-ylcIf.",
                 jqTemplate.get()
             );
@@ -472,7 +444,7 @@
             );
         }
 
-        assert(false);
+        errorUtil.assert(false);
 
     }
 
@@ -535,7 +507,7 @@
                     domDynamicallyGeneratedElement,
                     controller
                 );
-            assert(
+            errorUtil.assert(
                 nProcessed === 1,
                 "A template can't be a dynamically generated element."
             );
@@ -558,7 +530,7 @@
         var domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate);
 
         if (domarrCurrentGeneratedElements.length > 0) {
-            assert(domarrCurrentGeneratedElements.length === 1);
+            errorUtil.assert(domarrCurrentGeneratedElements.length === 1);
             v2mProcessElement(
                 context,
                 domView,
@@ -610,7 +582,7 @@
 
             fnSetter = jqElement[currentYlcBinding.strPropertyName];
             if (!(fnSetter instanceof Function)) {
-                throw createError(
+                throw errorUtil.createError(
                     "Cannot find jQuery getter/setter called '" +
                         currentYlcBinding.strPropertyName + "'.",
                     domElement
@@ -621,7 +593,7 @@
                 value = context.getValue(currentYlcBinding.strBindingExpression);
 
             } catch (err) {
-                throw elementToError(err, domElement);
+                throw errorUtil.elementToError(err, domElement);
             }
 
             if (value !== PREFIELD) {
@@ -710,7 +682,7 @@
 
             elementsProcessed =
                 m2vProcessElement(context, domView, jqNewDynamicElement.get(), controller, true);
-            assert(
+            errorUtil.assert(
                 elementsProcessed === 1,
                 "If an element is dynamically generated, it can't be a template."
             );
@@ -797,7 +769,7 @@
 
             nElementsProcessed =
                 m2vProcessElement(context, domView, jqNewDynamicElement.get(), controller, true);
-            assert(
+            errorUtil.assert(
                 nElementsProcessed === 1,
                 "If an element is dynamically generated, it can't be a template."
             );
@@ -816,7 +788,7 @@
                     );
 
             } else {
-                assert(domarrCurrentGeneratedElements.length === 1);
+                errorUtil.assert(domarrCurrentGeneratedElements.length === 1);
                 $(domarrCurrentGeneratedElements[0]).remove();
             }
 
@@ -837,7 +809,7 @@
             strYlcIf = strGetData(jqTemplate, "ylcIf");
 
         if (strYlcLoop && strYlcIf) {
-            throw createError(
+            throw errorUtil.createError(
                 "An element can't contain both data-ylcLoop and data-ylcIf. " +
                     "Please use an embedded DIV.",
                 jqTemplate.get()
@@ -864,7 +836,7 @@
             );
         }
 
-        assert(false);
+        errorUtil.assert(false);
     }
 
     function m2vProcessChildren(
@@ -898,7 +870,7 @@
                     );
 
             } catch (err) {
-                throw elementToError(err, domChild);
+                throw errorUtil.elementToError(err, domChild);
             }
         }
 
@@ -934,7 +906,7 @@
             );
 
         } catch (error) {
-            printAndRethrow(error);
+            errorUtil.printAndRethrow(error);
         }
 
         return returnValue;
@@ -995,7 +967,7 @@
             }
 
             if (!(fnHandler instanceof Function)) {
-                throw createError(
+                throw errorUtil.createError(
                     "Event handler '" + currentYlcEvent.strMethodName + "', " +
                         "specified for event '" + currentYlcEvent.strEventName + "', " +
                         "is not a function.",
@@ -1178,7 +1150,7 @@
 
             } else if (typeof parameter1 === "string") {
                 if (!domAnnotator.isViewRoot($(domView))) {
-                    throw createError(
+                    throw errorUtil.createError(
                         "Cannot get an adapter. This element is not a YLC view root. " +
                         "Make sure Yellow Code has been properly initialized with this " +
                         "element as a view root.",
@@ -1191,7 +1163,7 @@
             return objectToReturn;
 
         } catch (error) {
-            printAndRethrow(error);
+            errorUtil.printAndRethrow(error);
         }
     };
 
