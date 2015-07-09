@@ -1,5 +1,6 @@
 var jsep = require('jsep'),
-    errorUtil = require('./errorUtil');
+    errorUtil = require('./errorUtil'),
+    sanityCheck = require('./sanityCheck');
 
 jsep.addBinaryOp("|||", 10);
 jsep.addBinaryOp("#", 10);
@@ -202,9 +203,7 @@ module.exports.newContext = function newContext(model, controller) {
                 var objectValue = gsAstValue(ast.object),
                     indexValue = gsAstValue(ast.property);
 
-                if (!$.isArray(objectValue)) {
-                    throw errorUtil.createError("The [] operator can only be used on arrays.");
-                }
+                sanityCheck.checkArraySanity(objectValue);
 
                 if (hasValue(objectValue[indexValue])) {
                     return objectValue[indexValue];
@@ -220,11 +219,7 @@ module.exports.newContext = function newContext(model, controller) {
             setter: function(ast, value, forceSet) {
                 var objectValue = gsAstValue(ast.object, undefined, forceSet ? [] : undefined),
                     indexValue = gsAstValue(ast.property);
-
-                if (!$.isArray(objectValue)) {
-                    throw errorUtil.createError("The [] operator can only be used on arrays.");
-                }
-
+                sanityCheck.checkArraySanity(objectValue);
                 objectValue[indexValue] = value;
             }
         },
@@ -287,11 +282,7 @@ module.exports.newContext = function newContext(model, controller) {
                 var objectValue = gsAstValue(ast.object),
                     propertyName = ast.property.name;
 
-                if (!$.isPlainObject(objectValue)) {
-                    throw errorUtil.createError(
-                        "Left hand side of the '.' operator must be an object."
-                    );
-                }
+                sanityCheck.checkObjectSanity(objectValue);
 
                 if (hasValue(objectValue[ast.property.name])) {
                     return objectValue[propertyName];
@@ -570,4 +561,4 @@ module.exports.newContext = function newContext(model, controller) {
 
     return that;
 
-}
+};

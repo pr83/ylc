@@ -1,3 +1,5 @@
+var errorUtil = require('./errorUtil');
+
 module.exports = (function () {
 
     function echoCharacter(str, index, sbResult) {
