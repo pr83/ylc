@@ -2,69 +2,15 @@
 
     "use strict";
 
-    var
-
-        PREFIELD = {},
+    var PREFIELD = {},
         EMPTY_FUNCTION = function () {},
 
         domAnnotator = require('./domAnnotator'),
         contextFactory = require('./contextFactory'),
         errorUtil = require('./errorUtil'),
         stringUtil = require('./stringUtil'),
-        ylcBindParser = require('./parser/ylc-bind');
-
-
-    // parameter parsers
-
-
-
-
-
-
-
-    function parseYlcLoop(strYlcLoop) {
-
-        var throwException = function () {
-                throw errorUtil.createError(
-                    "Invalid format of the data-ylcLoop parameter: " + strYlcLoop
-                );
-            },
-            arrParts = stringUtil.normalizeWhitespace(strYlcLoop).split(":"),
-            strLoopAndStatusVariables,
-            strCollectionName,
-            strLoopVariable,
-            strStatusVariable,
-            arrLoopAndStatusParts;
-
-        if (arrParts.length !== 2) {
-            throwException();
-        }
-
-        strLoopAndStatusVariables = $.trim(arrParts[0]);
-        strCollectionName = $.trim(arrParts[1]);
-
-        if (!strLoopAndStatusVariables || !strCollectionName) {
-            throwException();
-        }
-
-        if (strLoopAndStatusVariables.indexOf(",") < 0) {
-            strLoopVariable = strLoopAndStatusVariables;
-
-        } else {
-            arrLoopAndStatusParts = strLoopAndStatusVariables.split(",");
-            if (arrLoopAndStatusParts.length !== 2) {
-                throwException();
-            }
-            strLoopVariable = $.trim(arrLoopAndStatusParts[0]);
-            strStatusVariable = $.trim(arrLoopAndStatusParts[1]);
-        }
-
-        return {
-            strLoopVariable: strLoopVariable,
-            strStatusVariable: strStatusVariable,
-            strCollectionName: strCollectionName
-        };
-    }
+        ylcBindParser = require('./parser/ylcBind'),
+        ylcLoopParser = require('./parser/ylcLoop');
 
     function parseYlcEvents(strYlcEvents) {
         if (!strYlcEvents) {
@@ -285,7 +231,7 @@
         controller
     ) {
         var idxWithinDynamicallyGenerated,
-            ylcLoop = parseYlcLoop(stringUtil.strGetData(jqTemplate, "ylcLoop")),
+            ylcLoop = ylcLoopParser.parseYlcLoop(stringUtil.strGetData(jqTemplate, "ylcLoop")),
             arrCollection = context.getValue(ylcLoop.strCollectionName),
             domarrGeneratedElements = getGeneratedElements(jqTemplate),
             domDynamicallyGeneratedElement,
@@ -510,7 +456,7 @@
         strYlcLoop
     ) {
 
-        var ylcLoop = parseYlcLoop(strYlcLoop),
+        var ylcLoop = ylcLoopParser.parseYlcLoop(strYlcLoop),
             domarrCurrentGeneratedElements =
                 getGeneratedElements(jqTemplate),
             arrCollection = context.getValue(ylcLoop.strCollectionName),
