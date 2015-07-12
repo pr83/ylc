@@ -12,7 +12,6 @@ module.exports = function(grunt) {
       }
     },
 
-    /*
     uglify: {
       dist: {
         src: 'tmp/yellowCode.js',
@@ -22,17 +21,8 @@ module.exports = function(grunt) {
         }
       }
     },
-    */
 
     copy: {
-      mockUglify: {
-        files: [
-          {
-            src: 'tmp/yellowCode.js',
-            dest: 'tmp/yellowCode.min.js'
-          }
-        ]
-      },
       dist: {
         files: [
           {
@@ -153,8 +143,7 @@ module.exports = function(grunt) {
       [
         'clean:before_dist',
         'browserify',
-        //'uglify',
-        'copy:mockUglify',
+        'uglify',
         'usebanner',
         'copy',
         'subgrunt',
