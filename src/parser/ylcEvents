@@ -1,0 +1,49 @@
+var stringUtil = require("../stringUtil"),
+    errorUtil = require('../errorUtil');
+
+module.exports = (function () {
+
+    return {
+
+        parseYlcEvents: function(strYlcEvents) {
+            if (!strYlcEvents) {
+                return [];
+            }
+
+            var result = [],
+                arrEvents = stringUtil.normalizeWhitespace(strYlcEvents).split(";"),
+                index,
+
+                strEvent,
+                arrParts,
+                strEventName,
+                strMethodName;
+
+            for (index = 0; index < arrEvents.length; index += 1) {
+                strEvent = $.trim(arrEvents[index]);
+
+                if (strEvent) {
+                    arrParts = strEvent.split(":");
+                    if (arrParts.length !== 2) {
+                        throw errorUtil.createError(
+                            "Invalid format of the data-ylcEvents parameter: " + strYlcEvents
+                        );
+                    }
+
+                    strEventName = $.trim(arrParts[0]);
+                    strMethodName = $.trim(arrParts[1]);
+
+                    result.push({
+                        strEventName: strEventName,
+                        strMethodName: strMethodName
+                    });
+
+                }
+            }
+
+            return result;
+        }
+
+    };
+
+}());

@@ -10,47 +10,8 @@
         errorUtil = require('./errorUtil'),
         stringUtil = require('./stringUtil'),
         ylcBindParser = require('./parser/ylcBind'),
-        ylcLoopParser = require('./parser/ylcLoop');
-
-    function parseYlcEvents(strYlcEvents) {
-        if (!strYlcEvents) {
-            return [];
-        }
-
-        var result = [],
-            arrEvents = stringUtil.normalizeWhitespace(strYlcEvents).split(";"),
-            index,
-
-            strEvent,
-            arrParts,
-            strEventName,
-            strMethodName;
-
-        for (index = 0; index < arrEvents.length; index += 1) {
-            strEvent = $.trim(arrEvents[index]);
-
-            if (strEvent) {
-                arrParts = strEvent.split(":");
-                if (arrParts.length !== 2) {
-                    throw errorUtil.createError(
-                        "Invalid format of the data-ylcEvents parameter: " + strYlcEvents
-                    );
-                }
-
-                strEventName = $.trim(arrParts[0]);
-                strMethodName = $.trim(arrParts[1]);
-
-                result.push({
-                    strEventName: strEventName,
-                    strMethodName: strMethodName
-                });
-
-            }
-        }
-
-        return result;
-    }
-
+        ylcLoopParser = require('./parser/ylcLoop'),
+        ylcEventsParser = require('./parser/ylcEvents');
 
     // manipulating YLC special elements properties
 
@@ -702,7 +663,7 @@
     function m2vBindEvents(context, domView, domElement, controller) {
         var jqElement = $(domElement),
             strYlcEvents = stringUtil.strGetData(jqElement, "ylcEvents"),
-            arrYlcEvents = parseYlcEvents(strYlcEvents),
+            arrYlcEvents = ylcEventsParser.parseYlcEvents(strYlcEvents),
 
             index,
             currentYlcEvent,
