@@ -11,35 +11,8 @@
         stringUtil = require('./stringUtil'),
         ylcBindParser = require('./parser/ylcBind'),
         ylcLoopParser = require('./parser/ylcLoop'),
-        ylcEventsParser = require('./parser/ylcEvents');
-
-    // manipulating YLC special elements properties
-
-    function isDynamicallyGenerated(domElement) {
-        var jqElement = $(domElement);
-        return jqElement.hasClass("_ylcDynamicallyGenerated") ||
-            jqElement.attr("data-_ylcDynamicallyGenerated") === "true";
-    }
-
-    function isTemplate(domElement) {
-        var jqElement = $(domElement),
-            strYlcLoop = stringUtil.strGetData(jqElement, "ylcLoop"),
-            strIf = stringUtil.strGetData(jqElement, "ylcIf");
-
-        return (strYlcLoop || strIf) ?
-                !isDynamicallyGenerated(domElement) :
-                false;
-    }
-
-    function jqCreateElementFromTemplate(jqTemplate) {
-        var jqClone = jqTemplate.clone();
-        jqClone.addClass("_ylcDynamicallyGenerated");
-        domAnnotator.unmarkViewRoot(jqClone);
-        jqClone.attr("data-_ylcDynamicallyGenerated", "true");
-
-        return jqClone;
-    }
-
+        ylcEventsParser = require('./parser/ylcEvents'),
+        domTemplates = require('./domTemplates');
 
     // propagating changes of view into model
 
@@ -104,7 +77,7 @@
         while (true) {
             jqCurrentSibling = jqCurrentSibling.next();
 
-            if (jqCurrentSibling.get() === undefined || !isDynamicallyGenerated(jqCurrentSibling)) {
+            if (jqCurrentSibling.get() === undefined || !domTemplates.isDynamicallyGenerated(jqCurrentSibling)) {
                 break;
             }
 
@@ -165,7 +138,7 @@
     function v2mProcessElement(context, domView, domElement, controller) {
         var nElementsProcessed;
 
-        if (isTemplate(domElement)) {
+        if (domTemplates.isTemplate(domElement)) {
             nElementsProcessed = v2mProcessDynamicElements(
                 context,
                 domView,
@@ -385,7 +358,7 @@
         jqLastElement = jqLastCommonElement;
         for (index = commonLength; index < arrCollection.length; index += 1) {
 
-            jqNewDynamicElement = jqCreateElementFromTemplate(jqTemplate);
+            jqNewDynamicElement = domTemplates.jqCreateElementFromTemplate(jqTemplate);
 
             context.enterIteration(
                 ylcLoop.strLoopVariable,
@@ -478,8 +451,7 @@
             nElementsProcessed;
 
         if (ifExpressionValue && domarrCurrentGeneratedElements.length === 0) {
-            jqNewDynamicElement = jqCreateElementFromTemplate(jqTemplate);
-
+            jqNewDynamicElement = domTemplates.jqCreateElementFromTemplate(jqTemplate);
 
             nElementsProcessed =
                 m2vProcessElement(context, domView, jqNewDynamicElement.get(), controller, true);
@@ -708,7 +680,7 @@
         var nElementsProcessed;
 
 
-        if (isTemplate(domElement)) {
+        if (domTemplates.isTemplate(domElement)) {
             nElementsProcessed = m2vProcessDynamicElements(
                 context,
                 domView,
