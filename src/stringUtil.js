@@ -24,7 +24,7 @@ module.exports = (function () {
         index += 1;
 
         return index;
-    };
+    }
 
     return {
 
