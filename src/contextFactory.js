@@ -1,23 +1,34 @@
 var jsep = require('jsep'),
     errorUtil = require('./errorUtil'),
-    sanityCheck = require('./sanityCheck');
+    sanityCheck = require('./sanityCheck'),
+    annotationProcessor = require('./annotationProcessor');
 
 jsep.addBinaryOp("|||", 10);
 jsep.addBinaryOp("#", 10);
 jsep.addBinaryOp("@", 10);
 
+function m2vOnlyAnnotationListener(annotation, code, metadata) {
+    if (annotation === "m2vOnly") {
+        metadata.m2vOnly = true;
+    }
+}
+
+function extractControllerMethods(controller) {
+    return annotationProcessor.processAnnotations(controller, [m2vOnlyAnnotationListener]);
+}
+
 module.exports = {};
 
-module.exports.newContext = function newContext(model, controller) {
+module.exports.newContext = function newContext(model, controller, controllerMethods) {
 
     var my = {
             model: model,
             controller: controller,
+            controllerMethods: controllerMethods || extractControllerMethods(controller),
             loopVariables: {},
             loopStatuses: {}
         },
-        that = {
-        };
+        that = {};
 
     /*
      * PRIVATE FUNCTIONS:
@@ -146,9 +157,9 @@ module.exports.newContext = function newContext(model, controller) {
             evaluatedArguments = [],
             idxArgument;
 
-        if (my.controller[functionName] instanceof Function) {
+        if (my.controllerMethods[functionName]) {
             parentObject = my.controller;
-            fn = my.controller[functionName];
+            fn = my.controllerMethods[functionName].code;
 
         } else if (my.model[functionName] instanceof Function) {
             parentObject = my.model;
@@ -548,7 +559,7 @@ module.exports.newContext = function newContext(model, controller) {
     };
 
     that.newWithEmptyLoopVariables = function () {
-        return newContext(my.model, my.controller);
+        return newContext(my.model, my.controller, my.controllerMethods);
     };
 
     that.getModel = function () {
@@ -557,6 +568,23 @@ module.exports.newContext = function newContext(model, controller) {
 
     that.getLoopStatusesSnapshot = function () {
         return $.extend(true, {}, my.loopStatuses);
+    };
+
+    that.getControllerFunctionCode = function (functionName) {
+        var objAnnotatedFunction = my.controllerMethods[functionName];
+        if (objAnnotatedFunction) {
+            return objAnnotatedFunction.code;
+        }
+    };
+
+    that.getControllerFunctionWithMetadata = function (functionName) {
+        var objFunctionWithMetadata = my.controllerMethods[functionName];
+        if (objFunctionWithMetadata) {
+            return {
+                code: objFunctionWithMetadata.code,
+                metadata: objFunctionWithMetadata.metadata
+            };
+        }
     };
 
     return that;

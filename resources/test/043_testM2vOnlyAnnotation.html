@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <h1>M2V Only</h1>
+    <div id="view">
+        bidirectional:
+        <input id="inputField1" data-ylcEvents="keyup: printContent1" data-ylcBind="val: content1" />
+        <br/>
+        M2V Only:
+        <input id="inputField2" data-ylcEvents="keyup: printContent2" data-ylcBind="val: content2" />
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+                model.content1 = "Change me...";
+                model.content2 = "Not me...";
+            },
+
+            printContent1: function(model) {
+                console.log(model.content1);
+            },
+
+            "m2vOnly": {
+                printContent2: function (model) {
+                    console.log(model.content2);
+                }
+            }
+        };
+
+        $("#view").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>

@@ -562,19 +562,22 @@ module.exports = (function () {
         publicContext,
         domView,
         controller,
-        fnUpdateMethod
+        fnUpdateMethod,
+        m2vOnly
     ) {
 
         var returnValue;
 
         try {
 
-            v2mProcessElement(
-                context.newWithEmptyLoopVariables(),
-                domView,
-                domView,
-                controller
-            );
+            if (!m2vOnly) {
+                v2mProcessElement(
+                    context.newWithEmptyLoopVariables(),
+                    domView,
+                    domView,
+                    controller
+                );
+            }
 
             returnValue = fnUpdateMethod.call(controller, context.getModel(), publicContext);
 
@@ -596,7 +599,7 @@ module.exports = (function () {
 
 
 
-    function createHandler(context, publicContext, domView, controller, fnHandler) {
+    function createHandler(context, publicContext, domView, controller, fnHandler, m2vOnly) {
         return function (eventObject) {
             publicContext.eventObject = eventObject;
             return callModelUpdatingMethod(
@@ -604,7 +607,8 @@ module.exports = (function () {
                 publicContext,
                 domView,
                 controller,
-                fnHandler
+                fnHandler,
+                m2vOnly
             );
         };
     }
@@ -617,16 +621,27 @@ module.exports = (function () {
             index,
             currentYlcEvent,
             fnHandler,
-            publicContext;
+            publicContext,
+            annotatedControllerFunction,
+
+            m2vOnly;
 
         for (index = 0; index < arrYlcEvents.length; index += 1) {
             currentYlcEvent = arrYlcEvents[index];
+            m2vOnly = false;
 
             if (currentYlcEvent.strMethodName.length === 0) {
                 fnHandler = EMPTY_FUNCTION;
 
             } else {
-                fnHandler = controller[currentYlcEvent.strMethodName];
+                annotatedControllerFunction =
+                    context.getControllerFunctionWithMetadata(currentYlcEvent.strMethodName);
+                if (annotatedControllerFunction) {
+                    fnHandler = annotatedControllerFunction.code;
+                    if (annotatedControllerFunction.metadata.m2vOnly) {
+                        m2vOnly = true;
+                    }
+                }
             }
 
             if (!(fnHandler instanceof Function)) {
@@ -647,7 +662,7 @@ module.exports = (function () {
 
             jqElement.bind(
                 currentYlcEvent.strEventName,
-                createHandler(context, publicContext, domView, controller, fnHandler)
+                createHandler(context, publicContext, domView, controller, fnHandler, m2vOnly)
             );
         }
 
