@@ -58,7 +58,20 @@
                     idxRight -= 1;
                 }
                 console.log(model);
+            },
+
+            "beforeEvent": {
+                beforeEventHandler: function () {
+                    console.log("beforeEventHandler");
+                }
+            },
+
+            "afterEvent": {
+                afterEventHandler: function () {
+                    console.log("beforeEventHandler");
+                }
             }
+
         };
 
         $("#colors").yellowCode(controller);

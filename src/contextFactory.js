@@ -7,16 +7,6 @@ jsep.addBinaryOp("|||", 10);
 jsep.addBinaryOp("#", 10);
 jsep.addBinaryOp("@", 10);
 
-function m2vOnlyAnnotationListener(annotation, code, metadata) {
-    if (annotation === "m2vOnly") {
-        metadata.m2vOnly = true;
-    }
-}
-
-function extractControllerMethods(controller) {
-    return annotationProcessor.processAnnotations(controller, [m2vOnlyAnnotationListener]);
-}
-
 module.exports = {};
 
 module.exports.newContext = function newContext(model, controller, controllerMethods) {
@@ -24,11 +14,43 @@ module.exports.newContext = function newContext(model, controller, controllerMet
     var my = {
             model: model,
             controller: controller,
-            controllerMethods: controllerMethods || extractControllerMethods(controller),
             loopVariables: {},
-            loopStatuses: {}
+            loopStatuses: {},
+            callbacks: {
+                beforeEvent: [],
+                afterEvent: []
+            }
         },
         that = {};
+
+    function m2vOnlyAnnotationListener(annotation, code, metadata) {
+        if (annotation === "m2vOnly") {
+            metadata.m2vOnly = true;
+        }
+    }
+
+    function beforeAfterEventAnnotationListener(annotation, code, metadata) {
+        if (annotation === "beforeEvent") {
+            my.callbacks.beforeEvent.push(code);
+
+        } else if (annotation === "afterEvent") {
+            my.callbacks.afterEvent.push(code);
+        }
+    }
+
+    function extractControllerMethods(controller) {
+        return annotationProcessor.processAnnotations(
+            controller,
+            [
+                m2vOnlyAnnotationListener,
+                beforeAfterEventAnnotationListener
+            ]
+        );
+    }
+
+    my.controllerMethods =
+        controllerMethods ||
+        extractControllerMethods(controller);
 
     /*
      * PRIVATE FUNCTIONS:
@@ -585,6 +607,14 @@ module.exports.newContext = function newContext(model, controller, controllerMet
                 metadata: objFunctionWithMetadata.metadata
             };
         }
+    };
+
+    that.getBeforeEventHandlers = function () {
+        return my.callbacks.beforeEvent;
+    };
+
+    that.getAfterEventHandlers = function () {
+        return my.callbacks.afterEvent;
     };
 
     return that;

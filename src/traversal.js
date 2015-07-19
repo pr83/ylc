@@ -557,6 +557,15 @@ module.exports = (function () {
 
     }
 
+    function callFunctions(context, controller, arrCallbacks) {
+        $.each(
+            arrCallbacks,
+            function (idx, fn) {
+                fn.call(controller);
+            }
+        )
+    }
+
     function callModelUpdatingMethod(
         context,
         publicContext,
@@ -569,6 +578,8 @@ module.exports = (function () {
         var returnValue;
 
         try {
+
+            callFunctions(context, controller, context.getBeforeEventHandlers());
 
             if (!m2vOnly) {
                 v2mProcessElement(
@@ -588,6 +599,8 @@ module.exports = (function () {
                 controller,
                 false
             );
+
+            callFunctions(context, controller, context.getAfterEventHandlers());
 
         } catch (error) {
             errorUtil.printAndRethrow(error);
