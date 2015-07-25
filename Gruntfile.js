@@ -50,6 +50,14 @@ module.exports = function(grunt) {
             dest: "dist/site/examples"
           }
         ]
+      },
+      dummyUglify: {
+        files: [
+          {
+            src: ['tmp/yellowCode.js'],
+            dest: 'tmp/yellowCode.min.js'
+          }
+        ]
       }
     },
 
@@ -143,7 +151,8 @@ module.exports = function(grunt) {
       [
         'clean:before_dist',
         'browserify',
-        'uglify',
+        //'uglify',
+        'copy:dummyUglify',
         'usebanner',
         'copy',
         'subgrunt',

@@ -7,18 +7,16 @@
         errorUtil = require('./errorUtil'),
         stringUtil = require('./stringUtil'),
         domTemplates = require('./domTemplates'),
-        traversal = require('./traversal');
+        traversorFactory = require('./traversorFactory');
 
-
-    function init(domView, controller) {
-        var model = {},
-            context = contextFactory.newContext(model, controller);
+    function init(traversor, model, domView, controller) {
+        var context = contextFactory.newContext(model, controller);
 
         if (controller.init instanceof Function) {
             controller.init.call(
                 controller,
                 model,
-                traversal.createPublicContext(context, domView, domView, controller)
+                traversor.createPublicContext(context, domView)
             );
         }
 
@@ -26,11 +24,9 @@
         $(domView).find(":not([data-ylcLoop=''])").addClass("ylcInvisibleTemplate");
         domAnnotator.markViewRoot($(domView));
 
-        traversal.m2vProcessElement(
+        traversor.m2vProcessElement(
             context,
             domView,
-            domView,
-            controller,
             true
         );
 
@@ -51,7 +47,7 @@
         return result;
     }
 
-    function createAdapter(context, domView, controller) {
+    function createAdapter(traversor, context, domView, controller) {
 
         var adapter = {},
             controllerMethodNames = getProperties(controller),
@@ -68,7 +64,7 @@
                     adapterMethodArguments =
                         [
                             context.getModel(),
-                            traversal.createPublicContext(context, domView, null, controller)
+                            traversor.createPublicContext(context, null)
                         ];
                     $.each(arguments, function (index, argument) {
                         adapterMethodArguments.push(argument);
@@ -76,11 +72,9 @@
 
                     returnValue = currentControllerMethod.apply(controller, adapterMethodArguments);
 
-                    traversal.m2vProcessElement(
+                    traversor.m2vProcessElement(
                         context.newWithEmptyLoopVariables(),
                         domView,
-                        domView,
-                        controller,
                         false
                     );
 
@@ -93,17 +87,17 @@
         return adapter;
     }
 
-    function processExternalEvent(context, domView, controller, communicationObject) {
+    function processExternalEvent(traversor, context, domView, controller, communicationObject) {
         if (communicationObject.eventName === "getAdapter") {
-            communicationObject.result = createAdapter(context, domView, controller);
+            communicationObject.result = createAdapter(traversor, context, domView, controller);
         }
     }
 
-    function registerYlcExternalEvent(context, domView, controller) {
+    function registerYlcExternalEvent(traversor, context, domView, controller) {
         $(domView).bind(
             "_ylcExternalEvent",
             function (event, communicationObject) {
-                processExternalEvent(context, domView, controller, communicationObject);
+                processExternalEvent(traversor, context, domView, controller, communicationObject);
                 return false;
             }
         );
@@ -127,14 +121,20 @@
         var domView = this,
             controller,
             context,
-            objectToReturn;
+            objectToReturn,
+            model,
+            traversor;
 
         try {
 
             if (parameter1 instanceof Object) {
+                model = {};
                 controller = parameter1;
-                context = init(this, controller);
-                registerYlcExternalEvent(context, domView, controller);
+
+                traversor = traversorFactory.newTraversor(model, domView, controller);
+
+                context = init(traversor, model, this, controller);
+                registerYlcExternalEvent(traversor, context, domView, controller);
 
                 if (typeof parameter2 === "string") {
                     objectToReturn = triggerExternalEvent(domView, parameter2, parameter3);
