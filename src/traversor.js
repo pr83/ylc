@@ -4,21 +4,41 @@ var errorUtil = require('./errorUtil'),
     domTemplates = require('./domTemplates'),
     ylcEventsParser = require('./parser/ylcEvents'),
     ylcLoopParser = require('./parser/ylcLoop'),
-    domAnnotator = require('./domAnnotator');
+    domAnnotator = require('./domAnnotator'),
+    contextFactory = require('./contextFactory'),
+    annotationProcessor = require('./annotationProcessor');
 
 module.exports = {};
 
-module.exports.newTraversor = function(pModel, pDomView, pController) {
+module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     var EMPTY_FUNCTION = function () {},
         PREFIELD = {},
-        my = {},
-        that = {};
+        my = {};
 
-    function initialize() {
-        my.model = pModel;
-        my.domView = pDomView;
-        my.controller = pController;
+    function m2vOnlyAnnotationListener(annotation, code, metadata) {
+        if (annotation === "m2vOnly") {
+            metadata.m2vOnly = true;
+        }
+    }
+
+    function beforeAfterEventAnnotationListener(annotation, code, metadata) {
+        if (annotation === "beforeEvent") {
+            my.callbacks.beforeEvent.push(code);
+
+        } else if (annotation === "afterEvent") {
+            my.callbacks.afterEvent.push(code);
+        }
+    }
+
+    function extractControllerMethods(controller) {
+        return annotationProcessor.processAnnotations(
+            controller,
+            [
+                m2vOnlyAnnotationListener,
+                beforeAfterEventAnnotationListener
+            ]
+        );
     }
 
     function v2mSetValues(context, domElement) {
@@ -546,7 +566,7 @@ module.exports.newTraversor = function(pModel, pDomView, pController) {
 
         try {
 
-            callFunctions(context.getBeforeEventHandlers());
+            callFunctions(my.callbacks.beforeEvent);
 
             if (!m2vOnly) {
                 v2mProcessElement(
@@ -563,7 +583,7 @@ module.exports.newTraversor = function(pModel, pDomView, pController) {
                 false
             );
 
-            callFunctions(context.getAfterEventHandlers());
+            callFunctions(my.callbacks.afterEvent);
 
         } catch (error) {
             errorUtil.printAndRethrow(error);
@@ -608,8 +628,7 @@ module.exports.newTraversor = function(pModel, pDomView, pController) {
                 fnHandler = EMPTY_FUNCTION;
 
             } else {
-                annotatedControllerFunction =
-                    context.getControllerFunctionWithMetadata(currentYlcEvent.strMethodName);
+                annotatedControllerFunction = my.controllerMethods[currentYlcEvent.strMethodName];
                 if (annotatedControllerFunction) {
                     fnHandler = annotatedControllerFunction.code;
                     if (annotatedControllerFunction.metadata.m2vOnly) {
@@ -686,17 +705,132 @@ module.exports.newTraversor = function(pModel, pDomView, pController) {
         return nElementsProcessed;
     }
 
-    initialize();
 
-    that.createPublicContext = function(context, domElement) {
-        return createPublicContext(context, domElement);
+
+
+
+
+
+
+
+
+    function getProperties(object) {
+        var result = [],
+            property;
+
+        for (property in object) {
+            if (object.hasOwnProperty(property)) {
+                result.push(property);
+            }
+        }
+
+        return result;
+    }
+
+    function createAdapter(context, domView, controller) {
+
+        var adapter = {},
+            controllerMethodNames = getProperties(controller),
+            adapterMethodArguments;
+
+        $.each(controllerMethodNames, function (idxProperty, currentMethodName) {
+            var currentControllerMethod = controller[currentMethodName];
+
+            if (currentControllerMethod instanceof Function) {
+                adapter[currentMethodName] = function () {
+
+                    var returnValue;
+
+                    adapterMethodArguments =
+                        [
+                            context.getModel(),
+                            createPublicContext(context, null)
+                        ];
+                    $.each(arguments, function (index, argument) {
+                        adapterMethodArguments.push(argument);
+                    });
+
+                    returnValue = currentControllerMethod.apply(controller, adapterMethodArguments);
+
+                    m2vProcessElement(
+                        context.newWithEmptyLoopVariables(),
+                        domView,
+                        false
+                    );
+
+                    return returnValue;
+                };
+            }
+
+        });
+
+        return adapter;
+    }
+
+    function processExternalEvent(context, domView, controller, communicationObject) {
+        if (communicationObject.eventName === "getAdapter") {
+            communicationObject.result = createAdapter(context, domView, controller);
+        }
+    }
+
+    function registerYlcExternalEvent(context, domView, controller) {
+        $(domView).bind(
+            "_ylcExternalEvent",
+            function (event, communicationObject) {
+                processExternalEvent(context, domView, controller, communicationObject);
+                return false;
+            }
+        );
+    }
+
+    function setupViewForYlcTraversal() {
+
+        $(my.domView).find(":not([data-ylcIf=''])").addClass("ylcInvisibleTemplate");
+        $(my.domView).find(":not([data-ylcLoop=''])").addClass("ylcInvisibleTemplate");
+        domAnnotator.markViewRoot($(my.domView));
+
+        var context = contextFactory.newContext(my.model, my.controller);
+        if (my.controller.init instanceof Function) {
+            my.controller.init.call(
+                my.controller,
+                my.model,
+                createPublicContext(context, my.domView)
+            );
+        }
+
+        m2vProcessElement(
+            context,
+            my.domView,
+            true
+        );
+
+        registerYlcExternalEvent(context, my.domView, my.controller);
+
+    }
+
+    my.model = pModel;
+    my.domView = pDomView;
+    my.controller = pController;
+
+    my.callbacks = {
+        beforeEvent: [],
+        afterEvent: []
+    };
+    my.controllerMethods = extractControllerMethods(pController);
+
+    setupViewForYlcTraversal();
+
+};
+
+module.exports.triggerExternalEvent = function(domView, eventName, parameter) {
+
+    var communicationObject = {
+        eventName: eventName,
+        parameter: parameter,
+        result: undefined
     };
 
-    that.m2vProcessElement = function(context, domElement, bBindEvents) {
-        return m2vProcessElement(context, domElement, bBindEvents);
-    };
+    $(domView).trigger("_ylcExternalEvent", communicationObject);
 
-
-    return that;
-
+    return communicationObject.result;
 };

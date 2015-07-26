@@ -592,27 +592,6 @@ module.exports.newContext = function newContext(model, controller, controllerMet
         return $.extend(true, {}, my.loopStatuses);
     };
 
-    that.getControllerFunctionCode = function (functionName) {
-        var objAnnotatedFunction = my.controllerMethods[functionName];
-        if (objAnnotatedFunction) {
-            return objAnnotatedFunction.code;
-        }
-    };
-
-    that.getControllerFunctionWithMetadata = function (functionName) {
-        var objFunctionWithMetadata = my.controllerMethods[functionName];
-        if (objFunctionWithMetadata) {
-            return {
-                code: objFunctionWithMetadata.code,
-                metadata: objFunctionWithMetadata.metadata
-            };
-        }
-    };
-
-    that.getBeforeEventHandlers = function () {
-        return my.callbacks.beforeEvent;
-    };
-
     that.getAfterEventHandlers = function () {
         return my.callbacks.afterEvent;
     };
