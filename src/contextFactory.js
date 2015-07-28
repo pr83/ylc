@@ -1,7 +1,6 @@
 var jsep = require('jsep'),
     errorUtil = require('./errorUtil'),
-    sanityCheck = require('./sanityCheck'),
-    annotationProcessor = require('./annotationProcessor');
+    sanityCheck = require('./sanityCheck');
 
 jsep.addBinaryOp("|||", 10);
 jsep.addBinaryOp("#", 10);
@@ -14,43 +13,11 @@ module.exports.newContext = function newContext(model, controller, controllerMet
     var my = {
             model: model,
             controller: controller,
+            controllerMethods: controllerMethods,
             loopVariables: {},
-            loopStatuses: {},
-            callbacks: {
-                beforeEvent: [],
-                afterEvent: []
-            }
+            loopStatuses: {}
         },
         that = {};
-
-    function m2vOnlyAnnotationListener(annotation, code, metadata) {
-        if (annotation === "m2vOnly") {
-            metadata.m2vOnly = true;
-        }
-    }
-
-    function beforeAfterEventAnnotationListener(annotation, code, metadata) {
-        if (annotation === "beforeEvent") {
-            my.callbacks.beforeEvent.push(code);
-
-        } else if (annotation === "afterEvent") {
-            my.callbacks.afterEvent.push(code);
-        }
-    }
-
-    function extractControllerMethods(controller) {
-        return annotationProcessor.processAnnotations(
-            controller,
-            [
-                m2vOnlyAnnotationListener,
-                beforeAfterEventAnnotationListener
-            ]
-        );
-    }
-
-    my.controllerMethods =
-        controllerMethods ||
-        extractControllerMethods(controller);
 
     /*
      * PRIVATE FUNCTIONS:
@@ -505,6 +472,7 @@ module.exports.newContext = function newContext(model, controller, controllerMet
      * PUBLIC FUNCTIONS:
      */
 
+
     /*
      * enterIteration:
      */
@@ -580,20 +548,8 @@ module.exports.newContext = function newContext(model, controller, controllerMet
         gsExpressionValue(strExpression, value, forceSet);
     };
 
-    that.newWithEmptyLoopVariables = function () {
-        return newContext(my.model, my.controller, my.controllerMethods);
-    };
-
-    that.getModel = function () {
-        return my.model;
-    };
-
     that.getLoopStatusesSnapshot = function () {
         return $.extend(true, {}, my.loopStatuses);
-    };
-
-    that.getAfterEventHandlers = function () {
-        return my.callbacks.afterEvent;
     };
 
     return that;

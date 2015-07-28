@@ -570,15 +570,15 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
             if (!m2vOnly) {
                 v2mProcessElement(
-                    context.newWithEmptyLoopVariables(),
+                    context,
                     my.domView
                 );
             }
 
-            returnValue = fnUpdateMethod.call(my.controller, context.getModel(), publicContext);
+            returnValue = fnUpdateMethod.call(my.controller, my.model, publicContext);
 
             m2vProcessElement(
-                context.newWithEmptyLoopVariables(),
+                context,
                 my.domView,
                 false
             );
@@ -650,7 +650,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
                 createPublicContext(context, domElement);
 
             if (currentYlcEvent.strEventName === "ylcElementInitialized") {
-                fnHandler.call(my.controller, context.getModel(), publicContext);
+                fnHandler.call(my.controller, my.model, publicContext);
             }
 
             jqElement.bind(
@@ -743,7 +743,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
                     adapterMethodArguments =
                         [
-                            context.getModel(),
+                            my.model,
                             createPublicContext(context, null)
                         ];
                     $.each(arguments, function (index, argument) {
@@ -753,7 +753,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
                     returnValue = currentControllerMethod.apply(controller, adapterMethodArguments);
 
                     m2vProcessElement(
-                        context.newWithEmptyLoopVariables(),
+                        context,
                         domView,
                         false
                     );
@@ -789,7 +789,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         $(my.domView).find(":not([data-ylcLoop=''])").addClass("ylcInvisibleTemplate");
         domAnnotator.markViewRoot($(my.domView));
 
-        var context = contextFactory.newContext(my.model, my.controller);
+        var context = contextFactory.newContext(my.model, my.controller, my.controllerMethods);
         if (my.controller.init instanceof Function) {
             my.controller.init.call(
                 my.controller,
