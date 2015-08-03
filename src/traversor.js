@@ -41,7 +41,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         );
     }
 
-    function v2mSetValues(context, domElement) {
+    function v2mSetValues(domElement) {
 
         var jqElement = $(domElement),
             strYlcBind = stringUtil.strGetData(jqElement, "ylcBind"),
@@ -85,7 +85,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             }
 
             try {
-                context.setValue(currentYlcBinding.strBindingExpression, value, forceSet);
+                my.context.setValue(currentYlcBinding.strBindingExpression, value, forceSet);
 
             } catch (err) {
                 throw errorUtil.elementToError(err, domElement);
@@ -121,10 +121,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         }
     }
 
-    function v2mProcessDynamicElements(
-        context,
-        jqTemplate
-    ) {
+    function v2mProcessDynamicElements(jqTemplate) {
 
         var strYlcLoop = stringUtil.strGetData(jqTemplate, "ylcLoop"),
             strYlcIf = stringUtil.strGetData(jqTemplate, "ylcIf");
@@ -137,29 +134,22 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         }
 
         if (strYlcLoop) {
-            return v2mProcessDynamicLoopElements(
-                context,
-                jqTemplate
-            );
+            return v2mProcessDynamicLoopElements(jqTemplate);
         }
 
         if (strYlcIf) {
-            return v2mProcessDynamicIfElements(
-                context,
-                jqTemplate
-            );
+            return v2mProcessDynamicIfElements(jqTemplate);
         }
 
         errorUtil.assert(false);
 
     }
 
-    function v2mProcessElement(context, domElement) {
+    function v2mProcessElement(domElement) {
         var nElementsProcessed;
 
         if (domTemplates.isTemplate(domElement)) {
             nElementsProcessed = v2mProcessDynamicElements(
-                context,
                 $(domElement),
                 my.controller
             );
@@ -168,21 +158,18 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             nElementsProcessed = 1;
 
         } else {
-            v2mSetValues(context, domElement);
-            v2mProcessChildren(context, domElement);
+            v2mSetValues(domElement);
+            v2mProcessChildren(domElement);
             nElementsProcessed = 1;
         }
 
         return nElementsProcessed;
     }
 
-    function v2mProcessDynamicLoopElements(
-        context,
-        jqTemplate
-    ) {
+    function v2mProcessDynamicLoopElements(jqTemplate) {
         var idxWithinDynamicallyGenerated,
             ylcLoop = ylcLoopParser.parseYlcLoop(stringUtil.strGetData(jqTemplate, "ylcLoop")),
-            arrCollection = context.getValue(ylcLoop.strCollectionName),
+            arrCollection = my.context.getValue(ylcLoop.strCollectionName),
             domarrGeneratedElements = getGeneratedElements(jqTemplate),
             domDynamicallyGeneratedElement,
             nProcessed;
@@ -196,24 +183,20 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             domDynamicallyGeneratedElement =
                 domarrGeneratedElements[idxWithinDynamicallyGenerated];
 
-            context.enterIteration(
+            my.context.enterIteration(
                 ylcLoop.strLoopVariable,
                 arrCollection,
                 ylcLoop.strStatusVariable,
                 idxWithinDynamicallyGenerated
             );
 
-            nProcessed =
-                v2mProcessElement(
-                    context,
-                    domDynamicallyGeneratedElement
-                );
+            nProcessed = v2mProcessElement(domDynamicallyGeneratedElement);
             errorUtil.assert(
                 nProcessed === 1,
                 "A template can't be a dynamically generated element."
             );
 
-            context.exitIteration(
+            my.context.exitIteration(
                 ylcLoop.strLoopVariable,
                 ylcLoop.strStatusVariable
             );
@@ -222,24 +205,18 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         return domarrGeneratedElements.length + 1;
     }
 
-    function v2mProcessDynamicIfElements(
-        context,
-        jqTemplate
-    ) {
+    function v2mProcessDynamicIfElements(jqTemplate) {
         var domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate);
 
         if (domarrCurrentGeneratedElements.length > 0) {
             errorUtil.assert(domarrCurrentGeneratedElements.length === 1);
-            v2mProcessElement(
-                context,
-                domarrCurrentGeneratedElements[0]
-            );
+            v2mProcessElement(domarrCurrentGeneratedElements[0]);
         }
 
         return domarrCurrentGeneratedElements.length + 1;
     }
 
-    function v2mProcessChildren(context, domElement) {
+    function v2mProcessChildren(domElement) {
         var jqDomElement = $(domElement),
             jqsetChildren = jqDomElement.children(),
             index = 0,
@@ -247,14 +224,14 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
         while (index < jqsetChildren.length) {
             domChild = jqsetChildren[index];
-            index += v2mProcessElement(context, domChild);
+            index += v2mProcessElement(domChild);
         }
     }
 
 
     // propagating changes of model into view
 
-    function m2vSetValues(context, domElement) {
+    function m2vSetValues(domElement) {
         var jqElement = $(domElement),
             strYlcBind = stringUtil.strGetData(jqElement, "ylcBind"),
             arrYlcBind = ylcBindParser.parseYlcBind(strYlcBind),
@@ -287,7 +264,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             }
 
             try {
-                value = context.getValue(currentYlcBinding.strBindingExpression);
+                value = my.context.getValue(currentYlcBinding.strBindingExpression);
 
             } catch (err) {
                 throw errorUtil.elementToError(err, domElement);
@@ -307,7 +284,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
     }
 
     function processCommonElements(
-        context,
         ylcLoop,
         domarrCurrentGeneratedElements,
         arrCollection,
@@ -319,7 +295,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         while (index < commonLength) {
             domGeneratedElement = domarrCurrentGeneratedElements[index];
 
-            context.enterIteration(
+            my.context.enterIteration(
                 ylcLoop.strLoopVariable,
                 arrCollection,
                 ylcLoop.strStatusVariable,
@@ -328,17 +304,15 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
             index +=
                 m2vProcessElement(
-                    context,
                     domGeneratedElement,
                     false
                 );
 
-            context.exitIteration(ylcLoop.strLoopVariable, ylcLoop.strStatusVariable);
+            my.context.exitIteration(ylcLoop.strLoopVariable, ylcLoop.strStatusVariable);
         }
     }
 
     function addExtraElements(
-        context,
         ylcLoop,
         jqTemplate,
         domarrCurrentGeneratedElements,
@@ -364,7 +338,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
             jqNewDynamicElement = domTemplates.jqCreateElementFromTemplate(jqTemplate);
 
-            context.enterIteration(
+            my.context.enterIteration(
                 ylcLoop.strLoopVariable,
                 arrCollection,
                 ylcLoop.strStatusVariable,
@@ -372,13 +346,13 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             );
 
             elementsProcessed =
-                m2vProcessElement(context, jqNewDynamicElement.get(), true);
+                m2vProcessElement(jqNewDynamicElement.get(), true);
             errorUtil.assert(
                 elementsProcessed === 1,
                 "If an element is dynamically generated, it can't be a template."
             );
 
-            context.exitIteration(ylcLoop.strLoopVariable, ylcLoop.strStatusVariable);
+            my.context.exitIteration(ylcLoop.strLoopVariable, ylcLoop.strStatusVariable);
 
             jqLastElement.after(jqNewDynamicElement);
             jqLastElement = jqNewDynamicElement;
@@ -386,16 +360,12 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         }
     }
 
-    function m2vProcessDynamicLoopElements(
-        context,
-        jqTemplate,
-        strYlcLoop
-    ) {
+    function m2vProcessDynamicLoopElements(jqTemplate, strYlcLoop) {
 
         var ylcLoop = ylcLoopParser.parseYlcLoop(strYlcLoop),
             domarrCurrentGeneratedElements =
                 getGeneratedElements(jqTemplate),
-            arrCollection = context.getValue(ylcLoop.strCollectionName),
+            arrCollection = my.context.getValue(ylcLoop.strCollectionName),
             commonLength,
             idxFirstToDelete,
             index;
@@ -406,7 +376,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             Math.min(arrCollection.length, domarrCurrentGeneratedElements.length);
 
         processCommonElements(
-            context,
             ylcLoop,
             domarrCurrentGeneratedElements,
             arrCollection,
@@ -415,7 +384,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
         if (arrCollection.length > commonLength) {
             addExtraElements(
-                context,
                 ylcLoop,
                 jqTemplate,
                 domarrCurrentGeneratedElements,
@@ -436,12 +404,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         return domarrCurrentGeneratedElements.length + 1;
     }
 
-    function m2vProcessDynamicIfElements(
-        context,
-        jqTemplate,
-        strYlcIf
-    ) {
-        var ifExpressionValue = context.getValue(stringUtil.normalizeWhitespace(strYlcIf)),
+    function m2vProcessDynamicIfElements(jqTemplate, strYlcIf) {
+        var ifExpressionValue = my.context.getValue(stringUtil.normalizeWhitespace(strYlcIf)),
             domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate),
             jqNewDynamicElement,
             nElementsProcessed;
@@ -450,7 +414,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             jqNewDynamicElement = domTemplates.jqCreateElementFromTemplate(jqTemplate);
 
             nElementsProcessed =
-                m2vProcessElement(context, jqNewDynamicElement.get(), true);
+                m2vProcessElement(jqNewDynamicElement.get(), true);
             errorUtil.assert(
                 nElementsProcessed === 1,
                 "If an element is dynamically generated, it can't be a template."
@@ -462,7 +426,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             if (ifExpressionValue) {
                 nElementsProcessed =
                     m2vProcessElement(
-                        context,
                         domarrCurrentGeneratedElements[0],
                         false
                     );
@@ -478,10 +441,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     }
 
-    function m2vProcessDynamicElements(
-        context,
-        jqTemplate
-    ) {
+    function m2vProcessDynamicElements(jqTemplate) {
 
         var strYlcLoop = stringUtil.strGetData(jqTemplate, "ylcLoop"),
             strYlcIf = stringUtil.strGetData(jqTemplate, "ylcIf");
@@ -495,29 +455,17 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         }
 
         if (strYlcLoop) {
-            return m2vProcessDynamicLoopElements(
-                context,
-                jqTemplate,
-                strYlcLoop
-            );
+            return m2vProcessDynamicLoopElements(jqTemplate, strYlcLoop);
         }
 
         if (strYlcIf) {
-            return m2vProcessDynamicIfElements(
-                context,
-                jqTemplate,
-                strYlcIf
-            );
+            return m2vProcessDynamicIfElements(jqTemplate, strYlcIf);
         }
 
         errorUtil.assert(false);
     }
 
-    function m2vProcessChildren(
-        context,
-        domElement,
-        bBindEvents
-    ) {
+    function m2vProcessChildren(domElement, bBindEvents) {
 
         var jqElement = $(domElement),
             jqsetChildren = jqElement.children(),
@@ -534,7 +482,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
                 index +=
                     m2vProcessElement(
-                        context,
                         domChild,
                         bBindEvents
                     );
@@ -555,12 +502,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         )
     }
 
-    function callModelUpdatingMethod(
-        context,
-        publicContext,
-        fnUpdateMethod,
-        m2vOnly
-    ) {
+    function callModelUpdatingMethod(publicContext, fnUpdateMethod, m2vOnly) {
 
         var returnValue;
 
@@ -569,16 +511,12 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             callFunctions(my.callbacks.beforeEvent);
 
             if (!m2vOnly) {
-                v2mProcessElement(
-                    context,
-                    my.domView
-                );
+                v2mProcessElement(my.domView);
             }
 
             returnValue = fnUpdateMethod.call(my.controller, my.model, publicContext);
 
             m2vProcessElement(
-                context,
                 my.domView,
                 false
             );
@@ -593,21 +531,15 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     }
 
-    function createHandler(context, publicContext, fnHandler, m2vOnly) {
+    function createHandler(publicContext, fnHandler, m2vOnly) {
 
         return function (eventObject) {
             publicContext.eventObject = eventObject;
-
-            return callModelUpdatingMethod(
-                context,
-                publicContext,
-                fnHandler,
-                m2vOnly
-            );
+            return callModelUpdatingMethod(publicContext, fnHandler, m2vOnly);
         };
     }
 
-    function m2vBindEvents(context, domElement) {
+    function m2vBindEvents(domElement) {
         var jqElement = $(domElement),
             strYlcEvents = stringUtil.strGetData(jqElement, "ylcEvents"),
             arrYlcEvents = ylcEventsParser.parseYlcEvents(strYlcEvents),
@@ -647,7 +579,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             }
 
             publicContext =
-                createPublicContext(context, domElement);
+                createPublicContext(domElement);
 
             if (currentYlcEvent.strEventName === "ylcElementInitialized") {
                 fnHandler.call(my.controller, my.model, publicContext);
@@ -655,64 +587,48 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
             jqElement.bind(
                 currentYlcEvent.strEventName,
-                createHandler(context, publicContext, fnHandler, m2vOnly)
+                createHandler(publicContext, fnHandler, m2vOnly)
             );
         }
 
     }
 
-    function createPublicContext(context, domElement) {
+    function createPublicContext(domElement) {
         var publicContext = {};
 
         publicContext.PREFIELD = PREFIELD;
 
         publicContext.domElement = domElement;
-        publicContext.loopStatuses = context.getLoopStatusesSnapshot();
+        publicContext.loopStatuses = my.context.getLoopStatusesSnapshot();
         publicContext.updateModel = function (fnUpdateMethod) {
-            return callModelUpdatingMethod(
-                context,
-                publicContext,
-                fnUpdateMethod
-            );
+            return callModelUpdatingMethod(publicContext, fnUpdateMethod);
         };
 
         return publicContext;
     }
 
-    function m2vProcessElement(context, domElement, bBindEvents) {
+    function m2vProcessElement(domElement, bBindEvents) {
         var nElementsProcessed;
 
         if (domTemplates.isTemplate(domElement)) {
-            nElementsProcessed = m2vProcessDynamicElements(
-                context,
-                $(domElement)
-            );
+            nElementsProcessed = m2vProcessDynamicElements($(domElement));
 
         } else if (domElement !== my.domView && domAnnotator.isViewRoot($(domElement))) {
             nElementsProcessed = 1;
 
         } else {
             if (bBindEvents) {
-                m2vBindEvents(context, domElement);
+                m2vBindEvents(domElement);
             }
-            m2vSetValues(context, domElement);
+            m2vSetValues(domElement);
             $(domElement).removeClass("ylcInvisibleTemplate");
-            m2vProcessChildren(context, domElement, bBindEvents);
+            m2vProcessChildren(domElement, bBindEvents);
 
             nElementsProcessed = 1;
         }
 
         return nElementsProcessed;
     }
-
-
-
-
-
-
-
-
-
 
     function getProperties(object) {
         var result = [],
@@ -727,7 +643,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         return result;
     }
 
-    function createAdapter(context, domView, controller) {
+    function createAdapter(domView, controller) {
 
         var adapter = {},
             controllerMethodNames = getProperties(controller),
@@ -744,7 +660,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
                     adapterMethodArguments =
                         [
                             my.model,
-                            createPublicContext(context, null)
+                            createPublicContext(null)
                         ];
                     $.each(arguments, function (index, argument) {
                         adapterMethodArguments.push(argument);
@@ -753,7 +669,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
                     returnValue = currentControllerMethod.apply(controller, adapterMethodArguments);
 
                     m2vProcessElement(
-                        context,
                         domView,
                         false
                     );
@@ -767,17 +682,17 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         return adapter;
     }
 
-    function processExternalEvent(context, domView, controller, communicationObject) {
+    function processExternalEvent(domView, controller, communicationObject) {
         if (communicationObject.eventName === "getAdapter") {
-            communicationObject.result = createAdapter(context, domView, controller);
+            communicationObject.result = createAdapter(domView, controller);
         }
     }
 
-    function registerYlcExternalEvent(context, domView, controller) {
+    function registerYlcExternalEvent(domView, controller) {
         $(domView).bind(
             "_ylcExternalEvent",
             function (event, communicationObject) {
-                processExternalEvent(context, domView, controller, communicationObject);
+                processExternalEvent(domView, controller, communicationObject);
                 return false;
             }
         );
@@ -789,22 +704,21 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         $(my.domView).find(":not([data-ylcLoop=''])").addClass("ylcInvisibleTemplate");
         domAnnotator.markViewRoot($(my.domView));
 
-        var context = contextFactory.newContext(my.model, my.controller, my.controllerMethods);
+
         if (my.controller.init instanceof Function) {
             my.controller.init.call(
                 my.controller,
                 my.model,
-                createPublicContext(context, my.domView)
+                createPublicContext(my.domView)
             );
         }
 
         m2vProcessElement(
-            context,
             my.domView,
             true
         );
 
-        registerYlcExternalEvent(context, my.domView, my.controller);
+        registerYlcExternalEvent(my.domView, my.controller);
 
     }
 
@@ -816,7 +730,9 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         beforeEvent: [],
         afterEvent: []
     };
-    my.controllerMethods = extractControllerMethods(pController);
+
+    my.controllerMethods = extractControllerMethods(my.controller);
+    my.context = contextFactory.newContext(my.model, my.controller, my.controllerMethods);
 
     setupViewForYlcTraversal();
 
