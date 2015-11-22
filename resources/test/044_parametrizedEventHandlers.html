@@ -16,8 +16,9 @@
     <h1>Parametrized Event Handlers</h1>
     <div id="view">
         <button data-ylcEvents="click: doSomething">No parameters</button>
-        <div data-ylcLoop="n: sequence">
-            <button data-ylcEvents="click: doSomethingElse('a', 3, n)">Parametrized</button>
+        <div data-ylcLoop="n,status: sequence">
+            <button data-ylcEvents="click: doSomethingElse('button pressed', 1, n, status.index)">Parametrized</button>
+            <span data-ylcEvents="ylcElementInitialized: doSomethingElse('element initialized', 2, n, status.index)"></span>
         </div>
     </div>
 
@@ -25,15 +26,15 @@
 
         var controller = {
             init: function(model) {
-                model.sequence = [1, 2, 3, 4, 5];
+                model.sequence = ["one", "two", "three", "four", "five"];
             },
 
             doSomething: function() {
                 console.log("No parameters");
             },
 
-            doSomethingElse: function(model, context, parameter1, parameter2, parameter3) {
-                console.log("With parameters: " + parameter1 + ", " + parameter2 + ", " + parameter3);
+            doSomethingElse: function(model, context, parameter1, parameter2, parameter3, parameter4) {
+                console.log("With parameters: " + parameter1 + ", " + parameter2 + ", " + parameter3 + ", " + parameter4);
             }
         };
 

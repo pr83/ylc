@@ -8,14 +8,23 @@ jsep.addBinaryOp("@", 10);
 
 module.exports = {};
 
-module.exports.newContext = function newContext(model, controller, controllerMethods, loopVariables, loopStatuses) {
+module.exports.newContext = function newContext(
+        model,
+        controller,
+        controllerMethods,
+        loopContextMemento
+) {
 
     var my = {
             model: model,
             controller: controller,
             controllerMethods: controllerMethods,
-            loopVariables: loopVariables || {},
-            loopStatuses: loopStatuses || {}
+            loopVariables:
+                (loopContextMemento && loopContextMemento.loopVariables) ?
+                    loopContextMemento.loopVariables : {},
+            loopStatuses:
+                (loopContextMemento && loopContextMemento.loopStatuses) ?
+                    loopContextMemento.loopStatuses : {}
         },
         that = {};
 
@@ -549,21 +558,33 @@ module.exports.newContext = function newContext(model, controller, controllerMet
         gsExpressionValue(strExpression, value, forceSet);
     };
 
-    that.getLoopVariablesSnapshot = function () {
-        return $.extend(true, {}, my.loopVariables);
-    };
-
     that.getLoopStatusesSnapshot = function () {
         return $.extend(true, {}, my.loopStatuses);
     };
 
-    that.newWithOverriddenLoops = function (loopVariables, loopStatuses) {
+    that.getLoopContextMemento = function() {
+        var currentLoopVariable,
+            loopVariablesSnapshot = {};
+
+        for (currentLoopVariable in my.loopVariables) {
+            if (my.loopVariables.hasOwnProperty(currentLoopVariable)) {
+                loopVariablesSnapshot[currentLoopVariable] =
+                    $.extend({}, my.loopVariables[currentLoopVariable]);
+            }
+        }
+
+        return {
+            loopVariables: loopVariablesSnapshot,
+            loopStatuses: $.extend(true, {}, my.loopStatuses)
+        };
+    };
+
+    that.newWithLoopContext = function (loopContextMemento) {
         return module.exports.newContext(
             my.model,
             my.controller,
             my.controllerMethods,
-            loopVariables,
-            loopStatuses
+            loopContextMemento
         );
     };
 

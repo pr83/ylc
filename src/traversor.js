@@ -502,21 +502,42 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         )
     }
 
-    function callModelUpdatingMethod(publicContext, fnUpdateMethod, m2vOnly, arrArgumentList) {
+    function evaluateArguments(arrArgumentExpressions, loopContextMemento) {
+        var context = my.context.newWithLoopContext(loopContextMemento),
+            idxArgument,
+            arrEvaluatedExpressions = [];
+
+        if (arrArgumentExpressions === null || arrArgumentExpressions === undefined) {
+            return arrArgumentExpressions;
+        }
+
+        for (idxArgument = 0; idxArgument < arrArgumentExpressions.length; idxArgument += 1) {
+            arrEvaluatedExpressions.push(context.getValue(arrArgumentExpressions[idxArgument]));
+        }
+
+        return arrEvaluatedExpressions;
+
+    }
+
+    function callModelUpdatingMethod(
+            publicContext,
+            fnUpdateMethod,
+            m2vOnly,
+            arrArgumentExpressions,
+            loopContextMemento
+    ) {
 
         var idxArgument,
             argumentValues = [my.model, publicContext],
             returnValue;
 
-        if (arrArgumentList) {
-            for (idxArgument = 0; idxArgument < arrArgumentList.length; idxArgument += 1) {
-                argumentValues.push(
-                    my.context.newWithOverriddenLoops(
-                        publicContext.loopVariables,
-                        publicContext.loopStatuses
-                    ).getValue(arrArgumentList[idxArgument])
-                );
-            }
+        if (arrArgumentExpressions) {
+
+            Array.prototype.push.apply(
+                argumentValues,
+                evaluateArguments(arrArgumentExpressions, loopContextMemento)
+            );
+
         }
 
         try {
@@ -544,11 +565,16 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     }
 
-    function createHandler(publicContext, fnHandler, m2vOnly, arrArgumentList) {
-
+    function createHandler(publicContext, fnHandler, m2vOnly, arrArgumentExpressions, loopContextMemento) {
         return function (eventObject) {
             publicContext.eventObject = eventObject;
-            return callModelUpdatingMethod(publicContext, fnHandler, m2vOnly, arrArgumentList);
+            return callModelUpdatingMethod(
+                publicContext,
+                fnHandler,
+                m2vOnly,
+                arrArgumentExpressions,
+                loopContextMemento
+            );
         };
     }
 
@@ -563,7 +589,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             publicContext,
             annotatedControllerFunction,
 
-            m2vOnly;
+            m2vOnly,
+            immediateCallArguments;
 
         for (index = 0; index < arrYlcEvents.length; index += 1) {
             currentYlcEvent = arrYlcEvents[index];
@@ -594,12 +621,28 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             publicContext = createPublicContext(domElement);
 
             if (currentYlcEvent.strEventName === "ylcElementInitialized") {
-                fnHandler.call(my.controller, my.model, publicContext);
+                immediateCallArguments = [my.model, publicContext];
+                if (currentYlcEvent.arrArgumentExpressions) {
+                    Array.prototype.push.apply(
+                        immediateCallArguments,
+                        evaluateArguments(
+                            currentYlcEvent.arrArgumentExpressions,
+                            my.context.getLoopContextMemento()
+                        )
+                    );
+                }
+                fnHandler.apply(my.controller, immediateCallArguments);
             }
 
             jqElement.bind(
                 currentYlcEvent.strEventName,
-                createHandler(publicContext, fnHandler, m2vOnly, currentYlcEvent.arrArgumentList)
+                createHandler(
+                    publicContext,
+                    fnHandler,
+                    m2vOnly,
+                    currentYlcEvent.arrArgumentExpressions,
+                    my.context.getLoopContextMemento()
+                )
             );
         }
 
@@ -612,7 +655,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
         publicContext.domElement = domElement;
         publicContext.loopStatuses = my.context.getLoopStatusesSnapshot();
-        publicContext.loopVariables = my.context.getLoopVariablesSnapshot();
         publicContext.updateModel = function (fnUpdateMethod) {
             return callModelUpdatingMethod(publicContext, fnUpdateMethod);
         };
