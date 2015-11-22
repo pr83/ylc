@@ -5,14 +5,14 @@ module.exports = (function () {
     return {
 
         checkObjectSanity: function(objectValue) {
-            if (!$.isPlainObject(objectValue) && !$.isArray(objectValue)) {
-                throw errorUtil.createError("Left hand side of the '.' operator must be an object or array.");
+            if (objectValue === null || objectValue === undefined) {
+                throw errorUtil.createError("Left hand side of the '.' operator must not be null/undefined.");
             }
         },
 
         checkArraySanity: function(arrayValue) {
-            if (!$.isPlainObject(arrayValue) && !$.isArray(arrayValue)) {
-                throw errorUtil.createError("The [] operator can only be used on arrays and objects.");
+            if (arrayValue === null || arrayValue === undefined) {
+                throw errorUtil.createError("Left hand side of the '[]' operator must not be null/undefined.");
             }
         }
 

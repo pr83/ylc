@@ -254,11 +254,6 @@ module.exports.newContext = function newContext(
                 } else if (array === null) {
                     return null;
 
-                } else if (!$.isArray(array)) {
-                    throw errorUtil.createError(
-                        "The '@' operator can only be used on arrays, null and undefined."
-                    );
-
                 } else {
 
                     if (!hasValue(array[indexValue]) && (adHocValue !== undefined)) {
@@ -272,11 +267,6 @@ module.exports.newContext = function newContext(
 
             setter: function(ast, value) {
                 var array = gsAstValue(ast.left, undefined, []);
-                if (!$.isArray(array)) {
-                    throw errorUtil.createError(
-                        "The '@' operator can only be used on arrays, null and undefined."
-                    );
-                }
                 array[gsAstValue(ast.right)] = value;
             }
         },
@@ -308,11 +298,7 @@ module.exports.newContext = function newContext(
                 var objectValue = gsAstValue(ast.object, undefined, forceSet ? {} : undefined),
                     propertyName = ast.property.name;
 
-                if (!(objectValue instanceof Object)) {
-                    throw errorUtil.createError(
-                        "Left hand side of the '.' operator must be an object."
-                    );
-                }
+                sanityCheck.checkObjectSanity(objectValue);
 
                 objectValue[propertyName] = value;
             }
@@ -343,11 +329,6 @@ module.exports.newContext = function newContext(
                 } else if (objectValue === null) {
                     return null;
 
-                } else if (!$.isPlainObject(objectValue)) {
-                    throw errorUtil.createError(
-                        "Left hand side of the '#' operator must be an object, null or undefined."
-                    );
-
                 } else {
                     if (!hasValue(objectValue[propertyName]) && (adHocValue !== undefined)) {
                         objectValue[propertyName] = adHocValue;
@@ -359,11 +340,6 @@ module.exports.newContext = function newContext(
 
             setter: function(ast, value) {
                 var objectValue = gsAstValue(ast.left, undefined, {});
-                if (!$.isPlainObject(objectValue)) {
-                    throw errorUtil.createError(
-                        "Left hand side of the '#' operator must be an object, null or undefined."
-                    );
-                }
                 objectValue[ast.right.name] = value;
             }
         },
