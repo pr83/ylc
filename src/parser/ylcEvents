@@ -1,5 +1,6 @@
 var stringUtil = require("../stringUtil"),
-    errorUtil = require('../errorUtil');
+    errorUtil = require('../errorUtil'),
+    parseUtil = require('../parseUtil');
 
 module.exports = (function () {
 
@@ -17,25 +18,59 @@ module.exports = (function () {
                 strEvent,
                 arrParts,
                 strEventName,
-                strMethodName;
+                strHandler,
+                idxArgumentListStart,
+                strArgumentList,
+                arrArgumentList,
+                strMethodName,
+
+                idxEventNameHandlerSeparator;
 
             for (index = 0; index < arrEvents.length; index += 1) {
                 strEvent = $.trim(arrEvents[index]);
 
                 if (strEvent) {
-                    arrParts = strEvent.split(":");
-                    if (arrParts.length !== 2) {
+
+                    idxEventNameHandlerSeparator = strEvent.indexOf(":");
+                    if (idxEventNameHandlerSeparator === -1) {
                         throw errorUtil.createError(
                             "Invalid format of the data-ylcEvents parameter: " + strYlcEvents
                         );
                     }
 
-                    strEventName = $.trim(arrParts[0]);
-                    strMethodName = $.trim(arrParts[1]);
+                    strEventName = $.trim(strEvent.substr(0, idxEventNameHandlerSeparator));
+                    strHandler =
+                        strEvent.substr(
+                            idxEventNameHandlerSeparator + 1,
+                            strEvent.length - (idxEventNameHandlerSeparator + 1)
+                        );
+
+                    idxArgumentListStart = strHandler.indexOf("(");
+                    if (idxArgumentListStart === -1) {
+                        strMethodName = $.trim(strHandler);
+                        arrArgumentList = [];
+
+                    } else {
+
+                        if (strHandler.charAt(strHandler.length - 1) !== ')') {
+                            throw errorUtil.createError(
+                                "Invalid format of the data-ylcEvents parameter: " + strYlcEvents
+                            );
+                        }
+
+                        strMethodName = $.trim(strHandler.substr(0, idxArgumentListStart));
+                        strArgumentList =
+                            strHandler.substr(
+                                idxArgumentListStart + 1,
+                                strHandler.length - idxArgumentListStart - 2
+                            );
+                        arrArgumentList = parseUtil.split(strArgumentList, ",");
+                    }
 
                     result.push({
                         strEventName: strEventName,
-                        strMethodName: strMethodName
+                        strMethodName: strMethodName,
+                        arrArgumentList: arrArgumentList
                     });
 
                 }

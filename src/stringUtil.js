@@ -2,6 +2,10 @@ var errorUtil = require('./errorUtil');
 
 module.exports = (function () {
 
+    function hasSubstringAt(string, substring, index) {
+        return string.substr(index, substring.length) === substring;
+    }
+
     function echoCharacter(str, index, sbResult) {
         if (index >= str.length) {
             throw errorUtil.createError(
@@ -75,6 +79,10 @@ module.exports = (function () {
             }
 
             return sbResult.join("");
+        },
+
+        hasSubstringAt: function(string, substring, index) {
+            return hasSubstringAt(string, substring, index);
         }
 
     };

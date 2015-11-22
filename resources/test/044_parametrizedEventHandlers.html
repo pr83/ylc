@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <h1>Parametrized Event Handlers</h1>
+    <div id="view">
+        <button data-ylcEvents="click: doSomething">No parameters</button>
+        <div data-ylcLoop="n: sequence">
+            <button data-ylcEvents="click: doSomethingElse('a', 3, n)">Parametrized</button>
+        </div>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+                model.sequence = [1, 2, 3, 4, 5];
+            },
+
+            doSomething: function() {
+                console.log("No parameters");
+            },
+
+            doSomethingElse: function(model, context, parameter1, parameter2, parameter3) {
+                console.log("With parameters: " + parameter1 + ", " + parameter2 + ", " + parameter3);
+            }
+        };
+
+        $("#view").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>

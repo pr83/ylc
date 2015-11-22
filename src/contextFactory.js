@@ -8,14 +8,14 @@ jsep.addBinaryOp("@", 10);
 
 module.exports = {};
 
-module.exports.newContext = function newContext(model, controller, controllerMethods) {
+module.exports.newContext = function newContext(model, controller, controllerMethods, loopVariables, loopStatuses) {
 
     var my = {
             model: model,
             controller: controller,
             controllerMethods: controllerMethods,
-            loopVariables: {},
-            loopStatuses: {}
+            loopVariables: loopVariables || {},
+            loopStatuses: loopStatuses || {}
         },
         that = {};
 
@@ -528,6 +528,7 @@ module.exports.newContext = function newContext(model, controller, controllerMet
         strLoopVariableName,
         strStatusVariableName
     ) {
+
         my.loopVariables[strLoopVariableName] = undefined;
         if (strStatusVariableName !== undefined) {
             my.loopStatuses[strStatusVariableName] = undefined;
@@ -548,8 +549,22 @@ module.exports.newContext = function newContext(model, controller, controllerMet
         gsExpressionValue(strExpression, value, forceSet);
     };
 
+    that.getLoopVariablesSnapshot = function () {
+        return $.extend(true, {}, my.loopVariables);
+    };
+
     that.getLoopStatusesSnapshot = function () {
         return $.extend(true, {}, my.loopStatuses);
+    };
+
+    that.newWithOverriddenLoops = function (loopVariables, loopStatuses) {
+        return module.exports.newContext(
+            my.model,
+            my.controller,
+            my.controllerMethods,
+            loopVariables,
+            loopStatuses
+        );
     };
 
     return that;

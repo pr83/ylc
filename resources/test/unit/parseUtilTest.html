@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../nakedYellowCode.js"></script>
+</head>
+
+<body>
+    <script>
+
+        var parseUtil = $.nakedYellowCode.parseUtil,
+            arrPartsBySemicolon,
+            arrPartsByComma;
+
+        arrPartsBySemicolon =
+            parseUtil.split(
+                "click: abc('x/*must be*/', 'y/*must be*/', 531, /*comment*/ 5); \n" +
+                    "\t\thover: def('z')",
+                ";"
+            );
+
+        console.log(arrPartsBySemicolon[0]);
+        console.log(arrPartsBySemicolon[1]);
+
+        arrPartsByComma =
+            parseUtil.split(
+                "'x/*must be*/', 'y/*must be*/', 531, /*comment*/ 5",
+                ","
+            );
+
+        console.log("---");
+
+        console.log(arrPartsByComma[0]);
+        console.log(arrPartsByComma[1]);
+        console.log(arrPartsByComma[2]);
+        console.log(arrPartsByComma[3]);
+
+    </script>
+</body>
+
+</html>

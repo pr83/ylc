@@ -502,9 +502,22 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         )
     }
 
-    function callModelUpdatingMethod(publicContext, fnUpdateMethod, m2vOnly) {
+    function callModelUpdatingMethod(publicContext, fnUpdateMethod, m2vOnly, arrArgumentList) {
 
-        var returnValue;
+        var idxArgument,
+            argumentValues = [my.model, publicContext],
+            returnValue;
+
+        if (arrArgumentList) {
+            for (idxArgument = 0; idxArgument < arrArgumentList.length; idxArgument += 1) {
+                argumentValues.push(
+                    my.context.newWithOverriddenLoops(
+                        publicContext.loopVariables,
+                        publicContext.loopStatuses
+                    ).getValue(arrArgumentList[idxArgument])
+                );
+            }
+        }
 
         try {
 
@@ -514,7 +527,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
                 v2mProcessElement(my.domView);
             }
 
-            returnValue = fnUpdateMethod.call(my.controller, my.model, publicContext);
+            returnValue = fnUpdateMethod.apply(my.controller, argumentValues);
 
             m2vProcessElement(
                 my.domView,
@@ -531,11 +544,11 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     }
 
-    function createHandler(publicContext, fnHandler, m2vOnly) {
+    function createHandler(publicContext, fnHandler, m2vOnly, arrArgumentList) {
 
         return function (eventObject) {
             publicContext.eventObject = eventObject;
-            return callModelUpdatingMethod(publicContext, fnHandler, m2vOnly);
+            return callModelUpdatingMethod(publicContext, fnHandler, m2vOnly, arrArgumentList);
         };
     }
 
@@ -578,8 +591,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
                 );
             }
 
-            publicContext =
-                createPublicContext(domElement);
+            publicContext = createPublicContext(domElement);
 
             if (currentYlcEvent.strEventName === "ylcElementInitialized") {
                 fnHandler.call(my.controller, my.model, publicContext);
@@ -587,7 +599,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
             jqElement.bind(
                 currentYlcEvent.strEventName,
-                createHandler(publicContext, fnHandler, m2vOnly)
+                createHandler(publicContext, fnHandler, m2vOnly, currentYlcEvent.arrArgumentList)
             );
         }
 
@@ -600,6 +612,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
         publicContext.domElement = domElement;
         publicContext.loopStatuses = my.context.getLoopStatusesSnapshot();
+        publicContext.loopVariables = my.context.getLoopVariablesSnapshot();
         publicContext.updateModel = function (fnUpdateMethod) {
             return callModelUpdatingMethod(publicContext, fnUpdateMethod);
         };
