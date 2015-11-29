@@ -1,5 +1,6 @@
 var errorUtil = require('./errorUtil'),
     stringUtil = require('./stringUtil'),
+    parseUtil = require('./parseUtil'),
     ylcBindParser = require('./parser/ylcBind'),
     domTemplates = require('./domTemplates'),
     ylcEventsParser = require('./parser/ylcEvents'),
@@ -405,7 +406,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
     }
 
     function m2vProcessDynamicIfElements(jqTemplate, strYlcIf) {
-        var ifExpressionValue = my.context.getValue(stringUtil.normalizeWhitespace(strYlcIf)),
+        var ifExpressionValue = my.context.getValue(parseUtil.normalizeWhitespace(strYlcIf)),
             domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate),
             jqNewDynamicElement,
             nElementsProcessed;

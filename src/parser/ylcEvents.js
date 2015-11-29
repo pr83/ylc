@@ -12,7 +12,7 @@ module.exports = (function () {
             }
 
             var result = [],
-                arrEvents = stringUtil.normalizeWhitespace(strYlcEvents).split(";"),
+                arrEvents = parseUtil.normalizeWhitespace(strYlcEvents).split(";"),
                 index,
 
                 strEvent,

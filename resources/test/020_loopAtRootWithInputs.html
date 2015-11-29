@@ -16,7 +16,7 @@
 
 <h1>Loop at root</h1>
 
-<div id="loopAtRoot" data-ylcLoop="item,status: list" class="ylcInvisibleTemplate">
+<div class="loopAtRoot ylcInvisibleTemplate" data-ylcLoop="item,status: list">
     <input data-ylcBind="val: item" data-ylcEvents="keyup: printThem"></div>
 </div>
 
@@ -37,7 +37,7 @@
         }
     };
 
-    $("#loopAtRoot").yellowCode(controller);
+    $(".loopAtRoot").yellowCode(controller);
 
 </script>
 

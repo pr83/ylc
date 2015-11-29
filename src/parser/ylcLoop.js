@@ -1,4 +1,4 @@
-var stringUtil = require("../stringUtil"),
+var parseUtil = require("../parseUtil"),
     errorUtil = require('../errorUtil');
 
 module.exports = (function () {
@@ -11,7 +11,7 @@ module.exports = (function () {
                         "Invalid format of the data-ylcLoop parameter: " + strYlcLoop
                     );
                 },
-                arrParts = stringUtil.normalizeWhitespace(strYlcLoop).split(":"),
+                arrParts = parseUtil.normalizeWhitespace(strYlcLoop).split(":"),
                 strLoopAndStatusVariables,
                 strCollectionName,
                 strLoopVariable,

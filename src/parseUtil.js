@@ -54,6 +54,49 @@ module.exports = (function () {
 
             return stringArrayBuilder.build();
 
+        },
+
+        normalizeWhitespace: function(string) {
+            var sbResult = [];
+
+            lexer.process(
+                string,
+                [
+
+                    lexer.onDelimitedToken("/*", "*/"),
+
+                    lexer.onDelimitedToken(
+                        "'",
+                        "'",
+                        function(strToken) {
+                            sbResult.push(strToken);
+                        }
+                    ),
+
+                    lexer.onDelimitedToken(
+                        "\"",
+                        "\"",
+                        function(strToken) {
+                            sbResult.push(strToken);
+                        }
+                    ),
+
+                    lexer.onCharacterSequence(
+                        [' ', '\n', '\r', '\t'],
+                        function(strToken) {
+                            sbResult.push(" ");
+                        }
+                    ),
+
+                    lexer.onDefaultToken(
+                        function(strToken) {
+                            sbResult.push(strToken)
+                        }
+                    )
+                ]
+            );
+
+            return sbResult.join("");
         }
 
     };
