@@ -18,16 +18,16 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         my = {};
 
     function m2vOnlyAnnotationListener(annotation, code, metadata) {
-        if (annotation === "m2vOnly") {
+        if (annotation === "@M2vOnly") {
             metadata.m2vOnly = true;
         }
     }
 
     function beforeAfterEventAnnotationListener(annotation, code, metadata) {
-        if (annotation === "beforeEvent") {
+        if (annotation === "@BeforeEvent") {
             my.callbacks.beforeEvent.push(code);
 
-        } else if (annotation === "afterEvent") {
+        } else if (annotation === "@AfterEvent") {
             my.callbacks.afterEvent.push(code);
         }
     }

@@ -60,15 +60,15 @@
                 console.log(model);
             },
 
-            "beforeEvent": {
+            "@BeforeEvent": {
                 beforeEventHandler: function () {
                     console.log("beforeEventHandler");
                 }
             },
 
-            "afterEvent": {
-                afterEventHandler: function () {
-                    console.log("beforeEventHandler");
+            afterEventHandler: {
+                "@AfterEvent": function () {
+                    console.log("afterEventHandler");
                 }
             }
 

@@ -1,59 +1,89 @@
+var errorUtil = require('./errorUtil');
+
 module.exports = (function () {
 
     return {
 
         processAnnotations: function(controller, arrAnnotationListeners) {
 
-            function processAnnotationsRecursively(
-                controllerSubtree,
-                arrAnnotationListeners,
-                result,
-                annotationsFromRootToHere
+            function processTreeRecursively(
+                    controllerSubtree,
+                    arrAnnotationListeners,
+                    result,
+                    keysFromRootToHere
             ) {
                 var subtreePropertyName,
                     subtreePropertyValue,
-                    metadata;
+                    metadata,
+                    strFunctionName;
 
                 for (subtreePropertyName in controllerSubtree) {
                     if (controllerSubtree.hasOwnProperty(subtreePropertyName)) {
 
                         subtreePropertyValue = controllerSubtree[subtreePropertyName];
 
+                        keysFromRootToHere.push(subtreePropertyName);
+
                         if ($.isPlainObject(subtreePropertyValue)) {
-                            annotationsFromRootToHere.push(subtreePropertyName);
-                            processAnnotationsRecursively(
+                            processTreeRecursively(
                                 subtreePropertyValue,
                                 arrAnnotationListeners,
                                 result,
-                                annotationsFromRootToHere
+                                keysFromRootToHere
                             );
-                            annotationsFromRootToHere.pop();
 
                         } else if ($.isFunction(subtreePropertyValue)) {
                             metadata = {};
+                            strFunctionName = undefined;
                             $.each(
-                                annotationsFromRootToHere,
-                                function(idxAnnotation, annotation) {
-                                    $.each(
-                                        arrAnnotationListeners,
-                                        function(idxListener, listener) {
-                                            listener(annotation, subtreePropertyValue, metadata);
+                                keysFromRootToHere,
+                                function(idxAnnotation, key) {
+                                    var keyTrimmed = $.trim(key),
+                                        annotation;
+                                    if (keyTrimmed.charAt(0) === '@') {
+                                        annotation = keyTrimmed;
+                                        $.each(
+                                            arrAnnotationListeners,
+                                            function (idxListener, listener) {
+                                                listener(
+                                                    annotation,
+                                                    subtreePropertyValue,
+                                                    metadata
+                                                );
+                                            }
+                                        );
+                                    } else {
+                                        if (strFunctionName) {
+                                            throw errorUtil.createError(
+                                                "Function name already specified; " +
+                                                    "unexpected key: '" + strFunctionName + "'."
+                                            );
                                         }
-                                    );
+                                        strFunctionName = keyTrimmed;
+                                    }
                                 }
                             );
-                            result[subtreePropertyName] = {
+
+                            if (!strFunctionName) {
+                                throw errorUtil.createError(
+                                    "Function name not specified for: " + subtreePropertyValue
+                                );
+                            }
+
+                            result[strFunctionName] = {
                                 metadata: metadata,
                                 code: subtreePropertyValue
                             };
                         }
+
+                        keysFromRootToHere.pop();
 
                     }
                 }
             }
 
             var result = {};
-            processAnnotationsRecursively(controller, arrAnnotationListeners, result, []);
+            processTreeRecursively(controller, arrAnnotationListeners, result, []);
             return result;
 
     }
