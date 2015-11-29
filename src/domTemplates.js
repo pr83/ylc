@@ -10,11 +10,15 @@ module.exports = (function () {
             jqElement.attr("data-_ylcDynamicallyGenerated") === "true";
     }
 
+    function findIncludingRoot(jqElement, selector) {
+        return jqElement.filter(selector).add(jqElement.find(selector));
+    }
+
     function checkOrRewriteTemplateIds(jqTemplate, bReportErrorOnId, strRewriteIdsInTemplateTo) {
         var jqTemplateElementsWithIds;
 
         if (!domAnnotator.areTemplateIdsChecked(jqTemplate)) {
-            jqTemplateElementsWithIds = jqTemplate.find("[id]");
+            jqTemplateElementsWithIds =  findIncludingRoot(jqTemplate, "[id]");
             if (jqTemplateElementsWithIds.length > 0) {
                 if (bReportErrorOnId) {
                     throw errorUtil.createError(
@@ -35,7 +39,7 @@ module.exports = (function () {
     }
 
     function reintroduceIdsInClonedSubtree(jqRoot, strRewriteIdsFrom) {
-        var jqTemplateElementsWithIds = jqRoot.find("[" + strRewriteIdsFrom + "]");
+        var jqTemplateElementsWithIds = findIncludingRoot(jqRoot, "[" + strRewriteIdsFrom + "]");
         jqTemplateElementsWithIds.each(function() {
             $(this).attr("id", $(this).attr(strRewriteIdsFrom));
         });

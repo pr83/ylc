@@ -1,4 +1,4 @@
-var stringUtil = require("../stringUtil"),
+var parseUtil = require("../parseUtil"),
     errorUtil = require('../errorUtil');
 
 module.exports = (function () {
@@ -66,11 +66,21 @@ module.exports = (function () {
         return index;
     }
 
-    function pushBinding(sbPropertyAndSubproperty, sbExpression, strMappingOperator, result) {
-
-        var strPropertyAndSubproperty = $.trim(sbPropertyAndSubproperty.join("")),
+    function parseBinding(strBinding) {
+        var index = 0,
+            sbPropertyAndSubproperty = [],
+            strMappingOperator,
+            sbExpression = [],
+            strPropertyAndSubproperty,
             strPropertyName,
             strSubpropertyName;
+
+        index = readPropertyAndSubproperty(strBinding, index, sbPropertyAndSubproperty);
+        strMappingOperator = pokeMappingOperator(strBinding, index);
+        index += strMappingOperator.length;
+        readExpression(strBinding, index, sbExpression);
+
+        strPropertyAndSubproperty = $.trim(sbPropertyAndSubproperty.join(""));
 
         if (strPropertyAndSubproperty.indexOf(".") < 0) {
             strPropertyName = strPropertyAndSubproperty;
@@ -81,15 +91,13 @@ module.exports = (function () {
             strSubpropertyName = $.trim(strPropertyAndSubproperty.split(".")[1]);
         }
 
-        result.push({
+        return {
             strPropertyName: strPropertyName,
             strSubpropertyName: strSubpropertyName,
             strMappingOperator: strMappingOperator,
             strBindingExpression: $.trim(sbExpression.join(""))
-        });
-
+        };
     }
-
 
     return {
 
@@ -98,44 +106,22 @@ module.exports = (function () {
         MAPPING_V2M_ONLY_FORCED: MAPPING_V2M_ONLY_FORCED,
         MAPPING_M2V_ONLY: MAPPING_M2V_ONLY,
 
-
-
         parseYlcBind: function(strYlcBind) {
 
             var result = [],
-                index = 0,
-                sbPropertyAndSubproperty,
-                strMappingOperator,
-                sbExpression;
+                bindings,
+                idxBinding,
+                strCurrentBinding;
 
             if (!strYlcBind) {
                 return [];
             }
 
-            strYlcBind = stringUtil.normalizeWhitespace(strYlcBind);
+            bindings = parseUtil.split(strYlcBind, ";");
 
-            while (index < strYlcBind.length) {
-
-                sbPropertyAndSubproperty = [];
-                index = readPropertyAndSubproperty(strYlcBind, index, sbPropertyAndSubproperty);
-
-                strMappingOperator = pokeMappingOperator(strYlcBind, index);
-                index += strMappingOperator.length;
-
-                sbExpression = [];
-                index = readExpression(strYlcBind, index, sbExpression);
-
-                pushBinding(sbPropertyAndSubproperty, sbExpression, strMappingOperator, result);
-
-                if (strYlcBind[index] === ";") {
-                    index += 1;
-                }
-
-                // skip trailing white space
-                while (index < strYlcBind.length && /\s/.test(strYlcBind[index])) {
-                    index += 1;
-                }
-
+            for (idxBinding = 0; idxBinding < bindings.length; idxBinding += 1) {
+                strCurrentBinding = bindings[idxBinding];
+                result.push(parseBinding(strCurrentBinding));
             }
 
             return result;
