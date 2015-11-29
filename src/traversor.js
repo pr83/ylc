@@ -336,7 +336,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         jqLastElement = jqLastCommonElement;
         for (index = commonLength; index < arrCollection.length; index += 1) {
 
-            jqNewDynamicElement = domTemplates.jqCreateElementFromTemplate(jqTemplate);
+            jqNewDynamicElement = domTemplates.jqCreateElementFromTemplate(jqTemplate, true);
 
             my.context.enterIteration(
                 ylcLoop.strLoopVariable,
@@ -411,7 +411,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             nElementsProcessed;
 
         if (ifExpressionValue && domarrCurrentGeneratedElements.length === 0) {
-            jqNewDynamicElement = domTemplates.jqCreateElementFromTemplate(jqTemplate);
+            jqNewDynamicElement =
+                domTemplates.jqCreateElementFromTemplate(jqTemplate, false, "_ylcId");
 
             nElementsProcessed =
                 m2vProcessElement(jqNewDynamicElement.get(), true);
@@ -503,6 +504,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
     }
 
     function evaluateArguments(arrArgumentExpressions, loopContextMemento) {
+
         var context = my.context.newWithLoopContext(loopContextMemento),
             idxArgument,
             arrEvaluatedExpressions = [];

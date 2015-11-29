@@ -9,7 +9,9 @@ module.exports = (function () {
         },
 
         elementToError: function(error, element) {
-            error.element = element;
+            if (!error.element) {
+                error.element = element;
+            }
             return error;
         },
 

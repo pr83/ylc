@@ -40,9 +40,11 @@ module.exports = (function () {
 
                     strEventName = $.trim(strEvent.substr(0, idxEventNameHandlerSeparator));
                     strHandler =
-                        strEvent.substr(
-                            idxEventNameHandlerSeparator + 1,
-                            strEvent.length - (idxEventNameHandlerSeparator + 1)
+                        $.trim(
+                            strEvent.substr(
+                                idxEventNameHandlerSeparator + 1,
+                                strEvent.length - (idxEventNameHandlerSeparator + 1)
+                            )
                         );
 
                     idxArgumentListStart = strHandler.indexOf("(");
@@ -60,11 +62,18 @@ module.exports = (function () {
 
                         strMethodName = $.trim(strHandler.substr(0, idxArgumentListStart));
                         strArgumentList =
-                            strHandler.substr(
-                                idxArgumentListStart + 1,
-                                strHandler.length - idxArgumentListStart - 2
+                            $.trim(
+                                strHandler.substr(
+                                    idxArgumentListStart + 1,
+                                    strHandler.length - idxArgumentListStart - 2
+                                )
                             );
-                        arrArgumentExpressions = parseUtil.split(strArgumentList, ",");
+
+                        if (strArgumentList.length === 0) {
+                            arrArgumentExpressions = [];
+                        } else {
+                            arrArgumentExpressions = parseUtil.split(strArgumentList, ",");
+                        }
                     }
 
                     result.push({

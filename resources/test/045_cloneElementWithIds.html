@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <h1>Clone element with IDs</h1>
+    <div id="view">
+        <div data-ylcIf="condition" id="id0">
+            <div>
+                <div>
+                    <span id="id1"></span>
+                    <span id="id2"></span>
+                    <span id="id3"></span>
+                </div>
+            </div>
+        </div>
+        <button data-ylcEvents="click: showLoop()">Show loop</button>
+        <div data-ylcIf="showLoop">
+            <span data-ylcLoop="element: list" id="id4">
+                <span id="id5"></span>
+            </span>
+        </div>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+                model.condition = true;
+                model.list = [1, 2, 3];
+                model.showLoop = false;
+            },
+
+            showLoop: function(model) {
+                model.showLoop = true;
+            }
+        };
+
+        $("#view").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>
