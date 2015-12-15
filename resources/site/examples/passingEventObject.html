@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:mynamespace="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none; !important;}
+    </style>
+</head>
+
+<body>
+
+    <div id="view">
+        <div data-ylcEvents="mousedown: clickedYellow"
+             style="background-color: yellow; width: 500px; height: 350px"
+        ></div>
+    </div>
+
+    <script>
+        var controller = {
+            clickedYellow: function (model, context) {
+                var offset = $(context.domElement).offset(),
+                    eventObject = context.eventObject,
+                    x = eventObject.pageX - offset.left,
+                    y = eventObject.pageY - offset.top;
+                alert("Clicked at [" + x + "; " + y + "]");
+            }
+        };
+        $("#view").yellowCode(controller);
+    </script>
+
+</body>
+
+</html>

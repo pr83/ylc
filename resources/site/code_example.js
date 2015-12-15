@@ -28,51 +28,115 @@
         });
     }
 
-    $.fn.codeExample = function (url) {
+    function countLeadingSpaces(string) {
+        var index = 0;
 
-        return this.each(function() {
-            var domElement = this,
-                sourceUrl = $(domElement).attr("data-sourceUrl"),
-                formattedSource,
-                preElement,
-                buttonElement;
+        while (index < string.length && string.charAt(index) === ' ') {
+            index += 1;
+        }
 
-            $.get(sourceUrl, null, function (data) {
+        return index;
+    }
+
+    function removeLeadingSpace(strMultiLineText) {
+
+        var lines = strMultiLineText.replace(/\r\n|\n\r|\n|\r/g,"\n").split("\n"),
+            nFirstLineLeadingSpaces = countLeadingSpaces(lines[0]),
+            sbResult = [];
+
+        $.each(
+            lines,
+            function(idx, line) {
+                sbResult.push(line.substring(nFirstLineLeadingSpaces));
+            }
+        );
+
+        return sbResult.join("\n");
+
+    }
+
+    $.fn.codeExample = function() {
+
+        return this.each(function () {
+
+            var sourceUrl = $(this).attr("data-sourceUrl");
+
+            if (!sourceUrl) {
+
+                var jqOriginalElement = $(this),
+                    jqNewElement,
+                    txtOriginalElementSource = jqOriginalElement.val(),
+                    formattedSource;
+
+                txtOriginalElementSource = removeLeadingSpace(txtOriginalElementSource);
 
                 if (Prism) {
-                    formattedSource = Prism.highlight(data, Prism.languages.markup);
+                    formattedSource =
+                        Prism.highlight(txtOriginalElementSource, Prism.languages.markup);
+
                 } else {
-                    formattedSource = escapeHtml(data).
+                    formattedSource = escapeHtml(txtOriginalElementSource).
                         replace(/\n/g, '<br\>').
                         replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;').
                         replace(/ /g, '&nbsp;');
-                    console.log(formattedSource);
                 }
 
-                $(domElement).html(
-                    '<div class="example">' +
+                jqNewElement = $("<code>" + formattedSource + "</code>");
+                jqNewElement.attributes = jqOriginalElement.attributes;
+                $.each(
+                    jqOriginalElement.prop("attributes"),
+                    function() {
+                        jqNewElement.attr(this.name, this.value);
+                    }
+                );
+                jqOriginalElement.after(jqNewElement);
+                jqOriginalElement.remove();
+
+            } else {
+
+                var domElement = this,
+                    formattedSource,
+                    preElement,
+                    buttonElement;
+
+                $.get(sourceUrl, null, function (data) {
+
+                    if (Prism) {
+                        formattedSource = Prism.highlight(data, Prism.languages.markup);
+                    } else {
+                        formattedSource = escapeHtml(data).
+                        replace(/\n/g, '<br\>').
+                        replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;').
+                        replace(/ /g, '&nbsp;');
+                        console.log(formattedSource);
+                    }
+
+                    $(domElement).html(
+                        '<div class="example">' +
                         '<pre></pre>' +
                         '<button></button>' +
-                    '</div>'
-                );
+                        '</div>'
+                    );
 
-                $(domElement).addClass("example");
+                    $(domElement).addClass("example");
 
-                preElement = $(domElement).find("pre");
-                preElement.html(formattedSource);
+                    preElement = $(domElement).find("pre");
+                    preElement.html(formattedSource);
 
-                buttonElement = $(domElement).find("button");
-                buttonElement.append(
-                    '<span class="glyphicon glyphicon-play"></span> Play'
-                );
-                buttonElement.addClass("btn");
-                buttonElement.addClass("btn-primary");
-                buttonElement.addClass("pull-right");
-                buttonElement.click(function () {
-                    openPopup(sourceUrl, "Example", 650, 450);
-                });
+                    buttonElement = $(domElement).find("button");
+                    buttonElement.append(
+                        '<span class="glyphicon glyphicon-play"></span> Play'
+                    );
+                    buttonElement.addClass("btn");
+                    buttonElement.addClass("btn-primary");
+                    buttonElement.addClass("pull-right");
+                    buttonElement.click(function () {
+                        openPopup(sourceUrl, "Example", 650, 450);
+                    });
 
-            }, "text");
+                }, "text");
+
+            }
 
         });
 
