@@ -239,8 +239,9 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
             index,
             currentYlcBinding,
-            fnSetter,
-            value;
+            fnGetterSetter,
+            value,
+            existingValue;
 
         for (index = 0; index < arrYlcBind.length; index += 1) {
             currentYlcBinding = arrYlcBind[index];
@@ -255,8 +256,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
                 continue;
             }
 
-            fnSetter = jqElement[currentYlcBinding.strPropertyName];
-            if (!(fnSetter instanceof Function)) {
+            fnGetterSetter = jqElement[currentYlcBinding.strPropertyName];
+            if (!(fnGetterSetter instanceof Function)) {
                 throw errorUtil.createError(
                     "Cannot find jQuery getter/setter called '" +
                     currentYlcBinding.strPropertyName + "'.",
@@ -272,11 +273,26 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
             }
 
             if (value !== PREFIELD) {
+
                 if (currentYlcBinding.strSubpropertyName === undefined) {
-                    fnSetter.call(jqElement, value);
+                    existingValue = fnGetterSetter.call(jqElement);
 
                 } else {
-                    fnSetter.call(jqElement, currentYlcBinding.strSubpropertyName, value);
+                    existingValue =
+                        fnGetterSetter.call(jqElement, currentYlcBinding.strSubpropertyName);
+                }
+
+                if (value !== existingValue) {
+                    if (currentYlcBinding.strSubpropertyName === undefined) {
+                        fnGetterSetter.call(jqElement, value);
+
+                    } else {
+                        fnGetterSetter.call(
+                            jqElement,
+                            currentYlcBinding.strSubpropertyName,
+                            value
+                        );
+                    }
                 }
             }
 
