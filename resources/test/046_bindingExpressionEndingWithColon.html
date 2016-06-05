@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="yellowCode.min.js"></script>
+
+    <style>
+        .ylcInvisibleTemplate {display: none;}
+    </style>
+</head>
+
+<body>
+
+    <h1>Binding expression ending with colon</h1>
+    <div id="view">
+        <span data-ylcBind="text: value;"></span>
+    </div>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+                model.value = "value";
+            }
+        };
+
+        $("#view").yellowCode(controller);
+
+    </script>
+
+</body>
+
+</html>

@@ -121,7 +121,9 @@ module.exports = (function () {
 
             for (idxBinding = 0; idxBinding < bindings.length; idxBinding += 1) {
                 strCurrentBinding = bindings[idxBinding];
-                result.push(parseBinding(strCurrentBinding));
+                if ($.trim(strCurrentBinding).length) {
+                    result.push(parseBinding(strCurrentBinding));
+                }
             }
 
             return result;
