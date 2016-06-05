@@ -149,13 +149,17 @@ module.exports.newContext = function newContext(
         }
     }
 
-    function callFunction(functionName, functionArguments) {
+    function callFunction(calleeObject, functionName, functionArguments) {
         var parentObject,
             fn,
             evaluatedArguments = [],
             idxArgument;
 
-        if (my.controllerMethods[functionName]) {
+        if (calleeObject !== null && calleeObject !== undefined) {
+            parentObject = calleeObject;
+            fn = calleeObject[functionName];
+
+        } else if (my.controllerMethods[functionName]) {
             parentObject = my.controller;
             fn = my.controllerMethods[functionName].code;
 
@@ -410,7 +414,16 @@ module.exports.newContext = function newContext(
                 return ast.type === "CallExpression";
             },
             getter: function(ast) {
-                return callFunction(ast.callee.name, ast.arguments);
+                if (ast.callee.object !== null && ast.callee.object !== undefined) {
+                    return callFunction(
+                        gsAstValue(ast.callee.object),
+                        ast.callee.property.name,
+                        ast.arguments
+                    );
+
+                } else {
+                    return callFunction(undefined, ast.callee.name, ast.arguments);
+                }
             }
         }
     ];
