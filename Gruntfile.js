@@ -66,14 +66,6 @@ module.exports = function(grunt) {
       }
     },
 
-    subgrunt: {
-      dist: {
-        projects: {
-          "dist/tests/038_resources": "default"
-        }
-      }
-    },
-
     replace: {
       dist: {
         src: ["dist/site/*.*"],
@@ -149,7 +141,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-text-replace');
   grunt.loadNpmTasks('grunt-banner');
   grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-subgrunt');
 
   grunt.registerTask(
       'default',
@@ -160,7 +151,6 @@ module.exports = function(grunt) {
         //'copy:dummyUglify',
         'usebanner',
         'copy',
-        'subgrunt',
         'replace',
         'clean:after_dist'
       ]

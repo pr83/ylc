@@ -5,7 +5,6 @@
     <title></title>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="yellowCode.min.js"></script>
-    <script src="038_resources/colorWidget.all.js"></script>
 
     <style>
         .ylcInvisibleTemplate {display: none !important;}
@@ -13,6 +12,114 @@
 </head>
 
 <body>
+
+    <!-- inner widget definition -->
+
+    <div id="colorWidgetHtml">
+        <div
+             class="ylcInvisibleTemplate"
+             style="width: 500px; min-height: 30px; border: 1px solid; margin: 10px; padding: 10px">
+
+            <div>
+                <strong>current color:</strong>
+                <div
+                        style="width: 40px; height: 20px; border: 2px solid; margin-left: auto; margin-right: auto; display: inline-block; vertical-align: middle;"
+                        data-ylcBind="css.background-color: currentColor"
+                        data-ylcEvents="click: enableEdit">
+                </div>
+            </div>
+
+            <div data-ylcIf="edit">
+
+                edit: <span data-ylcBind="text: edit"></span>
+                <div
+                    data-ylcLoop="color,colorStatus: colors"
+                    style="width: 20px; height: 20px; border: 2px solid; display: inline-block; margin: 3px"
+                    data-ylcBind="css.background-color: color"
+                    data-ylcEvents="click: changeColor">
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        (function($) {
+
+            function createController() {
+                return {
+                    init: function(model) {
+                        model.currentColor = "white";
+                        model.edit = false;
+
+                        model.colors = [
+                            "red",
+                            "green",
+                            "blue",
+                            "cyan",
+                            "magenta",
+                            "yellow",
+                            "white",
+                            "black",
+                            "brown",
+                            "gray",
+                            "crimson",
+                            "orange",
+                            "violet",
+                            "purple",
+                            "pink"
+                        ];
+                    },
+
+                    enableEdit: function(model, context) {
+                        model.edit = true;
+                    },
+
+                    changeColor: function(model, context) {
+                        model.currentColor = model.colors[context.loopStatuses.colorStatus.index];
+                        model.edit = false;
+                    },
+
+                    getColor: function(model, context) {
+                        return model.currentColor;
+                    },
+
+                    setColor: function(model, context, color) {
+                        model.currentColor = color;
+                    }
+                };
+            }
+
+            function init(jqTopDiv) {
+                var jqView;
+                jqTopDiv.html($("#colorWidgetHtml").html());
+                jqView = $(jqTopDiv.children().get());
+                jqView.yellowCode(createController());
+            }
+
+            $.fn.colorWidget = function(arg1, arg2) {
+                var jqTopDiv = $(this),
+                        jqView;
+
+                if (arg1 === undefined) {
+                    init(jqTopDiv);
+
+                } else if (arg1 === "color" && arg2 === undefined) {
+                    jqView = $(jqTopDiv.children().get());
+                    return jqView.yellowCode("getAdapter").getColor();
+
+                } else if (arg1 === "color" && arg2 !== undefined) {
+                    jqView = $(jqTopDiv.children().get());
+                    jqView.yellowCode("getAdapter").setColor(arg2);
+                }
+            };
+
+        }(jQuery));
+    </script>
+
+
+    <!-- outer widget definition -->
 
     <div id="colors">
         <div data-ylcLoop="color: colors"
