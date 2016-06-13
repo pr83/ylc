@@ -26,6 +26,15 @@
     "grunt-contrib-copy": "~0.8.0",
     "grunt-text-replace": "~0.4.0",
     "grunt-banner": "~0.3.1",
-    "jsep": "~0.3.0"
+
+    "tape": "~2.13.1",
+    "tape-dom": "~0.0.10",
+    "jquery": "~3.0.0",
+    "sinon": "~1.17.4",
+    "brfs": "~1.4.3",
+
+    "jsep": "~0.3.0",
+
+    "grunt-contrib-watch": "~0.6.1"
   }
 }

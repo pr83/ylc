@@ -10,6 +10,14 @@ module.exports = function(grunt) {
           'tmp/yellowCode.js': ['src/yellowCode.js'],
           'tmp/nakedYellowCode.js': ['src/nakedYellowCode.js']
         }
+      },
+      tests: {
+        files: {
+          'test/dest/all.js': ['test/src/*.js']
+        },
+        options: {
+          transform: ['brfs']
+        }
       }
     },
 
@@ -131,6 +139,16 @@ module.exports = function(grunt) {
       after_dist: {
         src: 'tmp'
       }
+    },
+
+    watch: {
+      tests: {
+        files: [
+          'test/src/**',
+          'test/resources/**'
+        ],
+        tasks: ['browserify:tests']
+      }
     }
 
   });
@@ -141,6 +159,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-text-replace');
   grunt.loadNpmTasks('grunt-banner');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask(
       'default',
@@ -152,7 +171,8 @@ module.exports = function(grunt) {
         'usebanner',
         'copy',
         'replace',
-        'clean:after_dist'
+        'clean:after_dist',
+        'browserify:tests'
       ]
   );
 
