@@ -1,0 +1,10 @@
+<div class="ylcInvisibleTemplate">
+    <button id="addElement" data-ylcEvents="click: addElement">Add element</button>
+    <ul>
+        <li data-ylcLoop="dynamicInput: dynamicInputs">
+            <input data-ylcBind="val: dynamicInput.value" />
+        </li>
+    </ul>
+    <button id="sumUp" data-ylcEvents="click: sumUp">Sum up</button>
+    <p id="result">sum: <span data-ylcBind="text: sum"></span></p>
+</div>

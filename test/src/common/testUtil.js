@@ -2,19 +2,17 @@ var FIXTURE_ID = "__htmlTestingFixture",
 
     tape = require("tape"),
     tapeDom = require('tape-dom'),
-    commonObjects = null;
+    setUpDone = false;
 
-function setUpCommonObjects() {
-    if (!commonObjects) {
+function setUp() {
+    if (!setUpDone) {
         tapeDom.installCSS();
         tapeDom.stream(tape);
 
         global.$ = global.jQuery = require("jquery");
         require("../../../src/yellowCode");
 
-        commonObjects = {
-            tape: tape
-        };
+        setUpDone = true;
     }
 }
 
@@ -27,14 +25,8 @@ function removeFixture() {
 
 module.exports = {
 
-    getJQuery: function() {
-        setUpCommonObjects();
-        return commonObjects.jQuery;
-    },
-
-    getTape: function() {
-        setUpCommonObjects();
-        return commonObjects.tape;
+    setUp: function() {
+        setUp();
     },
 
     setUpFixture: function(fileBuffer) {

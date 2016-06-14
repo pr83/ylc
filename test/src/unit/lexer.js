@@ -1,8 +1,9 @@
-var sinon = require("sinon"),
-    lexer = require('../../src/lexer'),
-    testUtil = require("./lib/testUtil"),
+var test = require("tape"),
+    sinon = require("sinon"),
+    testUtil = require("../common/testUtil"),
+    lexer = require('../../../src/lexer');
 
-    test = testUtil.getTape();
+testUtil.setUp();
 
 test(
     "test",
@@ -16,7 +17,6 @@ test(
                 lexer.onConstantToken(
                     ";",
                     function(strToken) {
-                        //console.log("semicolon: " + strToken);
                         spy("semicolon", strToken);
                     }
                 ),
@@ -24,7 +24,6 @@ test(
                     "/*",
                     "*/",
                     function(strToken) {
-                        //console.log("comment: " + strToken);
                         spy("comment", strToken);
                     }
                 ),
@@ -32,20 +31,17 @@ test(
                     "'",
                     "'",
                     function(strToken) {
-                        //console.log("quotes: " + strToken);
                         spy("quotes", strToken);
                     }
                 ),
                 lexer.onCharacterSequence(
                     [' ', '\n', '\r', '\t'],
                     function(strToken) {
-                        //console.log("whitespace");
                         spy("whitespace");
                     }
                 ),
                 lexer.onDefaultToken(
                     function(strToken) {
-                        //console.log("character: " + strToken);
                         spy("character", strToken);
                     }
                 )

@@ -1,16 +1,17 @@
-var sinon = require("sinon"),
+var test = require("tape"),
+    sinon = require("sinon"),
     fs = require('fs'),
-    testUtil = require("./lib/testUtil"),
+    testUtil = require("../common/testUtil");
 
-    test = testUtil.getTape();
+testUtil.setUp();
 
 test(
-    "updatingModel",
+    "updating model",
     function (t) {
 
         var jqFixture =
                 testUtil.setUpFixture(
-                    fs.readFileSync(__dirname + '/../resources/' + "updatingModel.html")
+                    fs.readFileSync(__dirname + "/updatingModel.html")
                 ),
             jqDynamicallyGeneratedElements;
 
