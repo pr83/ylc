@@ -6,7 +6,7 @@ var test = require("tape"),
 testUtil.setUp();
 
 test(
-    "test",
+    "unit test: lexer",
     function (t) {
 
         var spy = sinon.spy();
@@ -65,7 +65,8 @@ test(
                         ["semicolon", ";"],
                         ["whitespace"],
                         ["quotes", "'quotes'"]
-                ]
+                ],
+                "correct callbacks called"
             );
 
         t.end();

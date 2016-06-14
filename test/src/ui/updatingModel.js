@@ -1,5 +1,4 @@
 var test = require("tape"),
-    sinon = require("sinon"),
     fs = require('fs'),
     testUtil = require("../common/testUtil");
 
@@ -36,18 +35,28 @@ test(
             trigger("click");
 
         jqDynamicallyGeneratedElements = jqFixture.find("li:visible");
-        t.equal(jqDynamicallyGeneratedElements.length, 3);
+        t.equal(
+            jqDynamicallyGeneratedElements.length,
+            3,
+            "correct number of dynamically generated elements"
+        );
+
         t.equal(
             jqDynamicallyGeneratedElements.eq(0).text(),
-            "I am a dynamically generated string #1."
+            "I am a dynamically generated string #1.",
+            "correct 1st element text"
         );
+
         t.equal(
             jqDynamicallyGeneratedElements.eq(1).text(),
-            "I am a dynamically generated string #2."
+            "I am a dynamically generated string #2.",
+            "correct 2nd element text"
         );
+
         t.equal(
             jqDynamicallyGeneratedElements.eq(2).text(),
-            "I am a dynamically generated string #3."
+            "I am a dynamically generated string #3.",
+            "correct 3rd element text"
         );
 
         testUtil.removeFixture();
