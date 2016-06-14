@@ -1,0 +1,18 @@
+<div>
+    <ul class="level1" data-ylcLoop="level1node,level1status: level1nodes">
+        <li>
+            <span data-ylcBind="text: level1status.index + ') '"></span>
+            <span data-ylcBind="text: level1node.name"></span>
+            <ul class="level2" data-ylcLoop="level2node,level2status: level1node.level2nodes">
+                <li>
+                    <span data-ylcBind="text: level2status.index + ') '"></span>
+                    <span data-ylcBind="text: level2node.name"></span>
+                    <ul class="level3" data-ylcLoop="level3node,level3status: level2node.level3nodes">
+                        <span data-ylcBind="text: level3status.index + ') '"></span>
+                        <span data-ylcBind="text: level3node.name"></span>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
