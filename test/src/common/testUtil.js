@@ -48,6 +48,10 @@ module.exports = {
 
     removeFixture: function() {
         removeFixture();
+    },
+
+    toRegExp: function(str) {
+        return new RegExp(str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
     }
 
 };
