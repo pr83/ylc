@@ -1,0 +1,8 @@
+<div>
+    <button id="addElement" data-ylcEvents="click: addElement">+</button><br />
+    <div data-ylcLoop="dynamicInput,dynamicInputStatus: dynamicInputs" class="inputRow">
+        <input data-ylcBind="val: dynamicInput.value" data-ylcEvents="keyup: sumUp" />
+        <button data-ylcEvents="click: remove">-</button>
+    </div>
+    <p>sum: <span id="result" data-ylcBind="text: sum">xx</span></p>
+</div>
