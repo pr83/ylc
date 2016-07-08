@@ -1,0 +1,9 @@
+<div>
+    <button data-ylcEvents="click: addElement" id="bAdd">+</button><br />
+    <div data-ylcLoop="dynamicInput,dynamicInputStatus: dynamicInputs" class="ylcInvisibleTemplate">
+        <input
+                data-ylcBind="val: dynamicInput.value"
+                data-ylcEvents="ylcElementInitialized: installPlugin" />
+        <button data-ylcEvents="click: remove" class="bRemove">-</button>
+    </div>
+</div>

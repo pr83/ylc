@@ -18,7 +18,7 @@ test(
             level2Elements,
             level2Title,
             level3Elements,
-            level2Title;
+            level3Title;
 
         var controller = {
             init: function(model) {

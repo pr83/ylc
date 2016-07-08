@@ -6,11 +6,15 @@ var FIXTURE_ID = "__htmlTestingFixture",
 
 function setUp() {
     if (!setUpDone) {
-        tapeDom.installCSS();
-        tapeDom.stream(tape);
+        if (window.setUpTapeDom) {
+            tapeDom.installCSS();
+            tapeDom.stream(tape);
+        }
 
         global.$ = global.jQuery = require("jquery");
         require("../../../src/yellowCode");
+
+        $("head").append($("<style>.ylcInvisibleTemplate {display: none;}</style>"));
 
         setUpDone = true;
     }

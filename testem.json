@@ -1,0 +1,6 @@
+{
+  "serve_files": [
+    "test/dest/all.js"
+  ],
+  "framework": "tap"
+}
