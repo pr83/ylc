@@ -1,0 +1,8 @@
+<div>
+    <input type="password" data-ylcBind="val: password" data-ylcEvents="keyup: pwdEntered" />
+    <ul data-ylcIf="isPwdEntered">
+        <li data-ylcBind="attr.class: correctLength ? 'present' : 'absent'">Between 7 and 25 characters</li>
+        <li data-ylcBind="attr.class: containsDigit ? 'present' : 'absent'">Contains at least one digit</li>
+        <li data-ylcBind="attr.class: containsCapital ? 'present' : 'absent'">Contains at least one capital letter</li>
+    </ul>
+</div>

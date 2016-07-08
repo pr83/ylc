@@ -1,0 +1,13 @@
+<table>
+    <tr data-ylcLoop="row,rowStatus: data">
+        <td data-ylcLoop="cell,cellStatus: row">
+            <input data-ylcBind="val: cell" data-ylcEvents="keyup: dummy" />
+        </td>
+        <td>
+            <input readonly data-ylcBind="val: decorateSum(rowSum(rowStatus.index))" class="sum" />
+        </td>
+        <td>
+            <input readonly data-ylcBind="val: decorateProduct(rowProduct(rowStatus.index))" class="product" />
+        </td>
+    </tr>
+</table>
