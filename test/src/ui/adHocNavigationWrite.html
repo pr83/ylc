@@ -1,0 +1,47 @@
+<div>
+
+    <div data-ylcIf="step === 'WRITE'">
+        <input data-ylcBind="val: person # address # delivery # street" />
+        <br />
+        <input data-ylcBind="val: persons[10] # address # delivery # street" />
+        <br />
+        <input data-ylcBind="val: existingObject.nonexistentObject # member" />
+        <br />
+        <input data-ylcBind="val: a # b # c" />
+        <br />
+        <input data-ylcBind="val: (l1 # l2 # l3) ||| 'empty'" />
+        <br />
+        <input data-ylcBind="val: xx ||| -1" />
+        <br />
+        <input data-ylcBind="val: undefinedArray@3" />
+        <br />
+        <input data-ylcBind="val -> (obj1.var) ||| 'x'" />
+        <br />
+        <input data-ylcBind="val -> (arr1[5]) ||| 'x'" />
+        <br />
+
+        <button data-ylcEvents="click: read">Read</button>
+    </div>
+
+    <div data-ylcIf="step === 'READ'">
+        <span data-ylcBind="text: person # address # delivery # street" ></span>
+        <br />
+        <span data-ylcBind="text: persons[10] # address # delivery # street" ></span>
+        <br />
+        <span data-ylcBind="text: existingObject.nonexistentObject # member" ></span>
+        <br />
+        <span data-ylcBind="text: a # b # c"></span>
+        <br />
+        <span data-ylcBind="text: (l1 # l2 # l3) ||| 'empty'"></span>
+        <br />
+        <span data-ylcBind="text: xx ||| -1"></span>
+        <br />
+        <span data-ylcBind="text: undefinedArray@3"></span>
+        <br />
+        <span data-ylcBind="text <- (obj1.var) ||| 'x'"></span>
+        <br />
+        <span data-ylcBind="text <- (arr1[5]) ||| 'x'"></span>
+        <br />
+    </div>
+
+</div>

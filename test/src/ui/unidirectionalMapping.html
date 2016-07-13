@@ -1,0 +1,8 @@
+<div>
+    Name: <input data-ylcBind="val -> name ||| ''" data-ylcEvents="keyup:" /><br/>
+    Surname: <input data-ylcBind="val -> surname ||| ''" data-ylcEvents="keyup:" /><br/>
+    <hr/>
+    Name: <input data-ylcBind="val <- name ||| ''" readonly /><br/>
+    Surname: <input data-ylcBind="val <- surname ||| ''" readonly /><br/>
+    <input data-ylcBind="val <- (name ||| '') + ' ' + (surname ||| '')" readonly />
+</div>
