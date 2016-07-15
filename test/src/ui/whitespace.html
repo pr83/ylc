@@ -1,0 +1,37 @@
+<div>
+
+    <div id="bind"
+         data-ylcBind="
+            /* this is a comment */
+            css.color <-
+                color /* this is another comment */
+         "></div>
+
+    <div id="events"
+         data-ylcEvents="
+             click: /* This is a comment too. */
+                 doSomething
+         "></div>
+
+    <div id="loop">
+        <div data-ylcLoop="
+             /* comment 1 */
+             element:
+                 /* comment 2 */
+                 elements
+                 /* comment 3 */
+         "></div>
+    </div>
+
+    <div id="if">
+        <span id="trueSpan" data-ylcIf="
+            /* comment */
+                trueVariable
+        "></span>
+        <span id="falseSpan" data-ylcIf="
+            /* comment */
+                falseVariable
+        "></span>
+    </div>
+
+</div>
