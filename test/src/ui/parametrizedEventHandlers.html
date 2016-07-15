@@ -1,0 +1,7 @@
+<div>
+    <button data-ylcEvents="click: doSomething">No parameters</button>
+    <div data-ylcLoop="element,status: sequence">
+        <button data-ylcEvents="click: doSomethingElse('button pressed', 1, element, status.index)">Parametrized</button>
+        <button data-ylcEvents="ylcElementInitialized: doSomethingElse('element initialized', 2, element, status.index)"></button>
+    </div>
+</div>
