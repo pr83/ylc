@@ -1,1 +1,1 @@
-rsync -r --delete dist/site/* any3w.com:/var/www/html/ylc
+rsync -r --delete dist/site/* pavel@any3w.com:/var/www/html/ylc
