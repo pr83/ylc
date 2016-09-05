@@ -23,7 +23,7 @@ test(
         );
 
         t.equal(
-            jqFixture.find("span:visible").eq(0).text(),
+            jqFixture.find("span").eq(0).text(),
             "xxx",
             "value matches"
         );

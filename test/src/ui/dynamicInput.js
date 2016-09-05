@@ -45,7 +45,7 @@ test(
             trigger("click").
             trigger("click");
 
-        jqDynamicallyGeneratedInputs = jqFixture.find("input:visible");
+        jqDynamicallyGeneratedInputs = jqFixture.find("input");
         t.equal(jqDynamicallyGeneratedInputs.length, 3, "correct number of input fields");
 
         jqDynamicallyGeneratedInputs.eq(0).val("1");

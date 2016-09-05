@@ -36,39 +36,39 @@ test(
         jqFixture.children().first().yellowCode(controller);
 
         t.equal(
-            jqFixture.find("li:visible").find("a").text(),
+            jqFixture.find("li").find("a").text(),
             "redgreenbluepinkwhiteblackyellow",
             "elements before test"
         );
 
-        jqFixture.find("li:visible").eq(0).find("a").click();
+        jqFixture.find("li").eq(0).find("a").click();
 
         t.equal(
-            jqFixture.find("li:visible").find("a").text(),
+            jqFixture.find("li").find("a").text(),
             "greenbluepinkwhiteblackyellow",
             "elements after deleting red"
         );
 
-        jqFixture.find("li:visible").eq(2).find("a").click();
+        jqFixture.find("li").eq(2).find("a").click();
 
         t.equal(
-            jqFixture.find("li:visible").find("a").text(),
+            jqFixture.find("li").find("a").text(),
             "greenbluewhiteblackyellow",
             "elements after deleting red, pink"
         );
 
-        jqFixture.find("li:visible").eq(4).find("a").click();
+        jqFixture.find("li").eq(4).find("a").click();
 
         t.equal(
-            jqFixture.find("li:visible").find("a").text(),
+            jqFixture.find("li").find("a").text(),
             "greenbluewhiteblack",
             "elements after deleting red, pink, yellow"
         );
 
-        jqFixture.find("li:visible").eq(0).find("a").click();
+        jqFixture.find("li").eq(0).find("a").click();
 
         t.equal(
-            jqFixture.find("li:visible").find("a").text(),
+            jqFixture.find("li").find("a").text(),
             "bluewhiteblack",
             "elements after deleting red, pink, yellow, green"
         );

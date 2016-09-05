@@ -56,42 +56,42 @@ test(
         jqAddElementButton.trigger("click");
         jqAddElementButton.trigger("click");
 
-        jqDynamicallyGeneratedElements = jqFixture.find(".inputRow:visible");
+        jqDynamicallyGeneratedElements = jqFixture.find(".inputRow");
         t.equal(jqDynamicallyGeneratedElements.length, 2, "correct number of input rows (2)");
 
-        setInputValue(jqDynamicallyGeneratedElements.eq(0).find("input:visible"), 5);
-        setInputValue(jqDynamicallyGeneratedElements.eq(1).find("input:visible"), 8);
+        setInputValue(jqDynamicallyGeneratedElements.eq(0).find("input"), 5);
+        setInputValue(jqDynamicallyGeneratedElements.eq(1).find("input"), 8);
 
         jqAddElementButton.trigger("click");
         jqAddElementButton.trigger("click");
 
-        jqDynamicallyGeneratedElements = jqFixture.find(".inputRow:visible");
+        jqDynamicallyGeneratedElements = jqFixture.find(".inputRow");
         t.equal(jqDynamicallyGeneratedElements.length, 4, "correct number of input rows (4)");
 
-        setInputValue(jqDynamicallyGeneratedElements.eq(2).find("input:visible"), 13);
-        setInputValue(jqDynamicallyGeneratedElements.eq(3).find("input:visible"), 21);
+        setInputValue(jqDynamicallyGeneratedElements.eq(2).find("input"), 13);
+        setInputValue(jqDynamicallyGeneratedElements.eq(3).find("input"), 21);
 
-        jqDynamicallyGeneratedElements.eq(1).find("button:visible").trigger("click");
+        jqDynamicallyGeneratedElements.eq(1).find("button").trigger("click");
 
-        jqDynamicallyGeneratedElements = jqFixture.find(".inputRow:visible");
+        jqDynamicallyGeneratedElements = jqFixture.find(".inputRow");
         t.equal(jqDynamicallyGeneratedElements.length, 3, "correct number of input rows (3)");
 
-        setInputValue(jqDynamicallyGeneratedElements.eq(0).find("input:visible"), 34);
+        setInputValue(jqDynamicallyGeneratedElements.eq(0).find("input"), 34);
 
         t.equal(
-            jqDynamicallyGeneratedElements.eq(0).find("input:visible").val(),
+            jqDynamicallyGeneratedElements.eq(0).find("input").val(),
             "34",
             "correct value of input 1"
         );
 
         t.equal(
-            jqDynamicallyGeneratedElements.eq(1).find("input:visible").val(),
+            jqDynamicallyGeneratedElements.eq(1).find("input").val(),
             "13",
             "correct value of input 2"
         );
 
         t.equal(
-            jqDynamicallyGeneratedElements.eq(2).find("input:visible").val(),
+            jqDynamicallyGeneratedElements.eq(2).find("input").val(),
             "21",
             "correct value of input 3"
         );
@@ -103,8 +103,8 @@ test(
         );
 
         jqAddElementButton.trigger("click");
-        jqDynamicallyGeneratedElements = jqFixture.find(".inputRow:visible");
-        setInputValue(jqDynamicallyGeneratedElements.eq(3).find("input:visible"), 2);
+        jqDynamicallyGeneratedElements = jqFixture.find(".inputRow");
+        setInputValue(jqDynamicallyGeneratedElements.eq(3).find("input"), 2);
         t.equal(
             jqFixture.find("#result").text(),
             "70",

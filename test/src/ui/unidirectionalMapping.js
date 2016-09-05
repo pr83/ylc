@@ -17,23 +17,23 @@ test(
 
         jqFixture.children().first().yellowCode({});
 
-        jqFixture.children().first().find("input:visible").eq(0).val("xxx").trigger("keyup");
-        jqFixture.children().first().find("input:visible").eq(1).val("yyy").trigger("keyup");
+        jqFixture.children().first().find("input").eq(0).val("xxx").trigger("keyup");
+        jqFixture.children().first().find("input").eq(1).val("yyy").trigger("keyup");
 
         t.equal(
-            jqFixture.children().first().find("input:visible").eq(2).val(),
+            jqFixture.children().first().find("input").eq(2).val(),
             "xxx",
             "1st replicated input"
         );
 
         t.equal(
-            jqFixture.children().first().find("input:visible").eq(3).val(),
+            jqFixture.children().first().find("input").eq(3).val(),
             "yyy",
             "2nd replicated input"
         );
 
         t.equal(
-            jqFixture.children().first().find("input:visible").eq(4).val(),
+            jqFixture.children().first().find("input").eq(4).val(),
             "xxx yyy",
             "concatenated input"
         );

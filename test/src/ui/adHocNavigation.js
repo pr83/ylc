@@ -32,9 +32,9 @@ test(
             }
         );
 
-        jqFixture.children().first().find("button:visible").trigger("click");
+        jqFixture.children().first().find("button").trigger("click");
 
-        dynamicallyGeneratedElements = jqFixture.children().first().find("span:visible");
+        dynamicallyGeneratedElements = jqFixture.children().first().find("span");
 
         t.equal(
             dynamicallyGeneratedElements.eq(0).text(),

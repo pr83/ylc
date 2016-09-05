@@ -33,7 +33,7 @@ test(
             }
         );
 
-        jqFixture.children().first().find("button:visible").trigger("click");
+        jqFixture.children().first().find("button").trigger("click");
 
         t.deepEqual(spy.args[0], ["element initialized", 2, "one", 0], "element 1 initialization");
         t.deepEqual(spy.args[1], ["element initialized", 2, "two", 1], "element 2 initialization");

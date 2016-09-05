@@ -10,7 +10,7 @@ function matches(jqElement, bPresent) {
 }
 
 function verifyClasses(jqFixture, bCorrectLength, bContainsDigit, bContainsCapital) {
-    var jqLis = jqFixture.find("li:visible");
+    var jqLis = jqFixture.find("li");
 
     return matches(jqLis.eq(0), bCorrectLength) && matches(jqLis.eq(1), bContainsDigit) && matches(jqLis.eq(2), bContainsCapital);
 }
@@ -51,24 +51,24 @@ test(
 
 
 
-        jqFixture.find("input:visible").val("test");
-        jqFixture.find("input:visible").trigger("keyup");
+        jqFixture.find("input").val("test");
+        jqFixture.find("input").trigger("keyup");
         t.ok(verifyClasses(jqFixture, false, false, false), "no condition holds");
 
-        jqFixture.find("input:visible").val("xxxxxxx");
-        jqFixture.find("input:visible").trigger("keyup");
+        jqFixture.find("input").val("xxxxxxx");
+        jqFixture.find("input").trigger("keyup");
         t.ok(verifyClasses(jqFixture, true, false, false), "correct length");
 
-        jqFixture.find("input:visible").val("123");
-        jqFixture.find("input:visible").trigger("keyup");
+        jqFixture.find("input").val("123");
+        jqFixture.find("input").trigger("keyup");
         t.ok(verifyClasses(jqFixture, false, true, false), "contains digit");
 
-        jqFixture.find("input:visible").val("XXX");
-        jqFixture.find("input:visible").trigger("keyup");
+        jqFixture.find("input").val("XXX");
+        jqFixture.find("input").trigger("keyup");
         t.ok(verifyClasses(jqFixture, false, false, true), "contains capital");
 
-        jqFixture.find("input:visible").val("X1xxxxxxxxxxxxxxxxxxxxxxxx");
-        jqFixture.find("input:visible").trigger("keyup");
+        jqFixture.find("input").val("X1xxxxxxxxxxxxxxxxxxxxxxxx");
+        jqFixture.find("input").trigger("keyup");
         t.ok(verifyClasses(jqFixture, false, true, true), "contains capital & digit");
 
         testUtil.removeFixture();

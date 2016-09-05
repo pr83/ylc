@@ -42,14 +42,14 @@ test(
 
         jqFixture.children().first().find("#loop").yellowCode(controller);
         t.equal(
-            jqFixture.children().first().find("#loop").find("div:visible").length,
+            jqFixture.children().first().find("#loop").find("div").length,
             7,
             "ylcLoop working correctly"
         );
 
         jqFixture.children().first().find("#if").yellowCode(controller);
         jqDynamicallyGeneratedElements =
-            jqFixture.children().first().find("#if").find("span:visible");
+            jqFixture.children().first().find("#if").find("span");
         t.equal(
             jqDynamicallyGeneratedElements.eq(0).attr("id"),
             "trueSpan",

@@ -63,23 +63,23 @@ test(
         jqFixture.children().first().yellowCode(controller);
 
         // level 1
-        level1Elements = jqFixture.find(".level1:visible");
+        level1Elements = jqFixture.find(".level1");
         t.equal(3, level1Elements.length, "number of level 1 elements");
-        level1Title = level1Elements.eq(0).find("span:visible");
+        level1Title = level1Elements.eq(0).find("span");
         t.equal($.trim(level1Title.eq(0).text()), "0)", "level 1 title - first span");
         t.equal($.trim(level1Title.eq(1).text()), "AAAAA", "level 1 title - second span");
 
         // level 2
-        level2Elements = level1Elements.eq(1).find(".level2:visible");
+        level2Elements = level1Elements.eq(1).find(".level2");
         t.equal(5, level2Elements.length, "number of level 2 elements");
-        level2Title = level2Elements.eq(2).find("span:visible");
+        level2Title = level2Elements.eq(2).find("span");
         t.equal($.trim(level2Title.eq(0).text()), "2)", "level 2 title - first span");
         t.equal($.trim(level2Title.eq(1).text()), "33333", "level 2 title - second span");
 
         // level 3
-        level3Elements = level2Elements.eq(3).find(".level3:visible");
+        level3Elements = level2Elements.eq(3).find(".level3");
         t.equal(2, level3Elements.length, "number of level 3 elements");
-        level3Title = level3Elements.eq(1).find("span:visible");
+        level3Title = level3Elements.eq(1).find("span");
         t.equal($.trim(level3Title.eq(0).text()), "1)", "level 3 title - first span");
         t.equal($.trim(level3Title.eq(1).text()), "yyy", "level 3 title - second span");
 

@@ -40,7 +40,7 @@ test(
         jqButton.trigger("click");
 
         t.equal(
-            jqView.find("li:visible").text(),
+            jqView.find("li").text(),
             "aaabbbccc",
             "model variables correctly set"
         );

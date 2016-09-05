@@ -34,7 +34,7 @@ test(
             trigger("click").
             trigger("click");
 
-        jqDynamicallyGeneratedElements = jqFixture.find("li:visible");
+        jqDynamicallyGeneratedElements = jqFixture.find("li");
         t.equal(
             jqDynamicallyGeneratedElements.length,
             3,

@@ -30,8 +30,8 @@ test(
 
         jqFixture.find("button").trigger("click");
 
-        t.ok($(spy.args[0][0]).is(jqFixture.find("p:visible").eq(0)), "first element");
-        t.ok($(spy.args[0][1]).is(jqFixture.find("p:visible").eq(1)), "second element");
+        t.ok($(spy.args[0][0]).is(jqFixture.find("p").eq(0)), "first element");
+        t.ok($(spy.args[0][1]).is(jqFixture.find("p").eq(1)), "second element");
         testUtil.removeFixture();
 
         t.end();

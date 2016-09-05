@@ -32,7 +32,7 @@ test(
         jqFixture.children().first().yellowCode(controller);
 
         t.equal(
-            jqFixture.find("li:visible").text(),
+            jqFixture.find("li").text(),
             "onetwothreefourfive",
             "correct elements"
         );

@@ -25,39 +25,39 @@ test(
         });
 
         t.equal(
-            jqFixture.find("p:visible").length,
+            jqFixture.find("p").length,
             2,
             "correct number of elements"
         );
 
-        jqFixture.find("button:visible").eq(0).trigger("click");
+        jqFixture.find("button").eq(0).trigger("click");
 
         t.equal(
-            jqFixture.find("p:visible").length,
+            jqFixture.find("p").length,
             3,
             "correct number of elements"
         );
 
-        jqFixture.find("button:visible").eq(1).trigger("click");
+        jqFixture.find("button").eq(1).trigger("click");
 
         t.equal(
-            jqFixture.find("p:visible").length,
+            jqFixture.find("p").length,
             2,
             "correct number of elements"
         );
 
-        jqFixture.find("button:visible").eq(2).trigger("click");
+        jqFixture.find("button").eq(2).trigger("click");
 
         t.equal(
-            jqFixture.find("p:visible").length,
+            jqFixture.find("p").length,
             3,
             "correct number of elements"
         );
 
-        jqFixture.find("button:visible").eq(3).trigger("click");
+        jqFixture.find("button").eq(3).trigger("click");
 
         t.equal(
-            jqFixture.find("p:visible").length,
+            jqFixture.find("p").length,
             2,
             "correct number of elements"
         );

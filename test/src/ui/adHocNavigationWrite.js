@@ -32,7 +32,7 @@ test(
             }
         );
 
-        dynamicallyGeneratedInputs = jqFixture.children().first().find("input:visible");
+        dynamicallyGeneratedInputs = jqFixture.children().first().find("input");
 
 
         t.equal(
@@ -94,9 +94,9 @@ test(
             dynamicallyGeneratedInputs.eq(i).val("value" + i);
         }
 
-        jqFixture.children().first().find("button:visible").trigger("click");
+        jqFixture.children().first().find("button").trigger("click");
 
-        dynamicallyGeneratedSpans = jqFixture.children().first().find("span:visible");
+        dynamicallyGeneratedSpans = jqFixture.children().first().find("span");
 
         for (i = 0; i <= 8; i += 1) {
             t.equal(

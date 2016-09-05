@@ -52,9 +52,9 @@ test(
             }
         );
 
-        jqFixture.find("#bAdd:visible").trigger("click").trigger("click").trigger("click");
+        jqFixture.find("#bAdd").trigger("click").trigger("click").trigger("click");
 
-        jqDynamicallyGeneratedElements = jqFixture.find("input:visible");
+        jqDynamicallyGeneratedElements = jqFixture.find("input");
 
         t.equal(jqDynamicallyGeneratedElements.length, 3, "correct number of inputs");
 
@@ -71,9 +71,9 @@ test(
         t.equal(spy.args[1][0], "value:test2", "second value correct");
         t.equal(spy.args[2][0], "value:test3", "third value correct");
 
-        jqFixture.find(".bRemove:visible").eq(1).trigger("click");
+        jqFixture.find(".bRemove").eq(1).trigger("click");
 
-        jqDynamicallyGeneratedElements = jqFixture.find("input:visible");
+        jqDynamicallyGeneratedElements = jqFixture.find("input");
 
         t.equal(jqDynamicallyGeneratedElements.length, 2, "correct number of inputs");
 

@@ -34,15 +34,15 @@ test(
         jqFixture.children().first().yellowCode(controller);
 
         t.equal(
-            jqFixture.find("input:visible").val(),
+            jqFixture.find("input").val(),
             "hey",
             "test m2v"
         );
 
-        jqFixture.find("input:visible").val("xxx").trigger("keyup");
+        jqFixture.find("input").val("xxx").trigger("keyup");
 
         t.equal(
-            jqFixture.find("span:visible").text(),
+            jqFixture.find("span").text(),
             "xxx",
             "test v2m & m2v"
         );

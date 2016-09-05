@@ -37,7 +37,7 @@ test(
 
         jqFixture.children().first().yellowCode(controller);
 
-        jqDynamicallyGeneratedElements = jqFixture.find("li:visible");
+        jqDynamicallyGeneratedElements = jqFixture.find("li");
 
         jqDynamicallyGeneratedElements.eq(0).find("a").trigger("click");
         t.equal(spy.lastCall.args[0], "red", "1st link event attribute");

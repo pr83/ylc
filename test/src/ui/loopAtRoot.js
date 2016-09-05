@@ -24,7 +24,7 @@ test(
             }
         );
 
-        jqDynamicallyGeneratedElements = jqFixture.find("span:visible");
+        jqDynamicallyGeneratedElements = jqFixture.find("span");
 
 
         t.equal(

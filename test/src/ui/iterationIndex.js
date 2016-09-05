@@ -31,24 +31,24 @@ test(
 
         jqFixture.children().first().yellowCode(controller);
 
-        jqDynamicallyGeneratedElements = jqFixture.find("li:visible");
+        jqDynamicallyGeneratedElements = jqFixture.find("li");
 
         t.equal(jqDynamicallyGeneratedElements.length, 7, "correct number of elements");
 
         t.equal(
-            $.trim(jqDynamicallyGeneratedElements.eq(0).find("span:visible").eq(0).text()),
+            $.trim(jqDynamicallyGeneratedElements.eq(0).find("span").eq(0).text()),
             "0",
             "0: correct index"
         );
 
         t.equal(
-            $.trim(jqDynamicallyGeneratedElements.eq(1).find("span:visible").eq(0).text()),
+            $.trim(jqDynamicallyGeneratedElements.eq(1).find("span").eq(0).text()),
             "1",
             "1: correct index"
         );
 
         t.equal(
-            $.trim(jqDynamicallyGeneratedElements.eq(6).find("span:visible").eq(0).text()),
+            $.trim(jqDynamicallyGeneratedElements.eq(6).find("span").eq(0).text()),
             "6",
             "6: correct index"
         );

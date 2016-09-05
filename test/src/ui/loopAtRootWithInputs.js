@@ -33,7 +33,7 @@ test(
             }
         );
 
-        jqDynamicallyGeneratedElements = jqFixture.find("input:visible");
+        jqDynamicallyGeneratedElements = jqFixture.find("input");
 
         jqDynamicallyGeneratedElements.eq(0).val("a");
         jqDynamicallyGeneratedElements.eq(1).val("bc");

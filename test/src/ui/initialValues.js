@@ -16,9 +16,9 @@ test(
                 ),
             spy = sinon.spy();
 
-        jqFixture.children().first().find("input:visible").eq(0).val("testval1");
-        jqFixture.children().first().find("input:visible").eq(1).val("testval2");
-        jqFixture.children().first().find("input:visible").eq(2).val("testval3");
+        jqFixture.children().first().find("input").eq(0).val("testval1");
+        jqFixture.children().first().find("input").eq(1).val("testval2");
+        jqFixture.children().first().find("input").eq(2).val("testval3");
 
         jqFixture.children().first().yellowCode({
 
@@ -34,7 +34,7 @@ test(
 
         });
 
-        jqFixture.children().first().find("button:visible").trigger("click");
+        jqFixture.children().first().find("button").trigger("click");
 
         t.equal(
             spy.args[0][0],

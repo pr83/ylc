@@ -66,15 +66,15 @@ test(
 
         jqFixture.children().first().yellowCode(controller);
 
-        t.equal(jqFixture.find(".sum:visible").eq(0).val(), "sum = 17", "sum, row 1");
-        t.equal(jqFixture.find(".sum:visible").eq(1).val(), "sum = 18", "sum, row 2");
-        t.equal(jqFixture.find(".sum:visible").eq(2).val(), "sum = 32", "sum, row 3");
-        t.equal(jqFixture.find(".sum:visible").eq(3).val(), "sum = 23", "sum, row 4");
+        t.equal(jqFixture.find(".sum").eq(0).val(), "sum = 17", "sum, row 1");
+        t.equal(jqFixture.find(".sum").eq(1).val(), "sum = 18", "sum, row 2");
+        t.equal(jqFixture.find(".sum").eq(2).val(), "sum = 32", "sum, row 3");
+        t.equal(jqFixture.find(".sum").eq(3).val(), "sum = 23", "sum, row 4");
 
-        t.equal(jqFixture.find(".product:visible").eq(0).val(), "product = 96", "product, row 1");
-        t.equal(jqFixture.find(".product:visible").eq(1).val(), "product = 336", "product, row 2");
-        t.equal(jqFixture.find(".product:visible").eq(2).val(), "product = 9450", "product, row 3");
-        t.equal(jqFixture.find(".product:visible").eq(3).val(), "product = 840", "product, row 4");
+        t.equal(jqFixture.find(".product").eq(0).val(), "product = 96", "product, row 1");
+        t.equal(jqFixture.find(".product").eq(1).val(), "product = 336", "product, row 2");
+        t.equal(jqFixture.find(".product").eq(2).val(), "product = 9450", "product, row 3");
+        t.equal(jqFixture.find(".product").eq(3).val(), "product = 840", "product, row 4");
 
         testUtil.removeFixture();
 
