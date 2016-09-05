@@ -1,11 +1,15 @@
 module.exports = (function () {
 
+    function createError(message, element) {
+        var errorObject = new Error(message);
+        errorObject.element = element;
+        return errorObject;
+    }
+
     return {
 
         createError: function(message, element) {
-            var errorObject = new Error(message);
-            errorObject.element = element;
-            return errorObject;
+            return createError(message, element);
         },
 
         elementToError: function(error, element) {

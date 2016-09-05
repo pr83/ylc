@@ -1,3 +1,5 @@
+var virtualNodes = require('./virtualNodes');
+
 module.exports = (function () {
 
     var VIEW_ROOT_ATTR_NAME = "data-_ylcViewRoot",
@@ -7,23 +9,23 @@ module.exports = (function () {
 
     return {
         markViewRoot: function(jqElement) {
-            jqElement.attr(VIEW_ROOT_ATTR_NAME, VIEW_ROOT_ATTR_VALUE);
+            virtualNodes.getOriginal(jqElement).attr(VIEW_ROOT_ATTR_NAME, VIEW_ROOT_ATTR_VALUE);
         },
 
         unmarkViewRoot: function(jqElement) {
-            jqElement.removeAttr(VIEW_ROOT_ATTR_NAME);
+            virtualNodes.getOriginal(jqElement).removeAttr(VIEW_ROOT_ATTR_NAME);
         },
 
         isViewRoot: function(jqElement) {
-            return (jqElement.attr(VIEW_ROOT_ATTR_NAME) === VIEW_ROOT_ATTR_VALUE);
+            return (virtualNodes.getOriginal(jqElement).attr(VIEW_ROOT_ATTR_NAME) === VIEW_ROOT_ATTR_VALUE);
         },
 
         markTemplateIdsChecked: function(jqElement) {
-            jqElement.attr(TEMPLATE_IDS_CHECKED_ATTR_NAME, TEMPLATE_IDS_CHECKED_ATTR_VALUE);
+            virtualNodes.getOriginal(jqElement).attr(TEMPLATE_IDS_CHECKED_ATTR_NAME, TEMPLATE_IDS_CHECKED_ATTR_VALUE);
         },
 
         areTemplateIdsChecked: function(jqElement) {
-            return (jqElement.attr(TEMPLATE_IDS_CHECKED_ATTR_NAME) === TEMPLATE_IDS_CHECKED_ATTR_VALUE);
+            return (virtualNodes.getOriginal(jqElement).attr(TEMPLATE_IDS_CHECKED_ATTR_NAME) === TEMPLATE_IDS_CHECKED_ATTR_VALUE);
         }
 
     };

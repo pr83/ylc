@@ -157,67 +157,70 @@ test(
 
         jqFixture.children().first().find("button:visible").trigger("click");
 
+
         t.equal(
             getColor(jqFixture, 0),
-            "rgb(255, 165, 0)",
+            "rgb(238, 130, 238)",
             "color correct (box 1)"
         );
 
         t.equal(
             getColor(jqFixture, 1),
-            "rgb(220, 20, 60)",
+            "rgb(255, 165, 0)",
             "color correct (box 2)"
         );
 
         t.equal(
             getColor(jqFixture, 2),
-            "rgb(128, 128, 128)",
+            "rgb(220, 20, 60)",
             "color correct (box 3)"
         );
 
         t.equal(
             getColor(jqFixture, 3),
-            "rgb(165, 42, 42)",
+            "rgb(128, 128, 128)",
             "color correct (box 4)"
         );
 
         t.equal(
             getColor(jqFixture, 4),
-            "rgb(0, 0, 0)",
+            "rgb(165, 42, 42)",
             "color correct (box 5)"
         );
 
         t.equal(
             getColor(jqFixture, 5),
-            "rgb(255, 255, 255)",
+            "rgb(0, 0, 0)",
             "color correct (box 6)"
         );
 
         t.equal(
             getColor(jqFixture, 6),
-            "rgb(255, 255, 0)",
+            "rgb(255, 255, 255)",
             "color correct (box 7)"
         );
 
         t.equal(
             getColor(jqFixture, 7),
-            "rgb(255, 0, 255)",
+            "rgb(255, 255, 0)",
             "color correct (box 8)"
         );
 
         t.equal(
             getColor(jqFixture, 8),
-            "rgb(0, 255, 255)",
+            "rgb(255, 0, 255)",
             "color correct (box 9)"
         );
 
         t.equal(
             getColor(jqFixture, 9),
-            "rgb(0, 0, 255)",
+            "rgb(0, 255, 255)",
             "color correct (box 10)"
         );
 
         testUtil.removeFixture();
+
+        console.log(jqFixture);
 
         t.end();
     }

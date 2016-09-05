@@ -1,6 +1,7 @@
 var stringUtil = require("./stringUtil"),
     errorUtil = require("./errorUtil"),
-    domAnnotator = require('./domAnnotator');
+    domAnnotator = require('./domAnnotator'),
+    virtualNodes = require('./virtualNodes');
 
 module.exports = (function () {
 
@@ -45,20 +46,30 @@ module.exports = (function () {
         });
     }
 
+    function isTemplate(jqElement) {
+        var strYlcLoop = stringUtil.strGetData(jqElement, "ylcLoop"),
+            strIf = stringUtil.strGetData(jqElement, "ylcIf");
+
+        return (strYlcLoop || strIf) && !isDynamicallyGenerated(jqElement.get());
+    }
+
     return {
 
         isDynamicallyGenerated: function (domElement) {
             return isDynamicallyGenerated(domElement);
         },
 
-        isTemplate: function (domElement) {
-            var jqElement = $(domElement),
-                strYlcLoop = stringUtil.strGetData(jqElement, "ylcLoop"),
-                strIf = stringUtil.strGetData(jqElement, "ylcIf");
+        makeTemplateVirtual: function(jqElement) {
+            if (!isTemplate(jqElement)) {
+                return jqElement;
 
-            return (strYlcLoop || strIf) ?
-                !isDynamicallyGenerated(domElement) :
-                false;
+            } else {
+                return virtualNodes.makeVirtual(jqElement);
+            }
+        },
+
+        isTemplate: function (domElement) {
+            return isTemplate(virtualNodes.getOriginal($(domElement)));
         },
 
         jqCreateElementFromTemplate:

@@ -7,7 +7,8 @@ var errorUtil = require('./errorUtil'),
     ylcLoopParser = require('./parser/ylcLoop'),
     domAnnotator = require('./domAnnotator'),
     contextFactory = require('./contextFactory'),
-    annotationProcessor = require('./annotationProcessor');
+    annotationProcessor = require('./annotationProcessor'),
+    virtualNodes = require('./virtualNodes');
 
 module.exports = {};
 
@@ -124,8 +125,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     function v2mProcessDynamicElements(jqTemplate) {
 
-        var strYlcLoop = stringUtil.strGetData(jqTemplate, "ylcLoop"),
-            strYlcIf = stringUtil.strGetData(jqTemplate, "ylcIf");
+        var strYlcLoop = stringUtil.strGetData(virtualNodes.getOriginal(jqTemplate), "ylcLoop"),
+            strYlcIf = stringUtil.strGetData(virtualNodes.getOriginal(jqTemplate), "ylcIf");
 
         if (strYlcLoop && strYlcIf) {
             throw errorUtil.createError(
@@ -147,11 +148,12 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
     }
 
     function v2mProcessElement(domElement) {
-        var nElementsProcessed;
+        var nElementsProcessed,
+            jqVirtualTemplate = domTemplates.makeTemplateVirtual($(domElement));
 
         if (domTemplates.isTemplate(domElement)) {
             nElementsProcessed = v2mProcessDynamicElements(
-                $(domElement),
+                jqVirtualTemplate,
                 my.controller
             );
 
@@ -169,7 +171,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     function v2mProcessDynamicLoopElements(jqTemplate) {
         var idxWithinDynamicallyGenerated,
-            ylcLoop = ylcLoopParser.parseYlcLoop(stringUtil.strGetData(jqTemplate, "ylcLoop")),
+            ylcLoop = ylcLoopParser.parseYlcLoop(stringUtil.strGetData(virtualNodes.getOriginal(jqTemplate), "ylcLoop")),
             arrCollection = my.context.getValue(ylcLoop.strCollectionName),
             domarrGeneratedElements = getGeneratedElements(jqTemplate),
             domDynamicallyGeneratedElement,
@@ -353,7 +355,11 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         jqLastElement = jqLastCommonElement;
         for (index = commonLength; index < arrCollection.length; index += 1) {
 
-            jqNewDynamicElement = domTemplates.jqCreateElementFromTemplate(jqTemplate, true);
+            jqNewDynamicElement =
+                domTemplates.jqCreateElementFromTemplate(
+                    virtualNodes.getOriginal(jqTemplate),
+                    true
+                );
 
             my.context.enterIteration(
                 ylcLoop.strLoopVariable,
@@ -429,7 +435,11 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
         if (ifExpressionValue && domarrCurrentGeneratedElements.length === 0) {
             jqNewDynamicElement =
-                domTemplates.jqCreateElementFromTemplate(jqTemplate, false, "_ylcId");
+                domTemplates.jqCreateElementFromTemplate(
+                    virtualNodes.getOriginal(jqTemplate),
+                    false,
+                    "_ylcId"
+                );
 
             nElementsProcessed =
                 m2vProcessElement(jqNewDynamicElement.get(), true);
@@ -461,14 +471,14 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     function m2vProcessDynamicElements(jqTemplate) {
 
-        var strYlcLoop = stringUtil.strGetData(jqTemplate, "ylcLoop"),
-            strYlcIf = stringUtil.strGetData(jqTemplate, "ylcIf");
+        var strYlcLoop = stringUtil.strGetData(virtualNodes.getOriginal(jqTemplate), "ylcLoop"),
+            strYlcIf = stringUtil.strGetData(virtualNodes.getOriginal(jqTemplate), "ylcIf");
 
         if (strYlcLoop && strYlcIf) {
             throw errorUtil.createError(
                 "An element can't contain both data-ylcLoop and data-ylcIf. " +
                 "Please use an embedded DIV.",
-                jqTemplate.get()
+                virtualNodes.getOriginal(jqTemplate)
             );
         }
 
@@ -682,10 +692,12 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
     }
 
     function m2vProcessElement(domElement, bBindEvents) {
-        var nElementsProcessed;
+
+        var nElementsProcessed,
+            jqVirtualTemplate = domTemplates.makeTemplateVirtual($(domElement));
 
         if (domTemplates.isTemplate(domElement)) {
-            nElementsProcessed = m2vProcessDynamicElements($(domElement));
+            nElementsProcessed = m2vProcessDynamicElements(jqVirtualTemplate);
 
         } else if (domElement !== my.domView && domAnnotator.isViewRoot($(domElement))) {
             nElementsProcessed = 1;
@@ -777,7 +789,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         $(my.domView).find(":not([data-ylcIf=''])").addClass("ylcInvisibleTemplate");
         $(my.domView).find(":not([data-ylcLoop=''])").addClass("ylcInvisibleTemplate");
         domAnnotator.markViewRoot($(my.domView));
-
 
         if (my.controller.init instanceof Function) {
             my.controller.init.call(

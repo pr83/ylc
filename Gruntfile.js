@@ -144,6 +144,7 @@ module.exports = function(grunt) {
     watch: {
       tests: {
         files: [
+          'src/**',
           'test/src/**',
           'test/resources/**'
         ],
@@ -166,8 +167,8 @@ module.exports = function(grunt) {
       [
         'clean:before_dist',
         'browserify',
-        'uglify',
-        //'copy:dummyUglify',
+        //'uglify',
+        'copy:dummyUglify',
         'usebanner',
         'copy',
         'replace',
