@@ -8,7 +8,8 @@ var errorUtil = require('./errorUtil'),
     domAnnotator = require('./domAnnotator'),
     contextFactory = require('./contextFactory'),
     annotationProcessor = require('./annotationProcessor'),
-    virtualNodes = require('./virtualNodes');
+    virtualNodes = require('./virtualNodes'),
+    micVirtualize = require('./mic/virtualizeTemplates');
 
 module.exports = {};
 
@@ -33,12 +34,29 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         }
     }
 
-    function extractControllerMethods(controller) {
+    function domPreprocessAnnotationListener(annotation, code, metadata) {
+        if (annotation === "@DomPreprocessorFactory") {
+            my.callbacks.domPreprocessors.push(code());
+        }
+    }
+
+    function extractControllerMethods(mixin, controller) {
+
+        annotationProcessor.processAnnotations(
+            mixin,
+            [
+                m2vOnlyAnnotationListener,
+                beforeAfterEventAnnotationListener,
+                domPreprocessAnnotationListener
+            ]
+        );
+
         return annotationProcessor.processAnnotations(
             controller,
             [
                 m2vOnlyAnnotationListener,
-                beforeAfterEventAnnotationListener
+                beforeAfterEventAnnotationListener,
+                domPreprocessAnnotationListener
             ]
         );
     }
@@ -148,14 +166,10 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
     }
 
     function v2mProcessElement(domElement) {
-        var nElementsProcessed,
-            jqVirtualTemplate = domTemplates.makeTemplateVirtual($(domElement));
+        var nElementsProcessed;
 
         if (domTemplates.isTemplate(domElement)) {
-            nElementsProcessed = v2mProcessDynamicElements(
-                jqVirtualTemplate,
-                my.controller
-            );
+            nElementsProcessed = v2mProcessDynamicElements($(domElement), my.controller);
 
         } else if (domElement !== my.domView && domAnnotator.isViewRoot($(domElement))) {
             nElementsProcessed = 1;
@@ -693,11 +707,10 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     function m2vProcessElement(domElement, bBindEvents) {
 
-        var nElementsProcessed,
-            jqVirtualTemplate = domTemplates.makeTemplateVirtual($(domElement));
+        var nElementsProcessed;
 
         if (domTemplates.isTemplate(domElement)) {
-            nElementsProcessed = m2vProcessDynamicElements(jqVirtualTemplate);
+            nElementsProcessed = m2vProcessDynamicElements($(domElement));
 
         } else if (domElement !== my.domView && domAnnotator.isViewRoot($(domElement))) {
             nElementsProcessed = 1;
@@ -784,10 +797,44 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         );
     }
 
+    function inOrderTraversal(jqNode, listeners) {
+
+        var metadata = {},
+            bMakeVirtual = false,
+            jqVirtualNode;
+
+        $.each(
+            listeners,
+            function (idx, listener) {
+                bMakeVirtual |= listener.nodeStart(jqNode, metadata);
+            }
+        );
+
+        if (bMakeVirtual) {
+            jqVirtualNode = virtualNodes.makeVirtual(jqNode);
+        }
+
+        jqNode.children().each(
+            function() {
+                inOrderTraversal($(this), listeners);
+            }
+        );
+
+        $.each(
+            listeners,
+            function (idx, listener) {
+                listener.nodeEnd(jqNode, metadata);
+            }
+        );
+
+        jqNode.data("_ylcMetadata", metadata);
+
+        return jqVirtualNode ? jqVirtualNode : jqNode;
+
+    }
+
     function setupViewForYlcTraversal() {
 
-        $(my.domView).find(":not([data-ylcIf=''])").addClass("ylcInvisibleTemplate");
-        $(my.domView).find(":not([data-ylcLoop=''])").addClass("ylcInvisibleTemplate");
         domAnnotator.markViewRoot($(my.domView));
 
         if (my.controller.init instanceof Function) {
@@ -808,16 +855,21 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
     }
 
     my.model = pModel;
-    my.domView = pDomView;
     my.controller = pController;
 
     my.callbacks = {
         beforeEvent: [],
-        afterEvent: []
+        afterEvent: [],
+        domPreprocessors: []
     };
 
-    my.controllerMethods = extractControllerMethods(my.controller);
+    my.controllerMethods = extractControllerMethods(micVirtualize, my.controller);
+
     my.context = contextFactory.newContext(my.model, my.controller, my.controllerMethods);
+
+    if (my.callbacks.domPreprocessors.length > 0) {
+        my.domView = inOrderTraversal(pDomView, my.callbacks.domPreprocessors);
+    }
 
     setupViewForYlcTraversal();
 

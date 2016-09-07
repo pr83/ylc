@@ -220,8 +220,6 @@ test(
 
         testUtil.removeFixture();
 
-        console.log(jqFixture);
-
         t.end();
     }
 );

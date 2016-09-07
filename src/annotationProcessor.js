@@ -64,16 +64,19 @@ module.exports = (function () {
                                 }
                             );
 
-                            if (!strFunctionName) {
-                                throw errorUtil.createError(
-                                    "Function name not specified for: " + subtreePropertyValue
-                                );
+                            if (strFunctionName) {
+                                result[strFunctionName] = {
+                                    metadata: metadata,
+                                    code: subtreePropertyValue
+                                };
                             }
 
-                            result[strFunctionName] = {
-                                metadata: metadata,
-                                code: subtreePropertyValue
-                            };
+                            // if (!strFunctionName) {
+                            //     throw errorUtil.createError(
+                            //         "Function name not specified for: " + subtreePropertyValue
+                            //     );
+                            // }
+
                         }
 
                         keysFromRootToHere.pop();
