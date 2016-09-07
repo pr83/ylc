@@ -14,8 +14,6 @@ function setUp() {
         global.$ = global.jQuery = require("jquery");
         require("../../../src/yellowCode");
 
-        $("head").append($("<style>.ylcInvisibleTemplate {display: none;}</style>"));
-
         setUpDone = true;
     }
 }

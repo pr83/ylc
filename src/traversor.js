@@ -720,7 +720,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
                 m2vBindEvents(domElement);
             }
             m2vSetValues(domElement);
-            $(domElement).removeClass("ylcInvisibleTemplate");
             m2vProcessChildren(domElement, bBindEvents);
 
             nElementsProcessed = 1;

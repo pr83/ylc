@@ -10,7 +10,7 @@
 
 <div id="nonexistentModelList">
     <h2>Nonexistent model list</h2>
-    <p data-ylcLoop="item: list" class="ylcInvisibleTemplate">
+    <p data-ylcLoop="item: list">
         item: <span data-ylcBind="text: item">Some child</span>
     </p>
 </div>
@@ -53,9 +53,9 @@
 <div id="iterationStatusUsed">
     <h2>Iteration status used</h2>
 
-    <div data-ylcLoop="sublist,status: multilevelList" class="ylcInvisibleTemplate">
+    <div data-ylcLoop="sublist,status: multilevelList">
         <div>
-            <div data-ylcLoop="nestedItem,status: sublist" class="ylcInvisibleTemplate">
+            <div data-ylcLoop="nestedItem,status: sublist">
                 <p data-ylcBind="text: nestedItem"></p>
             </div>
         </div>
@@ -65,9 +65,9 @@
 <div id="iterationVariableUsed">
     <h2>Iteration variable used</h2>
 
-    <div data-ylcLoop="sublist,status1: multilevelList" class="ylcInvisibleTemplate">
+    <div data-ylcLoop="sublist,status1: multilevelList">
         <div>
-            <div data-ylcLoop="sublist,status2: sublist" class="ylcInvisibleTemplate">
+            <div data-ylcLoop="sublist,status2: sublist">
             </div>
         </div>
     </div>
@@ -76,6 +76,6 @@
 <div id="iterationVariableNotArray">
     <h2>Iteration variable not array</h2>
 
-    <div data-ylcLoop="item: notAList" class="ylcInvisibleTemplate">
+    <div data-ylcLoop="item: notAList">
     </div>
 </div>
