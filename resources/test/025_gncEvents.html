@@ -10,16 +10,13 @@
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/black-tie/jquery-ui.css" />
 
-    <style>
-        .ylcInvisibleTemplate {display: none;}
-    </style>
 </head>
 
 <body>
 <h1>YLC events</h1>
 <div id="form">
     <button data-ylcEvents="click: addElement">+</button><br />
-    <div data-ylcLoop="dynamicInput,dynamicInputStatus: dynamicInputs" class="ylcInvisibleTemplate">
+    <div data-ylcLoop="dynamicInput,dynamicInputStatus: dynamicInputs">
         <input
             data-ylcBind="val: dynamicInput.value"
             data-ylcEvents="ylcElementInitialized: installDatePicker" />

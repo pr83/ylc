@@ -6,15 +6,12 @@
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="yellowCode.min.js"></script>
 
-    <style>
-        .ylcInvisibleTemplate {display: none;}
-    </style>
 </head>
 
 <body>
 
     <h1>Updating model</h1>
-    <div id="dynamicList" class="ylcInvisibleTemplate">
+    <div id="dynamicList">
         <button data-ylcEvents="click: addElement">Add element</button>
         <ul data-ylcLoop="element: listOfElements">
             <li data-ylcBind="text: element.text">Some dynamic element...</li>

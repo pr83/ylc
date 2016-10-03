@@ -6,16 +6,12 @@
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="yellowCode.min.js"></script>
 
-    <style>
-        .ylcInvisibleTemplate {display: none;}
-    </style>
-
 </head>
 
 <body>
 
     <h1>Dynamic children</h1>
-    <div id="groupOfDynamicChildren" class="ylcInvisibleTemplate">
+    <div id="groupOfDynamicChildren">
         <p>static child: <span data-ylcBind="text: staticChild"></span></p>
         <p data-ylcLoop="dynamicChild: dynamicChildren">
             dynamic child: <span data-ylcBind="text: dynamicChild.name">Some child</span>

@@ -9,6 +9,10 @@ module.exports = (function () {
 
         makeVirtual: function(jqElement) {
 
+            if (isVirtual(jqElement)) {
+                return jqElement;
+            }
+
             if (jqElement.data("virtualElement")) {
                 return jqElement.data("virtualElement");
             }

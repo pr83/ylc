@@ -6,16 +6,13 @@
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="yellowCode.min.js"></script>
 
-    <style>
-        .ylcInvisibleTemplate {display: none;}
-    </style>
 </head>
 
 <body>
     <h1>Deletable dynamic input</h1>
     <div id="form">
         <button data-ylcEvents="click: addElement">+</button><br />
-        <div data-ylcLoop="dynamicInput,dynamicInputStatus: dynamicInputs" class="ylcInvisibleTemplate">
+        <div data-ylcLoop="dynamicInput,dynamicInputStatus: dynamicInputs">
             <input data-ylcBind="val: dynamicInput.value" data-ylcEvents="keyup: sumUp" />
             <button data-ylcEvents="click: remove">-</button>
         </div>

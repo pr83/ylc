@@ -167,8 +167,8 @@ module.exports = function(grunt) {
       [
         'clean:before_dist',
         'browserify',
-        //'uglify',
-        'copy:dummyUglify',
+        'uglify',
+        //'copy:dummyUglify',
         'usebanner',
         'copy',
         'replace',

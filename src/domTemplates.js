@@ -50,6 +50,10 @@ module.exports = (function () {
         var strYlcLoop = stringUtil.strGetData(jqElement, "ylcLoop"),
             strIf = stringUtil.strGetData(jqElement, "ylcIf");
 
+        if (!isDynamicallyGenerated(jqElement.get()) && jqElement.data("_ylcMetadata") && (jqElement.data("_ylcMetadata").ylcLoop || jqElement.data("_ylcMetadata").ylcIf)) {
+            return true;
+        }
+
         return (strYlcLoop || strIf) && !isDynamicallyGenerated(jqElement.get());
     }
 

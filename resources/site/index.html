@@ -248,17 +248,6 @@
                     Once you have your view and controller ready, initialize
                     the plugin by calling:<br/>
                     <code>$("<em>your_view_selector</em>").yellowCode(controller);</code>.<br/>
-
-                    Note one more detail: the definition of the "ylcInvisibleTemplate" CSS class.
-                    This class is used internally by Yellow code to denote parts of the DOM which
-                    serve as the template and should not be rendered directly; an example being the
-                    elements with the <code>data-ylcLoop</code> and <code>data-ylcIf</code>
-                    attributes.
-
-                    Also note that we use the "ylcInvisibleTemplate" class for the root element
-                    of the view. This is not strictly necessary, but if the page loads slowly,
-                    it will prevent the browser from showing the template instead of the generated
-                    markup before the Yellow code plugin initializes.
                 </p>
 
                 <h2 id="advancedFeatures">Advanced features</h2>
