@@ -87,7 +87,7 @@ module.exports = (function () {
                     strRewriteIdsInTemplateTo
                 );
 
-                jqClone = jqTemplate.clone(true);
+                jqClone = jqTemplate.clone(true, true);
                 jqClone.addClass("_ylcDynamicallyGenerated");
                 jqClone.attr("data-_ylcDynamicallyGenerated", "true");
                 domAnnotator.unmarkViewRoot(jqClone);

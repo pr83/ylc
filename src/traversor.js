@@ -695,7 +695,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     function inOrderTraversal(jqNode, listeners) {
 
-        var metadata = {},
+        var metadata = jqNode.data("_ylcMetadata") || {},
             bMakeVirtual = false,
             jqVirtualNode;
 
