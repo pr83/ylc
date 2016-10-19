@@ -1,7 +1,8 @@
 var stringUtil = require("./stringUtil"),
     errorUtil = require("./errorUtil"),
     domAnnotator = require('./domAnnotator'),
-    virtualNodes = require('./virtualNodes');
+    virtualNodes = require('./virtualNodes'),
+    metadata = require('./metadata');
 
 module.exports = (function () {
 
@@ -50,7 +51,7 @@ module.exports = (function () {
         var strYlcLoop = stringUtil.strGetData(jqElement, "ylcLoop"),
             strIf = stringUtil.strGetData(jqElement, "ylcIf");
 
-        if (!isDynamicallyGenerated(jqElement.get()) && jqElement.data("_ylcMetadata") && (jqElement.data("_ylcMetadata").ylcLoop || jqElement.data("_ylcMetadata").ylcIf)) {
+        if (!isDynamicallyGenerated(jqElement.get()) && (metadata.of(jqElement).ylcLoop || metadata.of(jqElement).ylcIf)) {
             return true;
         }
 

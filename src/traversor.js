@@ -12,7 +12,8 @@ var errorUtil = require('./errorUtil'),
     micVirtualize = require('./mic/virtualizeTemplates'),
     micProcessBindingParameters = require('./mic/processBindingParameters'),
     micM2v = require('./mic/m2v'),
-    micV2m = require('./mic/v2m');
+    micV2m = require('./mic/v2m'),
+    metadata = require('./metadata');
 
 module.exports = {};
 
@@ -72,14 +73,12 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
         var jqElement = $(domElement);
 
-        if (jqElement.data("_ylcMetadata")) {
-            $.each(
-                jqElement.data("_ylcMetadata").v2m,
-                function (idx, v2m) {
-                    v2m(domElement, my.context);
-                }
-            );
-        }
+        $.each(
+            metadata.of(jqElement).v2m,
+            function (idx, v2m) {
+                v2m(domElement, my.context);
+            }
+        );
 
     }
 
@@ -113,13 +112,13 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     function v2mProcessDynamicElements(jqTemplate) {
 
-        var metadata = virtualNodes.getOriginal(jqTemplate).data("_ylcMetadata");
+        var metadataObj = metadata.of(virtualNodes.getOriginal(jqTemplate));
 
-        if (metadata.ylcLoop) {
+        if (metadataObj.ylcLoop) {
             return v2mProcessDynamicLoopElements(jqTemplate);
         }
 
-        if (metadata.ylcIf) {
+        if (metadataObj.ylcIf) {
             return v2mProcessDynamicIfElements(jqTemplate);
         }
 
@@ -148,7 +147,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
     function v2mProcessDynamicLoopElements(jqTemplate) {
 
         var idxWithinDynamicallyGenerated,
-            ylcLoop = virtualNodes.getOriginal(jqTemplate).data("_ylcMetadata").ylcLoop,
+            ylcLoop = metadata.of(virtualNodes.getOriginal(jqTemplate)).ylcLoop,
             arrCollection = my.context.getValue(ylcLoop.strCollectionName),
             domarrGeneratedElements = getGeneratedElements(jqTemplate),
             domDynamicallyGeneratedElement,
@@ -214,14 +213,13 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
     function m2vSetValues(domElement) {
         var jqElement = $(domElement);
 
-        if (jqElement.data("_ylcMetadata")) {
-            $.each(
-                jqElement.data("_ylcMetadata").m2v,
-                function (idx, m2v) {
-                    m2v(domElement, my.context);
-                }
-            );
-        }
+        $.each(
+            metadata.of(jqElement).m2v,
+            function (idx, m2v) {
+                m2v(domElement, my.context);
+            }
+        );
+
     }
 
     function processCommonElements(
@@ -391,14 +389,14 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     function m2vProcessDynamicElements(jqTemplate) {
 
-        var metadata = virtualNodes.getOriginal(jqTemplate).data("_ylcMetadata");
+        var metadataObj = metadata.of(virtualNodes.getOriginal(jqTemplate));
 
-        if (metadata.ylcLoop) {
-            return m2vProcessDynamicLoopElements(jqTemplate, metadata.ylcLoop);
+        if (metadataObj.ylcLoop) {
+            return m2vProcessDynamicLoopElements(jqTemplate, metadataObj.ylcLoop);
         }
 
-        if (metadata.ylcIf) {
-            return m2vProcessDynamicIfElements(jqTemplate, metadata.ylcIf);
+        if (metadataObj.ylcIf) {
+            return m2vProcessDynamicIfElements(jqTemplate, metadataObj.ylcIf);
         }
 
         errorUtil.assert(false);
@@ -695,14 +693,14 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     function inOrderTraversal(jqNode, listeners) {
 
-        var metadata = jqNode.data("_ylcMetadata") || {},
+        var metadataObj = metadata.of(jqNode),
             bMakeVirtual = false,
             jqVirtualNode;
 
         $.each(
             listeners,
             function (idx, listener) {
-                bMakeVirtual |= listener.nodeStart(jqNode, metadata);
+                bMakeVirtual |= listener.nodeStart(jqNode, metadataObj);
             }
         );
 
@@ -719,11 +717,9 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         $.each(
             listeners,
             function (idx, listener) {
-                listener.nodeEnd(jqNode, metadata);
+                listener.nodeEnd(jqNode, metadataObj);
             }
         );
-
-        jqNode.data("_ylcMetadata", metadata);
 
         return jqVirtualNode ? jqVirtualNode : jqNode;
 

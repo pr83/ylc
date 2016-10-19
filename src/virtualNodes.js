@@ -1,3 +1,5 @@
+var metadata = require('./metadata');
+
 module.exports = (function () {
 
     function isVirtual(jqElement) {
@@ -18,7 +20,7 @@ module.exports = (function () {
             }
 
             var virtualElement = $("<script type='ylc/virtual'></script>"),
-                originalElement = jqElement.replaceWith(virtualElement);
+                originalElement = /*jqElement.replaceWith(virtualElement)*/metadata.safeElementReplace(jqElement, virtualElement);
             virtualElement.data("originalElement", originalElement);
             originalElement.data("virtualElement", virtualElement);
             return virtualElement;
