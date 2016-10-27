@@ -91,7 +91,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         while (true) {
             jqCurrentSibling = jqCurrentSibling.next();
 
-            if (jqCurrentSibling.get() === undefined || !domTemplates.isDynamicallyGenerated(jqCurrentSibling)) {
+            if (jqCurrentSibling.length === 0 || !domTemplates.isDynamicallyGenerated(jqCurrentSibling.get())) {
                 break;
             }
 

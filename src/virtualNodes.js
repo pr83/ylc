@@ -15,20 +15,20 @@ module.exports = (function () {
                 return jqElement;
             }
 
-            if (jqElement.data("virtualElement")) {
-                return jqElement.data("virtualElement");
+            if ( metadata.localOf(jqElement).virtualElement) {
+                return metadata.localOf(jqElement).virtualElement;
             }
 
             var virtualElement = $("<script type='ylc/virtual'></script>"),
-                originalElement = /*jqElement.replaceWith(virtualElement)*/metadata.safeElementReplace(jqElement, virtualElement);
-            virtualElement.data("originalElement", originalElement);
-            originalElement.data("virtualElement", virtualElement);
+                originalElement = metadata.safeElementReplace(jqElement, virtualElement);
+            metadata.localOf(virtualElement).originalElement = originalElement;
+            metadata.localOf(originalElement).virtualElement = virtualElement;
             return virtualElement;
         },
 
         getOriginal: function(jqElement) {
             if (isVirtual(jqElement)) {
-                return jqElement.data("originalElement");
+                return metadata.localOf(jqElement).originalElement;
             } else {
                 return jqElement;
             }
@@ -39,7 +39,7 @@ module.exports = (function () {
             if (isVirtual(jqElement)) {
                 return jqElement;
             } else {
-                jqVirtual = jqElement.data("virtualElement");
+                jqVirtual = metadata.localOf(jqElement).virtualElement;
                 return jqVirtual ? jqVirtual : jqElement;
             }
         },

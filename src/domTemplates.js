@@ -7,9 +7,7 @@ var stringUtil = require("./stringUtil"),
 module.exports = (function () {
 
     function isDynamicallyGenerated(domElement) {
-        var jqElement = $(domElement);
-        return jqElement.hasClass("_ylcDynamicallyGenerated") ||
-            jqElement.attr("data-_ylcDynamicallyGenerated") === "true";
+        return metadata.localOf($(domElement)).dynamicallyGenerated;
     }
 
     function findIncludingRoot(jqElement, selector) {
@@ -88,9 +86,10 @@ module.exports = (function () {
                     strRewriteIdsInTemplateTo
                 );
 
-                jqClone = jqTemplate.clone(true, true);
-                jqClone.addClass("_ylcDynamicallyGenerated");
-                jqClone.attr("data-_ylcDynamicallyGenerated", "true");
+                jqClone = metadata.safeClone(jqTemplate);
+
+                metadata.localOf(jqClone).dynamicallyGenerated = true;
+
                 domAnnotator.unmarkViewRoot(jqClone);
 
                 reintroduceIdsInClonedSubtree(jqClone, strRewriteIdsInTemplateTo);

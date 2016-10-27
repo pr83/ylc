@@ -1,31 +1,27 @@
-var virtualNodes = require('./virtualNodes');
+var virtualNodes = require('./virtualNodes'),
+    metadata = require('./metadata');
 
 module.exports = (function () {
 
-    var VIEW_ROOT_ATTR_NAME = "data-_ylcViewRoot",
-        VIEW_ROOT_ATTR_VALUE = "data-_ylcViewRoot",
-        TEMPLATE_IDS_CHECKED_ATTR_NAME = "data-_ylcTemplateIdsChecked",
-        TEMPLATE_IDS_CHECKED_ATTR_VALUE = "data-_ylcTemplateIdsChecked";
-
     return {
         markViewRoot: function(jqElement) {
-            virtualNodes.getOriginal(jqElement).attr(VIEW_ROOT_ATTR_NAME, VIEW_ROOT_ATTR_VALUE);
+            metadata.localOf(virtualNodes.getOriginal(jqElement)).viewRoot = true;
         },
 
         unmarkViewRoot: function(jqElement) {
-            virtualNodes.getOriginal(jqElement).removeAttr(VIEW_ROOT_ATTR_NAME);
+            metadata.localOf(virtualNodes.getOriginal(jqElement)).viewRoot = false;
         },
 
         isViewRoot: function(jqElement) {
-            return (virtualNodes.getOriginal(jqElement).attr(VIEW_ROOT_ATTR_NAME) === VIEW_ROOT_ATTR_VALUE);
+            return metadata.localOf(virtualNodes.getOriginal(jqElement)).viewRoot;
         },
 
         markTemplateIdsChecked: function(jqElement) {
-            virtualNodes.getOriginal(jqElement).attr(TEMPLATE_IDS_CHECKED_ATTR_NAME, TEMPLATE_IDS_CHECKED_ATTR_VALUE);
+            metadata.localOf(virtualNodes.getOriginal(jqElement)).templateIdsChecked = true;
         },
 
         areTemplateIdsChecked: function(jqElement) {
-            return (virtualNodes.getOriginal(jqElement).attr(TEMPLATE_IDS_CHECKED_ATTR_NAME) === TEMPLATE_IDS_CHECKED_ATTR_VALUE);
+            return metadata.localOf(virtualNodes.getOriginal(jqElement)).templateIdsChecked;
         }
 
     };
