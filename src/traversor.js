@@ -25,6 +25,9 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
     function m2vOnlyAnnotationListener(annotation, code, metadata) {
         if (annotation === "@M2vOnly") {
             metadata.m2vOnly = true;
+
+        } else if (annotation === "@Public") {
+            metadata.public = true;
         }
     }
 
@@ -636,16 +639,17 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         return result;
     }
 
-    function createAdapter(domView, controller) {
+    function createAdapter(domView, controller, includePrivate) {
 
         var adapter = {},
-            controllerMethodNames = getProperties(controller),
+            controllerMethodNames = getProperties(my.controllerMethods),
             adapterMethodArguments;
 
         $.each(controllerMethodNames, function (idxProperty, currentMethodName) {
-            var currentControllerMethod = controller[currentMethodName];
 
-            if (currentControllerMethod instanceof Function) {
+            var currentControllerMethod = my.controllerMethods[currentMethodName];
+
+            if (currentControllerMethod.metadata && (currentControllerMethod.metadata.public || includePrivate)) {
                 adapter[currentMethodName] = function () {
 
                     var returnValue;
@@ -659,7 +663,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
                         adapterMethodArguments.push(argument);
                     });
 
-                    returnValue = currentControllerMethod.apply(controller, adapterMethodArguments);
+                    returnValue = currentControllerMethod.code.apply(controller, adapterMethodArguments);
 
                     m2vProcessElement(
                         domView,
@@ -677,7 +681,10 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     function processExternalEvent(domView, controller, communicationObject) {
         if (communicationObject.eventName === "getAdapter") {
-            communicationObject.result = createAdapter(domView, controller);
+            communicationObject.result = createAdapter(domView, controller, true);
+
+        } else if (communicationObject.eventName === "getPublicApi") {
+            communicationObject.result = createAdapter(domView, controller, false);
         }
     }
 

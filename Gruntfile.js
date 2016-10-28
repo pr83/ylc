@@ -13,7 +13,10 @@ module.exports = function(grunt) {
       },
       tests: {
         files: {
-          'test/dest/all.js': ['test/src/unit/*.js', 'test/src/ui/*.js']
+          'test/dest/all.js':
+              grunt.option('testFile') ?
+                  [grunt.option('testFile')] :
+                  ['test/src/unit/*.js', 'test/src/ui/*.js']
         },
         options: {
           transform: ['brfs']
