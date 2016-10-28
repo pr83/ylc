@@ -17,7 +17,7 @@ var errorUtil = require('./errorUtil'),
 
 module.exports = {};
 
-module.exports.setupTraversal = function(pModel, pDomView, pController) {
+module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins) {
 
     var EMPTY_FUNCTION = function () {},
         my = {};
@@ -48,28 +48,39 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     function extractControllerMethods(mixins, controller) {
 
+        var methodsForMixin,
+            result = {};
+
         $.each(
             mixins,
             function(idx, mixin) {
-                annotationProcessor.processAnnotations(
-                    mixin,
-                    [
-                        m2vOnlyAnnotationListener,
-                        beforeAfterEventAnnotationListener,
-                        domPreprocessAnnotationListener
-                    ]
-                );
+                methodsForMixin =
+                    annotationProcessor.processAnnotations(
+                        mixin,
+                        [
+                            m2vOnlyAnnotationListener,
+                            beforeAfterEventAnnotationListener,
+                            domPreprocessAnnotationListener
+                        ]
+                    );
+                $.extend(result, methodsForMixin);
             }
         );
 
-        return annotationProcessor.processAnnotations(
-            controller,
-            [
-                m2vOnlyAnnotationListener,
-                beforeAfterEventAnnotationListener,
-                domPreprocessAnnotationListener
-            ]
-        );
+        methodsForMixin =
+            annotationProcessor.processAnnotations(
+                controller,
+                [
+                    m2vOnlyAnnotationListener,
+                    beforeAfterEventAnnotationListener,
+                    domPreprocessAnnotationListener
+                ]
+            );
+        $.extend(result, methodsForMixin);
+
+        console.log(result);
+
+        return result;
     }
 
     function v2mSetValues(domElement) {
@@ -755,6 +766,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
 
     my.model = pModel;
     my.controller = pController;
+    my.mixins = pMixins || [];
 
     my.callbacks = {
         beforeEvent: [],
@@ -762,7 +774,11 @@ module.exports.setupTraversal = function(pModel, pDomView, pController) {
         domPreprocessors: []
     };
 
-    my.controllerMethods = extractControllerMethods([micProcessBindingParameters, micVirtualize, micM2v, micV2m], my.controller);
+    my.controllerMethods =
+        extractControllerMethods(
+            [micProcessBindingParameters, micVirtualize, micM2v, micV2m].concat(my.mixins),
+            my.controller
+        );
 
     my.context = contextFactory.newContext(my.model, my.controller, my.controllerMethods);
 

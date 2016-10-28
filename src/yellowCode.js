@@ -8,6 +8,10 @@
         domTemplates = require('./domTemplates'),
         traversor = require('./traversor');
 
+    $.yellowCode = {
+        standardMixins: []
+    };
+
     $.fn.yellowCode = function (parameter1, parameter2, parameter3) {
 
         var domView = this,
@@ -21,7 +25,22 @@
                 model = {};
                 controller = parameter1;
 
-                traversor.setupTraversal(model, domView, controller);
+                if ($.isArray(controller)) {
+                    traversor.setupTraversal(
+                        model,
+                        domView,
+                        controller[0],
+                        $.yellowCode.standardMixins.concat(controller.slice(1))
+                    );
+
+                } else {
+                    traversor.setupTraversal(
+                        model,
+                        domView,
+                        controller,
+                        $.yellowCode.standardMixins
+                    );
+                }
 
                 if (typeof parameter2 === "string") {
                     objectToReturn = traversor.triggerExternalEvent(domView, parameter2, parameter3);
