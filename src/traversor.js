@@ -1,18 +1,16 @@
 var errorUtil = require('./errorUtil'),
     stringUtil = require('./stringUtil'),
     parseUtil = require('./parseUtil'),
-    ylcBindParser = require('./parser/ylcBind'),
     domTemplates = require('./domTemplates'),
     ylcEventsParser = require('./parser/ylcEvents'),
-    ylcLoopParser = require('./parser/ylcLoop'),
     domAnnotator = require('./domAnnotator'),
     contextFactory = require('./contextFactory'),
     annotationProcessor = require('./annotationProcessor'),
     virtualNodes = require('./virtualNodes'),
-    micVirtualize = require('./mic/virtualizeTemplates'),
-    micProcessBindingParameters = require('./mic/processBindingParameters'),
-    micM2v = require('./mic/m2v'),
-    micV2m = require('./mic/v2m'),
+    micVirtualize = require('./mixin/virtualizeTemplates'),
+    micProcessBindingParameters = require('./mixin/processBindingParameters'),
+    micM2v = require('./mixin/m2v'),
+    micV2m = require('./mixin/v2m'),
     metadata = require('./metadata');
 
 module.exports = {};
@@ -25,8 +23,11 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     function m2vOnlyAnnotationListener(annotation, code, metadata) {
         if (annotation === "@M2vOnly") {
             metadata.m2vOnly = true;
+        }
+    }
 
-        } else if (annotation === "@Public") {
+    function publicAnnotationListener(annotation, code, metadata) {
+        if (annotation === "@Public") {
             metadata.public = true;
         }
     }
@@ -49,7 +50,14 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     function extractControllerMethods(mixins, controller) {
 
         var methodsForMixin,
-            result = {};
+            result = {},
+            annotationListeners =
+                [
+                    publicAnnotationListener,
+                    m2vOnlyAnnotationListener,
+                    beforeAfterEventAnnotationListener,
+                    domPreprocessAnnotationListener
+                ];
 
         $.each(
             mixins,
@@ -57,11 +65,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                 methodsForMixin =
                     annotationProcessor.processAnnotations(
                         mixin,
-                        [
-                            m2vOnlyAnnotationListener,
-                            beforeAfterEventAnnotationListener,
-                            domPreprocessAnnotationListener
-                        ]
+                        annotationListeners
                     );
                 $.extend(result, methodsForMixin);
             }
@@ -70,11 +74,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         methodsForMixin =
             annotationProcessor.processAnnotations(
                 controller,
-                [
-                    m2vOnlyAnnotationListener,
-                    beforeAfterEventAnnotationListener,
-                    domPreprocessAnnotationListener
-                ]
+                annotationListeners
             );
         $.extend(result, methodsForMixin);
 
