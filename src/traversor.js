@@ -78,8 +78,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             );
         $.extend(result, methodsForMixin);
 
-        console.log(result);
-
         return result;
     }
 
@@ -240,7 +238,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         ylcLoop,
         domarrCurrentGeneratedElements,
         arrCollection,
-        commonLength
+        commonLength,
+        bUnderlyingCollectionChanged
     ) {
         var index = 0,
             domGeneratedElement;
@@ -258,7 +257,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             index +=
                 m2vProcessElement(
                     domGeneratedElement,
-                    false
+                    bUnderlyingCollectionChanged
                 );
 
             my.context.exitIteration(ylcLoop.strLoopVariable, ylcLoop.strStatusVariable);
@@ -321,11 +320,17 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
         var domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate),
             arrCollection = my.context.getValue(ylcLoop.strCollectionName),
+            bUnderlyingCollectionChanged =
+                (metadata.localOf(jqTemplate).loopCollection !== arrCollection),
             commonLength,
             idxFirstToDelete,
             index;
 
         checkIterable(arrCollection);
+
+        if (bUnderlyingCollectionChanged) {
+            metadata.localOf(jqTemplate).loopCollection = arrCollection;
+        }
 
         commonLength =
             Math.min(arrCollection.length, domarrCurrentGeneratedElements.length);
@@ -334,7 +339,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             ylcLoop,
             domarrCurrentGeneratedElements,
             arrCollection,
-            commonLength
+            commonLength,
+            bUnderlyingCollectionChanged
         );
 
         if (arrCollection.length > commonLength) {
@@ -586,6 +592,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                 fnHandler.apply(my.controller, immediateCallArguments);
             }
 
+            jqElement.unbind(currentYlcEvent.strEventName);
+
             jqElement.bind(
                 currentYlcEvent.strEventName,
                 createHandler(
@@ -596,6 +604,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                     my.context.getLoopContextMemento()
                 )
             );
+
         }
 
     }
