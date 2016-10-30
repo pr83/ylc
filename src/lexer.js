@@ -1,15 +1,33 @@
-var stringUtil = require('./stringUtil');
+var stringUtil = require("./stringUtil"),
+    stringBuilderFactory = require("./stringBuilderFactory");
+
+function newMatchResult(matchedLength, fnCallback) {
+    return {
+        matchedLength: matchedLength,
+        fnCallback: fnCallback
+    };
+}
 
 module.exports = (function () {
 
     return {
 
-        process: function(string, arrTokenRecognizers) {
+        process: function(string, arrTokenRecognizers, fnUnmatchedCallback) {
             var idxString = 0,
-                nMatchedCharacters,
+                matchResult,
                 idxTokenRecognizer,
                 fnTokenRecognizer,
-                bMatched;
+                bMatched,
+                sbUnmatched = stringBuilderFactory.newStringBuilder();
+
+            function drainUnmatched() {
+                if (sbUnmatched.isNotEmpty()) {
+                    if (fnUnmatchedCallback) {
+                        fnUnmatchedCallback(sbUnmatched.build());
+                        sbUnmatched = stringBuilderFactory.newStringBuilder();
+                    }
+                }
+            }
 
             while (idxString < string.length) {
                 bMatched = false;
@@ -18,43 +36,48 @@ module.exports = (function () {
                         idxTokenRecognizer < arrTokenRecognizers.length;
                         idxTokenRecognizer += 1) {
                     fnTokenRecognizer = arrTokenRecognizers[idxTokenRecognizer];
-                    nMatchedCharacters = fnTokenRecognizer(string, idxString);
-                    if (nMatchedCharacters > 0) {
-                        idxString += nMatchedCharacters;
+
+                    matchResult = fnTokenRecognizer(string, idxString);
+
+                    if (matchResult.matchedLength > 0) {
+
+                        drainUnmatched();
+
+                        if (matchResult.fnCallback) {
+                            matchResult.fnCallback(string.substr(idxString, matchResult.matchedLength));
+                        }
+                        idxString += matchResult.matchedLength;
                         bMatched = true;
                         break;
                     }
                 }
 
                 if (!bMatched) {
-                    throw "Unrecognized token in '" + string + "' at position " + idxString + ".";
+                    if (fnUnmatchedCallback) {
+                        sbUnmatched.append(string.substr(idxString, 1));
+                        idxString += 1;
+                    } else {
+                        throw "Unrecognized token in '" + string + "' at position " + idxString + ".";
+                    }
                 }
             }
+
+            drainUnmatched();
 
         },
 
         onDefaultToken: function(callback) {
             return function(string, idxString) {
-                if (callback) {
-                    callback(string.substr(idxString, 1));
-                }
-
-                return 1;
+                return newMatchResult(1, callback);
             }
         },
 
         onConstantToken: function(token, callback) {
             return function(string, idxString) {
-
-                if (!stringUtil.hasSubstringAt(string, token, idxString)) {
-                    return 0;
-                }
-
-                if (callback) {
-                    callback(token);
-                }
-
-                return token.length;
+                return newMatchResult(
+                    stringUtil.hasSubstringAt(string, token, idxString) ? token.length : 0,
+                    callback
+                );
             };
         },
 
@@ -63,28 +86,23 @@ module.exports = (function () {
 
                 var idxOpening,
                     idxClosing,
-                    lenToken,
-                    strToken;
+                    lenToken;
 
                 if (!stringUtil.hasSubstringAt(string, opening, idxString)) {
-                    return 0;
+                    return newMatchResult(0, null);
                 }
 
                 idxOpening = idxString;
                 idxClosing = string.indexOf(closing, idxOpening + opening.length);
 
                 if (idxClosing === -1) {
-                    return 0;
+                    return newMatchResult(0, null);
                 }
 
                 lenToken = (idxClosing - idxOpening) + closing.length;
-                strToken = string.substr(idxString, lenToken);
 
-                if (callback) {
-                    callback(strToken);
-                }
+                return newMatchResult(lenToken, callback);
 
-                return lenToken;
             }
         },
 
@@ -101,12 +119,7 @@ module.exports = (function () {
 
                 strToken = string.substr(idxStringOriginal, idxStringCurrent - idxStringOriginal);
 
-                if (idxStringCurrent > idxStringOriginal && callback) {
-                    callback(strToken);
-                }
-
-                return strToken.length;
-
+                return newMatchResult(strToken.length, callback);
             }
         }
 

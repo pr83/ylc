@@ -49,27 +49,68 @@ test(
 
         );
 
-            t.deepEqual(
-                spy.args,
-                [
-                        ["character", "A"],
-                        ["semicolon", ";"],
-                        ["whitespace"],
-                        ["character", "B"],
-                        ["semicolon", ";"],
-                        ["whitespace"],
-                        ["comment", "/*comment*/"],
-                        ["semicolon", ";"],
-                        ["whitespace"],
-                        ["character", "C"],
-                        ["semicolon", ";"],
-                        ["whitespace"],
-                        ["quotes", "'quotes'"]
-                ],
-                "correct callbacks called"
-            );
+        t.deepEqual(
+            spy.args,
+            [
+                    ["character", "A"],
+                    ["semicolon", ";"],
+                    ["whitespace"],
+                    ["character", "B"],
+                    ["semicolon", ";"],
+                    ["whitespace"],
+                    ["comment", "/*comment*/"],
+                    ["semicolon", ";"],
+                    ["whitespace"],
+                    ["character", "C"],
+                    ["semicolon", ";"],
+                    ["whitespace"],
+                    ["quotes", "'quotes'"]
+            ],
+            "correct callbacks called"
+        );
 
         t.end();
 
     }
+
+);
+
+test(
+    "unit test: lexer - delimited tokens inside free text",
+    function (t) {
+
+        var spy = sinon.spy();
+
+        lexer.process(
+            "abc{{def}}ghi{{jkl}}mno",
+            [
+                lexer.onDelimitedToken(
+                    "{{",
+                    "}}",
+                    function(strToken) {
+                        spy("delimited", strToken);
+                    }
+                )
+            ],
+            function(strToken) {
+                spy("unmatched", strToken);
+            }
+        );
+
+        t.deepEqual(
+            spy.args,
+            [
+                ["unmatched", "abc"],
+                ["delimited", "{{def}}"],
+                ["unmatched", "ghi"],
+                ["delimited", "{{jkl}}"],
+                ["unmatched", "mno"]
+            ],
+            "correct callbacks called"
+        );
+
+        t.end();
+
+    }
+
 );
