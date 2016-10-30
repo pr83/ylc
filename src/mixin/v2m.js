@@ -36,7 +36,7 @@ function createV2m(currentYlcBinding) {
         }
 
         try {
-            context.setValue(currentYlcBinding.strBindingExpression, value, forceSet);
+            context.setValue(currentYlcBinding.astBindingExpression, value, forceSet);
 
         } catch (err) {
             throw errorUtil.elementToError(err, domElement);

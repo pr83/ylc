@@ -11,7 +11,8 @@ var errorUtil = require('./errorUtil'),
     micProcessBindingParameters = require('./mixin/processBindingParameters'),
     micM2v = require('./mixin/m2v'),
     micV2m = require('./mixin/v2m'),
-    metadata = require('./metadata');
+    metadata = require('./metadata'),
+    expressionParser = require('./expressionParser');
 
 module.exports = {};
 
@@ -160,7 +161,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
         var idxWithinDynamicallyGenerated,
             ylcLoop = metadata.of(virtualNodes.getOriginal(jqTemplate)).ylcLoop,
-            arrCollection = my.context.getValue(ylcLoop.strCollectionName),
+            arrCollection = my.context.getValue(expressionParser.toAst(ylcLoop.strCollectionName)),
             domarrGeneratedElements = getGeneratedElements(jqTemplate),
             domDynamicallyGeneratedElement,
             nProcessed;
@@ -319,7 +320,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     function m2vProcessDynamicLoopElements(jqTemplate, ylcLoop) {
 
         var domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate),
-            arrCollection = my.context.getValue(ylcLoop.strCollectionName),
+            arrCollection = my.context.getValue(expressionParser.toAst(ylcLoop.strCollectionName)),
             bUnderlyingCollectionChanged =
                 (metadata.localOf(jqTemplate).loopCollection !== arrCollection),
             commonLength,
@@ -366,7 +367,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     }
 
     function m2vProcessDynamicIfElements(jqTemplate, strYlcIf) {
-        var ifExpressionValue = my.context.getValue(parseUtil.normalizeWhitespace(strYlcIf)),
+        var ifExpressionValue = my.context.getValue(expressionParser.toAst(parseUtil.normalizeWhitespace(strYlcIf))),
             domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate),
             jqNewDynamicElement,
             nElementsProcessed;
@@ -470,7 +471,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         }
 
         for (idxArgument = 0; idxArgument < arrArgumentExpressions.length; idxArgument += 1) {
-            arrEvaluatedExpressions.push(context.getValue(arrArgumentExpressions[idxArgument]));
+            arrEvaluatedExpressions.push(context.getValue(expressionParser.toAst(arrArgumentExpressions[idxArgument])));
         }
 
         return arrEvaluatedExpressions;

@@ -1,10 +1,5 @@
-var jsep = require('jsep'),
-    errorUtil = require('./errorUtil'),
+var errorUtil = require('./errorUtil'),
     sanityCheck = require('./sanityCheck');
-
-jsep.addBinaryOp("|||", 10);
-jsep.addBinaryOp("#", 10);
-jsep.addBinaryOp("@", 10);
 
 module.exports = {};
 
@@ -461,8 +456,7 @@ module.exports.newContext = function newContext(
 
     }
 
-    function gsExpressionValue(strExpression, value, forceSet) {
-        var ast = jsep(strExpression);
+    function gsExpressionValue(ast, value, forceSet) {
         return gsAstValue(ast, value, undefined, forceSet);
     }
 
@@ -536,15 +530,15 @@ module.exports.newContext = function newContext(
     /*
      * getValue:
      */
-    that.getValue = function (strExpression) {
-        return gsExpressionValue(strExpression);
+    that.getValue = function (ast) {
+        return gsExpressionValue(ast);
     };
 
     /*
      * setValue:
      */
-    that.setValue = function (strExpression, value, forceSet) {
-        gsExpressionValue(strExpression, value, forceSet);
+    that.setValue = function (ast, value, forceSet) {
+        gsExpressionValue(ast, value, forceSet);
     };
 
     that.getLoopStatusesSnapshot = function () {

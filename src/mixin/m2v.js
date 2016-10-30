@@ -24,7 +24,7 @@ function createM2v(currentYlcBinding) {
         }
 
         try {
-            value = context.getValue(currentYlcBinding.strBindingExpression);
+            value = context.getValue(currentYlcBinding.astBindingExpression);
 
         } catch (err) {
             throw errorUtil.elementToError(err, domElement);

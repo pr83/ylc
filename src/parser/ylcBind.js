@@ -1,5 +1,6 @@
 var parseUtil = require("../parseUtil"),
-    errorUtil = require('../errorUtil');
+    errorUtil = require('../errorUtil'),
+    expressionParser = require('../expressionParser');
 
 module.exports = (function () {
 
@@ -73,7 +74,9 @@ module.exports = (function () {
             sbExpression = [],
             strPropertyAndSubproperty,
             strPropertyName,
-            strSubpropertyName;
+            strSubpropertyName,
+            strBindingExpression,
+            astBindingExpression;
 
         index = readPropertyAndSubproperty(strBinding, index, sbPropertyAndSubproperty);
         strMappingOperator = pokeMappingOperator(strBinding, index);
@@ -91,11 +94,24 @@ module.exports = (function () {
             strSubpropertyName = $.trim(strPropertyAndSubproperty.split(".")[1]);
         }
 
+        strBindingExpression = $.trim(sbExpression.join(""));
+
+        try {
+            astBindingExpression = expressionParser.toAst(strBindingExpression);
+        } catch (parseException) {
+            throw errorUtil.createError(
+                "Invalid binding expression for binding '" + strPropertyAndSubproperty + "' - " +
+                parseException + ": " +
+                strBinding
+            );
+        }
+
         return {
             strPropertyName: strPropertyName,
             strSubpropertyName: strSubpropertyName,
             strMappingOperator: strMappingOperator,
-            strBindingExpression: $.trim(sbExpression.join(""))
+            strBindingExpression: strBindingExpression,
+            astBindingExpression: astBindingExpression
         };
     }
 

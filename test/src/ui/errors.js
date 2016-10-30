@@ -61,7 +61,7 @@ test(
             function() {
                 jqFixture.find("#invalidExpression").yellowCode(controller);
             },
-            testUtil.toRegExp("Error: Premature end of binding expression: fsd!@#$"),
+            testUtil.toRegExp("Invalid binding expression for binding 'text' - Error: Unexpected \"}\" at character 0: text: }'"),
             "invalid expression"
         );
 
