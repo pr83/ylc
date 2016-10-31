@@ -11,6 +11,7 @@ var errorUtil = require('./errorUtil'),
     micProcessBindingParameters = require('./mixin/processBindingParameters'),
     micM2v = require('./mixin/m2v'),
     micV2m = require('./mixin/v2m'),
+    processMoustacheBindings = require('./mixin/processMoustacheBindings'),
     metadata = require('./metadata'),
     expressionParser = require('./expressionParser');
 
@@ -786,7 +787,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
     my.controllerMethods =
         extractControllerMethods(
-            [micProcessBindingParameters, micVirtualize, micM2v, micV2m].concat(my.mixins),
+            [micProcessBindingParameters, processMoustacheBindings, micVirtualize, micM2v, micV2m].concat(my.mixins),
             my.controller
         );
 

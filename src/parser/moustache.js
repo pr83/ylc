@@ -34,6 +34,13 @@ function addStringToAst(astLeft, strRight) {
 
 module.exports = {
 
+    containsMoustache: function(strToTest) {
+        var idxOpening = strToTest.indexOf(LEFT_MOUSTACHE_DELIMITER),
+            idxClosing = strToTest.indexOf(RIGHT_MOUSTACHE_DELIMITER);
+
+        return idxOpening !== -1 && idxClosing !== -1 && idxOpening < idxClosing;
+    },
+
     parse: function(strExpressionWithMoustache) {
 
         var astResult = null;
@@ -50,8 +57,6 @@ module.exports = {
                                     LEFT_MOUSTACHE_DELIMITER.length,
                                     strToken.length - RIGHT_MOUSTACHE_DELIMITER.length
                                 );
-                        console.log("strToken", strToken);
-                        console.log("strExpression", strExpression);
                         astResult = addAstToAst(astResult, jsep(strExpression));
                     }
                 )
