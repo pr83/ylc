@@ -13,7 +13,8 @@ test(
                     fs.readFileSync(__dirname + "/moustache.html")
                 ),
             spanWithMoustache,
-            mixedContentsWithoutMoustache;
+            mixedContentsWithoutMoustache,
+            i18n;
 
         jqFixture.yellowCode(
             {
@@ -21,16 +22,27 @@ test(
                     model.addressee = "Bob";
                     model.myName = "Bill";
                     model.color = "green";
+
+                    model.numberOfRecords = 33;
+                },
+
+                translate: function(key, arg0, arg1) {
+                    if (key === "dashboard.messages.numberOfRecordsParagraph") {
+                        return "Hello " + arg0 + ", you have " + arg1 + " records.";
+                    }
                 }
             }
         );
 
         spanWithMoustache = $("#spanWithMoustache");
-        mixedContentsWithoutMoustache = $("#mixedContentsWithoutMoustache");
-
         t.equals(spanWithMoustache.text(), "Hello Bob, my name is Bill!", "text correct");
         t.equals(spanWithMoustache.attr("style"), "color: green", "attribute correct");
+
+        mixedContentsWithoutMoustache = $("#mixedContentsWithoutMoustache");
         t.equals(mixedContentsWithoutMoustache.html(), "123<b>456</b>789", "mixed contents without moustache not affected");
+
+        i18n = $("#i18n");
+        t.equals(i18n.text(), "Hello Bob, you have 33 records.", "localized text correct");
 
         testUtil.removeFixture();
 

@@ -95,6 +95,42 @@ test(
             "starting with identifier correctly parsed"
         );
 
+        t.deepEqual(
+            moustache.parse("message: @{{dashboard.messages.numberOfRecordsParagraph, name, numberOfRecords}}"),
+            {
+                "type": "BinaryExpression",
+                "operator": "+",
+                "left": {
+                    "type": "Literal",
+                    "value": "message: ",
+                    "raw": "'message: '"
+                },
+                "right": {
+                    "type": "CallExpression",
+                    "arguments": [
+                        {
+                            "type": "Literal",
+                            "value": "dashboard.messages.numberOfRecordsParagraph",
+                            "raw": "'dashboard.messages.numberOfRecordsParagraph'"
+                        },
+                        {
+                            "type": "Identifier",
+                            "name": "name"
+                        },
+                        {
+                            "type": "Identifier",
+                            "name": "numberOfRecords"
+                        }
+                    ],
+                    "callee": {
+                        "type": "Identifier",
+                        "name": "translate"
+                    }
+                }
+            },
+            "translation string parsed correctly"
+        );
+
         t.end();
 
     }
