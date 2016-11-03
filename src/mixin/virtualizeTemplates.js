@@ -2,7 +2,8 @@ var errorUtil = require('../errorUtil'),
     parseUtil = require('../parseUtil'),
     domTemplates = require("../domTemplates"),
     ylcLoopParser = require('../parser/ylcLoop'),
-    stringUtil = require("../stringUtil");
+    stringUtil = require("../stringUtil"),
+    expressionParser = require('../expressionParser');
 
 module.exports = {
 
@@ -25,7 +26,7 @@ module.exports = {
                     metadata.ylcLoop = ylcLoopParser.parseYlcLoop(strYlcLoop);
 
                 } else if (strYlcIf) {
-                    metadata.ylcIf = parseUtil.normalizeWhitespace(strYlcIf);
+                    metadata.astYlcIf = expressionParser.toAst(parseUtil.normalizeWhitespace(strYlcIf));
 
                 } else {
                     return false;

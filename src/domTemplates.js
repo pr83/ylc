@@ -49,7 +49,7 @@ module.exports = (function () {
         var strYlcLoop = stringUtil.strGetData(jqElement, "ylcLoop"),
             strIf = stringUtil.strGetData(jqElement, "ylcIf");
 
-        if (!isDynamicallyGenerated(jqElement.get()) && (metadata.of(jqElement).ylcLoop || metadata.of(jqElement).ylcIf)) {
+        if (!isDynamicallyGenerated(jqElement.get()) && (metadata.of(jqElement).ylcLoop || metadata.of(jqElement).astYlcIf)) {
             return true;
         }
 

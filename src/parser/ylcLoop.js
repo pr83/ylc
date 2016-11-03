@@ -1,5 +1,6 @@
 var parseUtil = require("../parseUtil"),
-    errorUtil = require('../errorUtil');
+    errorUtil = require('../errorUtil'),
+    expressionParser = require('../expressionParser');
 
 module.exports = (function () {
 
@@ -13,7 +14,7 @@ module.exports = (function () {
                 },
                 arrParts = parseUtil.normalizeWhitespace(strYlcLoop).split(":"),
                 strLoopAndStatusVariables,
-                strCollectionName,
+                strCollection,
                 strLoopVariable,
                 strStatusVariable,
                 arrLoopAndStatusParts;
@@ -23,9 +24,9 @@ module.exports = (function () {
             }
 
             strLoopAndStatusVariables = $.trim(arrParts[0]);
-            strCollectionName = $.trim(arrParts[1]);
+            strCollection = $.trim(arrParts[1]);
 
-            if (!strLoopAndStatusVariables || !strCollectionName) {
+            if (!strLoopAndStatusVariables || !strCollection) {
                 throwException();
             }
 
@@ -44,7 +45,7 @@ module.exports = (function () {
             return {
                 strLoopVariable: strLoopVariable,
                 strStatusVariable: strStatusVariable,
-                strCollectionName: strCollectionName
+                astCollection: expressionParser.toAst(strCollection)
             };
         }
 

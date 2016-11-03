@@ -132,7 +132,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             return v2mProcessDynamicLoopElements(jqTemplate);
         }
 
-        if (metadataObj.ylcIf) {
+        if (metadataObj.astYlcIf) {
             return v2mProcessDynamicIfElements(jqTemplate);
         }
 
@@ -162,7 +162,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
         var idxWithinDynamicallyGenerated,
             ylcLoop = metadata.of(virtualNodes.getOriginal(jqTemplate)).ylcLoop,
-            arrCollection = my.context.getValue(expressionParser.toAst(ylcLoop.strCollectionName)),
+            arrCollection = my.context.getValue(ylcLoop.astCollection),
             domarrGeneratedElements = getGeneratedElements(jqTemplate),
             domDynamicallyGeneratedElement,
             nProcessed;
@@ -321,7 +321,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     function m2vProcessDynamicLoopElements(jqTemplate, ylcLoop) {
 
         var domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate),
-            arrCollection = my.context.getValue(expressionParser.toAst(ylcLoop.strCollectionName)),
+            arrCollection = my.context.getValue(ylcLoop.astCollection),
             bUnderlyingCollectionChanged =
                 (metadata.localOf(jqTemplate).loopCollection !== arrCollection),
             commonLength,
@@ -367,8 +367,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         return domarrCurrentGeneratedElements.length + 1;
     }
 
-    function m2vProcessDynamicIfElements(jqTemplate, strYlcIf) {
-        var ifExpressionValue = my.context.getValue(expressionParser.toAst(parseUtil.normalizeWhitespace(strYlcIf))),
+    function m2vProcessDynamicIfElements(jqTemplate, astYlcIf) {
+        var ifExpressionValue = my.context.getValue(astYlcIf),
             domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate),
             jqNewDynamicElement,
             nElementsProcessed;
@@ -417,8 +417,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             return m2vProcessDynamicLoopElements(jqTemplate, metadataObj.ylcLoop);
         }
 
-        if (metadataObj.ylcIf) {
-            return m2vProcessDynamicIfElements(jqTemplate, metadataObj.ylcIf);
+        if (metadataObj.astYlcIf) {
+            return m2vProcessDynamicIfElements(jqTemplate, metadataObj.astYlcIf);
         }
 
         errorUtil.assert(false);
@@ -720,7 +720,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         );
     }
 
-    function inOrderTraversal(jqNode, listeners) {
+    function preOrderTraversal(jqNode, listeners) {
 
         var metadataObj = metadata.of(jqNode),
             bMakeVirtual = false,
@@ -739,7 +739,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
         jqNode.children().each(
             function() {
-                inOrderTraversal($(this), listeners);
+                preOrderTraversal($(this), listeners);
             }
         );
 
@@ -794,7 +794,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     my.context = contextFactory.newContext(my.model, my.controller, my.controllerMethods);
 
     if (my.callbacks.domPreprocessors.length > 0) {
-        my.domView = inOrderTraversal(pDomView, my.callbacks.domPreprocessors);
+        my.domView = preOrderTraversal(pDomView, my.callbacks.domPreprocessors);
     }
 
     setupViewForYlcTraversal();
