@@ -44,6 +44,16 @@ module.exports = {
 
                 jqNode.removeAttr("data-ylcEvents");
 
+                var ylcElementInit = stringUtil.strGetData(jqNode, "ylcElementInit");
+                if (ylcElementInit) {
+                    var objHandlerCall = ylcEventsParser.parseEventHandlerCall(ylcElementInit);
+                    metadata.listeners.ylcLifecycle.elementInitialized =
+                        {
+                            strMethodName: objHandlerCall.strMethodName,
+                            arrArgumentsAsts: objHandlerCall.arrArgumentAsts
+                        };
+                }
+
                 return false;
             },
 

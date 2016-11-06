@@ -59,3 +59,43 @@ test(
     }
 
 );
+
+test(
+    "unit: process data-ylcElementInit",
+    function (t) {
+
+        var jqNode =
+                $("<div data-ylcElementInit='initHandler(5, 6)'></div>"),
+            metadata = {};
+
+        processEventParameters["@DomPreprocessorFactory"]().nodeStart(jqNode, metadata);
+
+        t.deepEqual(
+            metadata.listeners,
+            {
+                "ylcLifecycle": {
+                    "elementInitialized": {
+                        "strMethodName": "initHandler",
+                        "arrArgumentsAsts": [
+                            {
+                                "type": "Literal",
+                                "value": 5,
+                                "raw": "5"
+                            },
+                            {
+                                "type": "Literal",
+                                "value": 6,
+                                "raw": "6"
+                            }
+                        ]
+                    }
+                },
+                "jsEvents": {}
+            },
+            "correctly parsed"
+        );
+
+        t.end();
+    }
+
+);
