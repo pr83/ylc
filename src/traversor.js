@@ -85,14 +85,17 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
     function v2mSetValues(domElement) {
 
-        var jqElement = $(domElement);
+        var jqElement = $(domElement),
+            v2m = metadata.of(jqElement).v2m;
 
-        $.each(
-            metadata.of(jqElement).v2m,
-            function (idx, v2m) {
-                v2m(domElement, my.context);
-            }
-        );
+        if (v2m) {
+            $.each(
+                v2m,
+                function (idx, v2m) {
+                    v2m(domElement, my.context);
+                }
+            );
+        }
 
     }
 
@@ -225,15 +228,17 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     // propagating changes of model into view
 
     function m2vSetValues(domElement) {
-        var jqElement = $(domElement);
+        var jqElement = $(domElement),
+            m2v = metadata.of(jqElement).m2v;
 
-        $.each(
-            metadata.of(jqElement).m2v,
-            function (idx, m2v) {
-                m2v(domElement, my.context);
-            }
-        );
-
+        if (m2v) {
+            $.each(
+                m2v,
+                function (idx, m2v) {
+                    m2v(domElement, my.context);
+                }
+            );
+        }
     }
 
     function processCommonElements(
@@ -308,7 +313,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             listeners = metadata.of(jqElement).listeners,
             publicContext = createPublicContext(domElement);
 
-        if (listeners.ylcLifecycle.elementInitialized) {
+        if (listeners && listeners.ylcLifecycle.elementInitialized) {
             var immediateCallArguments = [my.model, publicContext];
             if (listeners.ylcLifecycle.elementInitialized.arrArgumentsAsts) {
                 Array.prototype.push.apply(
@@ -606,41 +611,24 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             listeners = metadata.of(jqElement).listeners,
             publicContext = createPublicContext(domElement);
 
-        $.each(
-            listeners.jsEvents,
-            function(strEventName, objEventDescriptor) {
-                jqElement.unbind(strEventName);
-                jqElement.bind(
-                    strEventName,
-                    createHandler(
-                        publicContext,
-                        getHandler(strEventName, objEventDescriptor.strMethodName),
-                        isM2vOnly(objEventDescriptor.strMethodName),
-                        objEventDescriptor.arrArgumentsAsts,
-                        my.context.getLoopContextMemento()
-                    )
-                );
-            }
-        );
-
-        /*
-        if (listeners.ylcLifecycle.elementInitialized) {
-            var immediateCallArguments = [my.model, publicContext];
-            if (listeners.ylcLifecycle.elementInitialized.arrArgumentsAsts) {
-                Array.prototype.push.apply(
-                    immediateCallArguments,
-                    evaluateArguments(
-                        listeners.ylcLifecycle.elementInitialized.arrArgumentsAsts,
-                        my.context.getLoopContextMemento()
-                    )
-                );
-            }
-            getHandler(
-                "element initialized",
-                listeners.ylcLifecycle.elementInitialized.strMethodName).
-            apply(my.controller, immediateCallArguments);
+        if (listeners) {
+            $.each(
+                listeners.jsEvents,
+                function (strEventName, objEventDescriptor) {
+                    jqElement.unbind(strEventName);
+                    jqElement.bind(
+                        strEventName,
+                        createHandler(
+                            publicContext,
+                            getHandler(strEventName, objEventDescriptor.strMethodName),
+                            isM2vOnly(objEventDescriptor.strMethodName),
+                            objEventDescriptor.arrArgumentsAsts,
+                            my.context.getLoopContextMemento()
+                        )
+                    );
+                }
+            );
         }
-        */
 
     }
 
