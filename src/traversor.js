@@ -2,7 +2,6 @@ var errorUtil = require('./errorUtil'),
     stringUtil = require('./stringUtil'),
     parseUtil = require('./parseUtil'),
     domTemplates = require('./domTemplates'),
-    ylcEventsParser = require('./parser/ylcEvents'),
     domAnnotator = require('./domAnnotator'),
     contextFactory = require('./contextFactory'),
     annotationProcessor = require('./annotationProcessor'),
@@ -260,10 +259,70 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             index +=
                 m2vProcessElement(
                     domGeneratedElement,
+                    false,
                     bUnderlyingCollectionChanged
                 );
 
             my.context.exitIteration(ylcLoop.strLoopVariable, ylcLoop.strStatusVariable);
+        }
+    }
+
+    function getHandler(strEventName, strMethodName) {
+
+        var annotatedControllerFunction,
+            fnHandler;
+
+        if (strMethodName.length === 0) {
+            fnHandler = EMPTY_FUNCTION;
+
+        } else {
+            annotatedControllerFunction = my.controllerMethods[strMethodName];
+            if (annotatedControllerFunction) {
+                fnHandler = annotatedControllerFunction.code;
+            }
+        }
+
+        if (!(fnHandler instanceof Function)) {
+            throw errorUtil.createError(
+                "Event handler '" + strMethodName + "', " +
+                "specified for event '" + strEventName + "', " +
+                "is not a function."
+            );
+        }
+
+        return fnHandler;
+
+    }
+
+    function isM2vOnly(strMethodName) {
+        var annotatedControllerFunction = my.controllerMethods[strMethodName];
+        if (annotatedControllerFunction) {
+            return annotatedControllerFunction.metadata.m2vOnly;
+        }
+
+        return false;
+    }
+
+    function onElementInit(domElement) {
+        var jqElement = $(domElement),
+            listeners = metadata.of(jqElement).listeners,
+            publicContext = createPublicContext(domElement);
+
+        if (listeners.ylcLifecycle.elementInitialized) {
+            var immediateCallArguments = [my.model, publicContext];
+            if (listeners.ylcLifecycle.elementInitialized.arrArgumentsAsts) {
+                Array.prototype.push.apply(
+                    immediateCallArguments,
+                    evaluateArguments(
+                        listeners.ylcLifecycle.elementInitialized.arrArgumentsAsts,
+                        my.context.getLoopContextMemento()
+                    )
+                );
+            }
+            getHandler(
+                "element initialized",
+                listeners.ylcLifecycle.elementInitialized.strMethodName
+            ).apply(my.controller, immediateCallArguments);
         }
     }
 
@@ -305,7 +364,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             );
 
             elementsProcessed =
-                m2vProcessElement(jqNewDynamicElement.get(), true);
+                m2vProcessElement(jqNewDynamicElement.get(), true, true);
             errorUtil.assert(
                 elementsProcessed === 1,
                 "If an element is dynamically generated, it can't be a template."
@@ -383,7 +442,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                 );
 
             nElementsProcessed =
-                m2vProcessElement(jqNewDynamicElement.get(), true);
+                m2vProcessElement(jqNewDynamicElement.get(), true, true);
             errorUtil.assert(
                 nElementsProcessed === 1,
                 "If an element is dynamically generated, it can't be a template."
@@ -425,7 +484,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         errorUtil.assert(false);
     }
 
-    function m2vProcessChildren(domElement, bBindEvents) {
+    function m2vProcessChildren(domElement, bFirstVisit, bBindEvents) {
 
         var jqElement = $(domElement),
             jqsetChildren = jqElement.children(),
@@ -443,6 +502,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                 index +=
                     m2vProcessElement(
                         domChild,
+                        bFirstVisit,
                         bBindEvents
                     );
 
@@ -513,6 +573,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
             m2vProcessElement(
                 my.domView,
+                false,
                 false
             );
 
@@ -539,42 +600,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         };
     }
 
-    function getHandler(strEventName, strMethodName) {
-
-        var annotatedControllerFunction,
-            fnHandler;
-
-        if (strMethodName.length === 0) {
-            fnHandler = EMPTY_FUNCTION;
-
-        } else {
-            annotatedControllerFunction = my.controllerMethods[strMethodName];
-            if (annotatedControllerFunction) {
-                fnHandler = annotatedControllerFunction.code;
-            }
-        }
-
-        if (!(fnHandler instanceof Function)) {
-            throw errorUtil.createError(
-                "Event handler '" + strMethodName + "', " +
-                "specified for event '" + strEventName + "', " +
-                "is not a function."
-            );
-        }
-
-        return fnHandler;
-
-    }
-
-    function isM2vOnly(strMethodName) {
-        var annotatedControllerFunction = my.controllerMethods[strMethodName];
-        if (annotatedControllerFunction) {
-            return annotatedControllerFunction.metadata.m2vOnly;
-        }
-
-        return false;
-    }
-
     function m2vBindEvents(domElement) {
 
         var jqElement = $(domElement),
@@ -598,6 +623,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             }
         );
 
+        /*
         if (listeners.ylcLifecycle.elementInitialized) {
             var immediateCallArguments = [my.model, publicContext];
             if (listeners.ylcLifecycle.elementInitialized.arrArgumentsAsts) {
@@ -614,6 +640,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                 listeners.ylcLifecycle.elementInitialized.strMethodName).
             apply(my.controller, immediateCallArguments);
         }
+        */
 
     }
 
@@ -631,7 +658,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         return publicContext;
     }
 
-    function m2vProcessElement(domElement, bBindEvents) {
+    function m2vProcessElement(domElement, bFirstVisit, bBindEvents) {
 
         var nElementsProcessed;
 
@@ -642,11 +669,16 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             nElementsProcessed = 1;
 
         } else {
+            if (bFirstVisit) {
+                onElementInit(domElement);
+            }
+
             if (bBindEvents) {
                 m2vBindEvents(domElement);
             }
+
             m2vSetValues(domElement);
-            m2vProcessChildren(domElement, bBindEvents);
+            m2vProcessChildren(domElement, bFirstVisit, bBindEvents);
 
             nElementsProcessed = 1;
         }
@@ -695,6 +727,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
                     m2vProcessElement(
                         domView,
+                        false,
                         false
                     );
 
@@ -774,6 +807,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
         m2vProcessElement(
             my.domView,
+            true,
             true
         );
 
