@@ -43,6 +43,12 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         }
     }
 
+    function initAnnotationListener(annotation, code, metadata) {
+        if (annotation === "@Init") {
+            my.callbacks.init.push(code);
+        }
+    }
+
     function domPreprocessAnnotationListener(annotation, code, metadata) {
         if (annotation === "@DomPreprocessorFactory") {
             my.callbacks.domPreprocessors.push(code());
@@ -57,6 +63,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                 [
                     publicAnnotationListener,
                     m2vOnlyAnnotationListener,
+                    initAnnotationListener,
                     beforeAfterEventAnnotationListener,
                     domPreprocessAnnotationListener
                 ];
@@ -783,15 +790,20 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
     function setupViewForYlcTraversal() {
 
+        var publicContext = createPublicContext(my.domView);
+
         domAnnotator.markViewRoot($(my.domView));
 
         if (my.controller.init instanceof Function) {
-            my.controller.init.call(
-                my.controller,
-                my.model,
-                createPublicContext(my.domView)
-            );
+            my.callbacks.init.push(my.controller.init);
         }
+
+        $.each(
+            my.callbacks.init,
+            function(idx, callback) {
+                callback.call(my.controller, my.model, publicContext);
+            }
+        );
 
         m2vProcessElement(
             my.domView,
@@ -808,6 +820,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     my.mixins = pMixins || [];
 
     my.callbacks = {
+        init: [],
         beforeEvent: [],
         afterEvent: [],
         domPreprocessors: []
