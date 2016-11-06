@@ -9,6 +9,7 @@ var errorUtil = require('./errorUtil'),
     virtualNodes = require('./virtualNodes'),
     micVirtualize = require('./mixin/virtualizeTemplates'),
     micProcessBindingParameters = require('./mixin/processBindingParameters'),
+    processEventParameters = require('./mixin/processEventParameters'),
     micM2v = require('./mixin/m2v'),
     micV2m = require('./mixin/v2m'),
     processMoustacheBindings = require('./mixin/processMoustacheBindings'),
@@ -461,18 +462,18 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         )
     }
 
-    function evaluateArguments(arrArgumentExpressions, loopContextMemento) {
+    function evaluateArguments(arrArgumentAsts, loopContextMemento) {
 
         var context = my.context.newWithLoopContext(loopContextMemento),
             idxArgument,
             arrEvaluatedExpressions = [];
 
-        if (arrArgumentExpressions === null || arrArgumentExpressions === undefined) {
-            return arrArgumentExpressions;
+        if (arrArgumentAsts === null || arrArgumentAsts === undefined) {
+            return arrArgumentAsts;
         }
 
-        for (idxArgument = 0; idxArgument < arrArgumentExpressions.length; idxArgument += 1) {
-            arrEvaluatedExpressions.push(context.getValue(expressionParser.toAst(arrArgumentExpressions[idxArgument])));
+        for (idxArgument = 0; idxArgument < arrArgumentAsts.length; idxArgument += 1) {
+            arrEvaluatedExpressions.push(context.getValue(arrArgumentAsts[idxArgument]));
         }
 
         return arrEvaluatedExpressions;
@@ -483,7 +484,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             publicContext,
             fnUpdateMethod,
             m2vOnly,
-            arrArgumentExpressions,
+            arrArgumentAsts,
             loopContextMemento
     ) {
 
@@ -491,11 +492,11 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             argumentValues = [my.model, publicContext],
             returnValue;
 
-        if (arrArgumentExpressions) {
+        if (arrArgumentAsts) {
 
             Array.prototype.push.apply(
                 argumentValues,
-                evaluateArguments(arrArgumentExpressions, loopContextMemento)
+                evaluateArguments(arrArgumentAsts, loopContextMemento)
             );
 
         }
@@ -525,88 +526,93 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
     }
 
-    function createHandler(publicContext, fnHandler, m2vOnly, arrArgumentExpressions, loopContextMemento) {
+    function createHandler(publicContext, fnHandler, m2vOnly, arrArgumentAsts, loopContextMemento) {
         return function (eventObject) {
             publicContext.eventObject = eventObject;
             return callModelUpdatingMethod(
                 publicContext,
                 fnHandler,
                 m2vOnly,
-                arrArgumentExpressions,
+                arrArgumentAsts,
                 loopContextMemento
             );
         };
     }
 
+    function getHandler(strEventName, strMethodName) {
+
+        var annotatedControllerFunction,
+            fnHandler;
+
+        if (strMethodName.length === 0) {
+            fnHandler = EMPTY_FUNCTION;
+
+        } else {
+            annotatedControllerFunction = my.controllerMethods[strMethodName];
+            if (annotatedControllerFunction) {
+                fnHandler = annotatedControllerFunction.code;
+            }
+        }
+
+        if (!(fnHandler instanceof Function)) {
+            throw errorUtil.createError(
+                "Event handler '" + strMethodName + "', " +
+                "specified for event '" + strEventName + "', " +
+                "is not a function."
+            );
+        }
+
+        return fnHandler;
+
+    }
+
+    function isM2vOnly(strMethodName) {
+        var annotatedControllerFunction = my.controllerMethods[strMethodName];
+        if (annotatedControllerFunction) {
+            return annotatedControllerFunction.metadata.m2vOnly;
+        }
+
+        return false;
+    }
+
     function m2vBindEvents(domElement) {
+
         var jqElement = $(domElement),
-            strYlcEvents = stringUtil.strGetData(jqElement, "ylcEvents"),
-            arrYlcEvents = ylcEventsParser.parseYlcEvents(strYlcEvents),
-
-            index,
-            currentYlcEvent,
-            fnHandler,
-            publicContext,
-            annotatedControllerFunction,
-
-            m2vOnly,
-            immediateCallArguments;
-
-        for (index = 0; index < arrYlcEvents.length; index += 1) {
-            currentYlcEvent = arrYlcEvents[index];
-            m2vOnly = false;
-
-            if (currentYlcEvent.strMethodName.length === 0) {
-                fnHandler = EMPTY_FUNCTION;
-
-            } else {
-                annotatedControllerFunction = my.controllerMethods[currentYlcEvent.strMethodName];
-                if (annotatedControllerFunction) {
-                    fnHandler = annotatedControllerFunction.code;
-                    if (annotatedControllerFunction.metadata.m2vOnly) {
-                        m2vOnly = true;
-                    }
-                }
-            }
-
-            if (!(fnHandler instanceof Function)) {
-                throw errorUtil.createError(
-                    "Event handler '" + currentYlcEvent.strMethodName + "', " +
-                    "specified for event '" + currentYlcEvent.strEventName + "', " +
-                    "is not a function.",
-                    domElement
-                );
-            }
-
+            listeners = metadata.of(jqElement).listeners,
             publicContext = createPublicContext(domElement);
 
-            if (currentYlcEvent.strEventName === "ylcElementInitialized") {
-                immediateCallArguments = [my.model, publicContext];
-                if (currentYlcEvent.arrArgumentExpressions) {
-                    Array.prototype.push.apply(
-                        immediateCallArguments,
-                        evaluateArguments(
-                            currentYlcEvent.arrArgumentExpressions,
-                            my.context.getLoopContextMemento()
-                        )
-                    );
-                }
-                fnHandler.apply(my.controller, immediateCallArguments);
+        $.each(
+            listeners.jsEvents,
+            function(strEventName, objEventDescriptor) {
+                jqElement.unbind(strEventName);
+                jqElement.bind(
+                    strEventName,
+                    createHandler(
+                        publicContext,
+                        getHandler(strEventName, objEventDescriptor.strMethodName),
+                        isM2vOnly(objEventDescriptor.strMethodName),
+                        objEventDescriptor.arrArgumentsAsts,
+                        my.context.getLoopContextMemento()
+                    )
+                );
             }
+        );
 
-            jqElement.unbind(currentYlcEvent.strEventName);
-
-            jqElement.bind(
-                currentYlcEvent.strEventName,
-                createHandler(
-                    publicContext,
-                    fnHandler,
-                    m2vOnly,
-                    currentYlcEvent.arrArgumentExpressions,
-                    my.context.getLoopContextMemento()
-                )
-            );
-
+        if (listeners.ylcLifecycle.elementInitialized) {
+            var immediateCallArguments = [my.model, publicContext];
+            if (listeners.ylcLifecycle.elementInitialized.arrArgumentsAsts) {
+                Array.prototype.push.apply(
+                    immediateCallArguments,
+                    evaluateArguments(
+                        listeners.ylcLifecycle.elementInitialized.arrArgumentsAsts,
+                        my.context.getLoopContextMemento()
+                    )
+                );
+            }
+            getHandler(
+                "element initialized",
+                listeners.ylcLifecycle.elementInitialized.strMethodName).
+            apply(my.controller, immediateCallArguments);
         }
 
     }
@@ -787,7 +793,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
     my.controllerMethods =
         extractControllerMethods(
-            [micProcessBindingParameters, processMoustacheBindings, micVirtualize, micM2v, micV2m].concat(my.mixins),
+            [micProcessBindingParameters, processEventParameters, processMoustacheBindings, micVirtualize, micM2v, micV2m].concat(my.mixins),
             my.controller
         );
 

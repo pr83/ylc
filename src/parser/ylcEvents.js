@@ -1,6 +1,20 @@
 var stringUtil = require("../stringUtil"),
     errorUtil = require('../errorUtil'),
-    parseUtil = require('../parseUtil');
+    parseUtil = require('../parseUtil'),
+    expressionParser = require('../expressionParser');
+
+function argumentsExpressionToAsts(arrArgumentExpressions) {
+
+    if (arrArgumentExpressions === null || arrArgumentExpressions === undefined) {
+        return arrArgumentExpressions;
+    }
+
+    return $.map(
+        arrArgumentExpressions,
+        expressionParser.toAst
+    );
+
+}
 
 module.exports = (function () {
 
@@ -79,7 +93,7 @@ module.exports = (function () {
                     result.push({
                         strEventName: strEventName,
                         strMethodName: strMethodName,
-                        arrArgumentExpressions: arrArgumentExpressions
+                        arrArgumentAsts: argumentsExpressionToAsts(arrArgumentExpressions)
                     });
 
                 }
