@@ -650,6 +650,14 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             return callModelUpdatingMethod(publicContext, fnUpdateMethod);
         };
 
+        publicContext.controllerMethods = {};
+            $.each(
+                my.controllerMethods,
+                function(name, method) {
+                    publicContext.controllerMethods[name] = method.code;
+                }
+            );
+
         return publicContext;
     }
 
