@@ -803,7 +803,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         );
 
         if (bMakeVirtual) {
-            console.log("virtualizing: ", jqNode);
             jqVirtualNode = virtualNodes.makeVirtual(jqNode);
         }
 
