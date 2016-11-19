@@ -35,7 +35,11 @@ module.exports = {
                 jqNode.removeAttr("data-ylcLoop");
                 jqNode.removeAttr("data-ylcIf");
 
-                return true;
+                return {
+                    bMakeVirtual: true,
+                    bHasV2m: false,
+                    bHasM2v: true
+                };
 
             },
 

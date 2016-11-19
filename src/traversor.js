@@ -156,6 +156,9 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         if (domTemplates.isTemplate(domElement)) {
             nElementsProcessed = v2mProcessDynamicElements($(domElement), my.controller);
 
+        } else if (!metadata.of($(domElement)).bHasV2m) {
+            nElementsProcessed = 1;
+
         } else if (domElement !== my.domView && domAnnotator.isViewRoot($(domElement))) {
             nElementsProcessed = 1;
 
@@ -171,12 +174,19 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     function v2mProcessDynamicLoopElements(jqTemplate) {
 
         var idxWithinDynamicallyGenerated,
-            ylcLoop = metadata.of(virtualNodes.getOriginal(jqTemplate)).ylcLoop,
-            arrCollection = my.context.getValue(ylcLoop.astCollection),
+            ylcLoop,
+            arrCollection,
             domarrGeneratedElements = getGeneratedElements(jqTemplate),
             domDynamicallyGeneratedElement,
             nProcessed;
 
+
+        if (!metadata.of(virtualNodes.getOriginal(jqTemplate)).bHasV2m) {
+            return domarrGeneratedElements.length + 1;
+        }
+
+        ylcLoop = metadata.of(virtualNodes.getOriginal(jqTemplate)).ylcLoop;
+        arrCollection = my.context.getValue(ylcLoop.astCollection);
         checkIterable(arrCollection);
 
         for (idxWithinDynamicallyGenerated = 0;
@@ -446,6 +456,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             nElementsProcessed;
 
         if (ifExpressionValue && domarrCurrentGeneratedElements.length === 0) {
+
             jqNewDynamicElement =
                 domTemplates.jqCreateElementFromTemplate(
                     virtualNodes.getOriginal(jqTemplate),
@@ -463,6 +474,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             jqTemplate.after(jqNewDynamicElement);
 
         } else if (domarrCurrentGeneratedElements.length > 0) {
+
             if (ifExpressionValue) {
                 nElementsProcessed =
                     m2vProcessElement(
@@ -671,6 +683,9 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         } else if (domElement !== my.domView && domAnnotator.isViewRoot($(domElement))) {
             nElementsProcessed = 1;
 
+        } else if (!metadata.of($(domElement)).bHasM2v && !bFirstVisit && !bBindEvents) {
+            nElementsProcessed = 1;
+
         } else {
             if (bFirstVisit) {
                 onElementInit(domElement);
@@ -765,23 +780,40 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     function preOrderTraversal(jqNode, listeners) {
 
         var metadataObj = metadata.of(jqNode),
+            childMetadata,
+            realChildMetadata,
+            preprocessingResult,
             bMakeVirtual = false,
+            bHasV2m = false,
+            bHasM2v = false,
             jqVirtualNode;
 
         $.each(
             listeners,
             function (idx, listener) {
-                bMakeVirtual |= listener.nodeStart(jqNode, metadataObj);
+                preprocessingResult = listener.nodeStart(jqNode, metadataObj);
+                if ($.isPlainObject(preprocessingResult)) {
+                    bMakeVirtual |= preprocessingResult.bMakeVirtual;
+                    bHasV2m |= preprocessingResult.bHasV2m;
+                    bHasM2v |= preprocessingResult.bHasM2v;
+                } else {
+                    bMakeVirtual |= preprocessingResult;
+                }
             }
         );
 
         if (bMakeVirtual) {
+            console.log("virtualizing: ", jqNode);
             jqVirtualNode = virtualNodes.makeVirtual(jqNode);
         }
 
         jqNode.children().each(
             function() {
                 preOrderTraversal($(this), listeners);
+                childMetadata = metadata.of($(this));
+                realChildMetadata = metadata.of(virtualNodes.getOriginal($(this)));
+                bHasV2m |= (childMetadata.bHasV2m || realChildMetadata.bHasV2m);
+                bHasM2v |= (childMetadata.bHasM2v || realChildMetadata.bHasM2v);
             }
         );
 
@@ -791,6 +823,9 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                 listener.nodeEnd(jqNode, metadataObj);
             }
         );
+
+        metadataObj.bHasV2m = bHasV2m;
+        metadataObj.bHasM2v = bHasM2v;
 
         return jqVirtualNode ? jqVirtualNode : jqNode;
 

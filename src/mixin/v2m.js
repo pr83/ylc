@@ -56,7 +56,8 @@ module.exports = {
 
                 var arrYlcBind = metadata.ylcBind,
                     idxYlcBind,
-                    currentYlcBinding;
+                    currentYlcBinding,
+                    bHasV2m = false;
 
                 for (idxYlcBind = 0; idxYlcBind < arrYlcBind.length; idxYlcBind += 1) {
                     currentYlcBinding = arrYlcBind[idxYlcBind];
@@ -67,12 +68,17 @@ module.exports = {
                         continue;
                     }
 
-                    metadata.v2m.push(
-                        createV2m(currentYlcBinding)
-                    );
+                    metadata.v2m.push(createV2m(currentYlcBinding));
+                    bHasV2m = true;
+
                 }
 
-                return false;
+                return {
+                    bMakeVirtual: false,
+                    bHasV2m: bHasV2m,
+                    bHasM2v: false
+                };
+
             },
 
             nodeEnd: function() {

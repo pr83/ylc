@@ -51,7 +51,8 @@ module.exports = {
 
                 var arrAttributes = jqNode.get(0).attributes,
                     idxAttribute,
-                    elementText;
+                    elementText,
+                    bHasM2v = false;
 
                 for (idxAttribute = 0; idxAttribute < arrAttributes.length; idxAttribute += 1) {
                     if (moustache.containsMoustache(arrAttributes[idxAttribute].value)) {
@@ -61,6 +62,7 @@ module.exports = {
                             arrAttributes[idxAttribute].name,
                             arrAttributes[idxAttribute].value
                         );
+                        bHasM2v = true;
                     }
                 }
 
@@ -68,7 +70,14 @@ module.exports = {
 
                 if (elementText) {
                     pushBinding(metadata, "text", undefined, elementText);
+                    bHasM2v = true;
                 }
+
+                return {
+                    bMakeVirtual: false,
+                    bHasV2m: false,
+                    bHasM2v: bHasM2v
+                };
 
             },
 

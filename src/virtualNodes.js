@@ -15,7 +15,7 @@ module.exports = (function () {
                 return jqElement;
             }
 
-            if ( metadata.localOf(jqElement).virtualElement) {
+            if (metadata.localOf(jqElement).virtualElement) {
                 return metadata.localOf(jqElement).virtualElement;
             }
 

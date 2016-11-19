@@ -53,6 +53,7 @@ module.exports = {
                             arrArgumentsAsts: objHandlerCall.arrArgumentAsts
                         };
                 }
+                jqNode.removeAttr("data-ylcElementInit");
 
                 return false;
             },
