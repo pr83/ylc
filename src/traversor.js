@@ -156,7 +156,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         if (domTemplates.isTemplate(domElement)) {
             nElementsProcessed = v2mProcessDynamicElements($(domElement), my.controller);
 
-        } else if (!metadata.of($(domElement)).bHasV2m) {
+        } else if (metadata.of($(domElement)).bHasV2m === 0) {
             nElementsProcessed = 1;
 
         } else if (domElement !== my.domView && domAnnotator.isViewRoot($(domElement))) {
@@ -181,7 +181,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             nProcessed;
 
 
-        if (!metadata.of(virtualNodes.getOriginal(jqTemplate)).bHasV2m) {
+        if (metadata.of(virtualNodes.getOriginal(jqTemplate)).bHasV2m === 0) {
             return domarrGeneratedElements.length + 1;
         }
 
@@ -683,7 +683,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         } else if (domElement !== my.domView && domAnnotator.isViewRoot($(domElement))) {
             nElementsProcessed = 1;
 
-        } else if (!metadata.of($(domElement)).bHasM2v && !bFirstVisit && !bBindEvents) {
+        } else if ((metadata.of($(domElement)).bHasM2v === 0) && !bFirstVisit && !bBindEvents) {
             nElementsProcessed = 1;
 
         } else {
