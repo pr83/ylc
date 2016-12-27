@@ -114,12 +114,12 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
         while (true) {
             jqCurrentSibling = jqCurrentSibling.next();
-
-            if (jqCurrentSibling.length === 0 || !domTemplates.isDynamicallyGenerated(jqCurrentSibling.get())) {
+            
+            if (jqCurrentSibling.length === 0 || !domTemplates.isDynamicallyGenerated(jqCurrentSibling.get(0))) {
                 break;
             }
 
-            domarrResult.push(jqCurrentSibling.get());
+            domarrResult.push(jqCurrentSibling.get(0));
         }
 
         return domarrResult;
@@ -178,8 +178,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             arrCollection,
             domarrGeneratedElements = getGeneratedElements(jqTemplate),
             domDynamicallyGeneratedElement,
+            dynamicElementsPerArrayItem = getDynamicElementsPerArrayItem(jqTemplate),
             nProcessed;
-
 
         if (metadata.of(virtualNodes.getOriginal(jqTemplate)).bHasV2m === 0) {
             return domarrGeneratedElements.length + 1;
@@ -200,7 +200,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                 ylcLoop.strLoopVariable,
                 arrCollection,
                 ylcLoop.strStatusVariable,
-                idxWithinDynamicallyGenerated
+                Math.floor(idxWithinDynamicallyGenerated / dynamicElementsPerArrayItem)
             );
 
             nProcessed = v2mProcessElement(domDynamicallyGeneratedElement);
@@ -263,7 +263,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         domarrCurrentGeneratedElements,
         arrCollection,
         commonLength,
-        bUnderlyingCollectionChanged
+        bUnderlyingCollectionChanged,
+        dynamicElementsPerArrayItem
     ) {
         var index = 0,
             domGeneratedElement;
@@ -275,7 +276,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                 ylcLoop.strLoopVariable,
                 arrCollection,
                 ylcLoop.strStatusVariable,
-                index
+                Math.floor(index / dynamicElementsPerArrayItem)
             );
 
             index +=
@@ -326,6 +327,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     }
 
     function onElementInit(domElement) {
+
         var jqElement = $(domElement),
             listeners = metadata.of(jqElement).listeners,
             publicContext = createPublicContext(domElement);
@@ -353,7 +355,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         jqTemplate,
         domarrCurrentGeneratedElements,
         arrCollection,
-        commonLength
+        commonLength,
+        dynamicElementsPerArrayItem
     ) {
 
         var jqLastCommonElement,
@@ -370,7 +373,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         }
 
         jqLastElement = jqLastCommonElement;
-        for (index = commonLength; index < arrCollection.length; index += 1) {
+
+        for (index = commonLength / dynamicElementsPerArrayItem; index < arrCollection.length; index += 1) {
 
             jqNewDynamicElement =
                 domTemplates.jqCreateElementFromTemplate(
@@ -386,7 +390,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             );
 
             elementsProcessed =
-                m2vProcessElement(jqNewDynamicElement.get(), true, true);
+                m2vProcessElement(jqNewDynamicElement.get(0), true, true);
             errorUtil.assert(
                 elementsProcessed === 1,
                 "If an element is dynamically generated, it can't be a template."
@@ -394,12 +398,28 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
             my.context.exitIteration(ylcLoop.strLoopVariable, ylcLoop.strStatusVariable);
 
-            jqLastElement.after(jqNewDynamicElement);
-            jqLastElement = jqNewDynamicElement;
+            if (metadata.of(virtualNodes.getOriginal(jqTemplate)).bRemoveTag) {
+                jqNewDynamicElement.children().each(function() {
+                    jqLastElement.after($(this));
+                    jqLastElement = $(this);
+                });
+            } else {
+                jqLastElement.after(jqNewDynamicElement);
+                jqLastElement = jqNewDynamicElement;
+            }
 
         }
     }
 
+    function getDynamicElementsPerArrayItem(jqTemplate) {
+        if (!metadata.of(virtualNodes.getOriginal(jqTemplate)).bRemoveTag) {
+            return 1;
+            
+        } else {
+            return virtualNodes.getOriginal(jqTemplate).children().length;
+        }
+    }
+    
     function m2vProcessDynamicLoopElements(jqTemplate, ylcLoop) {
 
         var domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate),
@@ -407,6 +427,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             bUnderlyingCollectionChanged =
                 (metadata.localOf(jqTemplate).loopCollection !== arrCollection),
             commonLength,
+            dynamicElementsPerArrayItem = getDynamicElementsPerArrayItem(jqTemplate),
             idxFirstToDelete,
             index;
 
@@ -417,28 +438,30 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         }
 
         commonLength =
-            Math.min(arrCollection.length, domarrCurrentGeneratedElements.length);
+            Math.min(arrCollection.length * dynamicElementsPerArrayItem, domarrCurrentGeneratedElements.length);
 
         processCommonElements(
             ylcLoop,
             domarrCurrentGeneratedElements,
             arrCollection,
             commonLength,
-            bUnderlyingCollectionChanged
+            bUnderlyingCollectionChanged,
+            dynamicElementsPerArrayItem
         );
 
-        if (arrCollection.length > commonLength) {
+        if (arrCollection.length * dynamicElementsPerArrayItem > commonLength) {
             addExtraElements(
                 ylcLoop,
                 jqTemplate,
                 domarrCurrentGeneratedElements,
                 arrCollection,
-                commonLength
+                commonLength,
+                dynamicElementsPerArrayItem
             );
         }
 
         if (domarrCurrentGeneratedElements.length > commonLength) {
-            idxFirstToDelete = arrCollection.length;
+            idxFirstToDelete = arrCollection.length * dynamicElementsPerArrayItem;
             for (index = idxFirstToDelete;
                  index < domarrCurrentGeneratedElements.length;
                  index += 1) {
@@ -465,7 +488,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                 );
 
             nElementsProcessed =
-                m2vProcessElement(jqNewDynamicElement.get(), true, true);
+                m2vProcessElement(jqNewDynamicElement.get(0), true, true);
             errorUtil.assert(
                 nElementsProcessed === 1,
                 "If an element is dynamically generated, it can't be a template."
@@ -877,7 +900,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     my.context = contextFactory.newContext(my.model, my.controller, my.controllerMethods);
 
     if (my.callbacks.domPreprocessors.length > 0) {
-        my.domView = preOrderTraversal(pDomView, my.callbacks.domPreprocessors);
+        my.domView = preOrderTraversal(pDomView, my.callbacks.domPreprocessors).get(0);
     }
 
     setupViewForYlcTraversal();

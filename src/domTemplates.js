@@ -7,7 +7,7 @@ var stringUtil = require("./stringUtil"),
 module.exports = (function () {
 
     function isDynamicallyGenerated(domElement) {
-        return metadata.localOf($(domElement)).dynamicallyGenerated;
+        return (!virtualNodes.isVirtual($(domElement))) && metadata.localOf($(domElement)).dynamicallyGenerated;
     }
 
     function findIncludingRoot(jqElement, selector) {
@@ -89,6 +89,11 @@ module.exports = (function () {
                 jqClone = metadata.safeClone(jqTemplate);
 
                 metadata.localOf(jqClone).dynamicallyGenerated = true;
+                if (metadata.of(jqClone).bRemoveTag) {
+                    jqClone.children().each(function() {
+                        metadata.localOf($(this)).dynamicallyGenerated = true;
+                    });
+                }
 
                 domAnnotator.unmarkViewRoot(jqClone);
 
