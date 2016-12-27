@@ -222,8 +222,12 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         var domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate);
 
         if (domarrCurrentGeneratedElements.length > 0) {
-            errorUtil.assert(domarrCurrentGeneratedElements.length === 1);
-            v2mProcessElement(domarrCurrentGeneratedElements[0]);
+            $.each(
+                domarrCurrentGeneratedElements,
+                function(idx, domCurrentGeneratedElement) {
+                    v2mProcessElement(domCurrentGeneratedElement);
+                }
+            );
         }
 
         return domarrCurrentGeneratedElements.length + 1;
@@ -476,7 +480,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         var ifExpressionValue = my.context.getValue(astYlcIf),
             domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate),
             jqNewDynamicElement,
-            nElementsProcessed;
+            jqLastElement;
 
         if (ifExpressionValue && domarrCurrentGeneratedElements.length === 0) {
 
@@ -487,27 +491,35 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                     "_ylcId"
                 );
 
-            nElementsProcessed =
-                m2vProcessElement(jqNewDynamicElement.get(0), true, true);
-            errorUtil.assert(
-                nElementsProcessed === 1,
-                "If an element is dynamically generated, it can't be a template."
-            );
+            m2vProcessElement(jqNewDynamicElement.get(0), true, true);
 
-            jqTemplate.after(jqNewDynamicElement);
+            if (metadata.of(virtualNodes.getOriginal(jqTemplate)).bRemoveTag) {
+                jqLastElement = jqTemplate;
+                jqNewDynamicElement.children().each(function() {
+                    jqLastElement.after($(this));
+                    jqLastElement = $(this);
+                });
+            } else {
+                jqTemplate.after(jqNewDynamicElement);
+            }
 
         } else if (domarrCurrentGeneratedElements.length > 0) {
 
             if (ifExpressionValue) {
-                nElementsProcessed =
-                    m2vProcessElement(
-                        domarrCurrentGeneratedElements[0],
-                        false
-                    );
+                $.each(
+                    domarrCurrentGeneratedElements,
+                    function(idx, domCurrentGeneratedElement) {
+                        m2vProcessElement(domCurrentGeneratedElement, false);
+                    }
+                );
 
             } else {
-                errorUtil.assert(domarrCurrentGeneratedElements.length === 1);
-                $(domarrCurrentGeneratedElements[0]).remove();
+                $.each(
+                    domarrCurrentGeneratedElements,
+                    function(idx, domCurrentGeneratedElement) {
+                        $(domCurrentGeneratedElement).remove();
+                    }
+                );
             }
 
         }

@@ -55,7 +55,6 @@ module.exports = {
                     bHasM2v = false;
                 
                 for (idxAttribute = 0; idxAttribute < arrAttributes.length; idxAttribute += 1) {
-                    console.log(arrAttributes[idxAttribute].name, arrAttributes[idxAttribute].value);
                     if (moustache.containsMoustache(arrAttributes[idxAttribute].value)) {
                         pushBinding(
                             metadata,
