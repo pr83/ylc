@@ -114,7 +114,14 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
         while (true) {
             jqCurrentSibling = jqCurrentSibling.next();
-            
+
+            if (jqCurrentSibling.length > 0 && virtualNodes.isVirtual(jqCurrentSibling)) {
+                if (metadata.of(virtualNodes.getOriginal(jqCurrentSibling)).level >= metadata.of(virtualNodes.getOriginal(jqTemplate)).level) {
+                    domarrResult.push(jqCurrentSibling.get(0));
+                    continue;
+                }
+            }
+
             if (jqCurrentSibling.length === 0 || !domTemplates.isDynamicallyGenerated(jqCurrentSibling.get(0))) {
                 break;
             }
@@ -122,6 +129,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             domarrResult.push(jqCurrentSibling.get(0));
         }
 
+        console.log(virtualNodes.getOriginal(jqTemplate), " -> ", domarrResult);
+        
         return domarrResult;
     }
 
@@ -219,6 +228,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     }
 
     function v2mProcessDynamicIfElements(jqTemplate) {
+
         var domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate);
 
         if (domarrCurrentGeneratedElements.length > 0) {
@@ -434,12 +444,17 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             dynamicElementsPerArrayItem = getDynamicElementsPerArrayItem(jqTemplate),
             idxFirstToDelete,
             index;
-
+        
+        if (metadata.localOf(jqTemplate).loopCollectionLength) {
+            dynamicElementsPerArrayItem = domarrCurrentGeneratedElements.length / metadata.localOf(jqTemplate).loopCollectionLength; 
+        }
+        
         checkIterable(arrCollection);
 
         if (bUnderlyingCollectionChanged) {
             metadata.localOf(jqTemplate).loopCollection = arrCollection;
         }
+        metadata.localOf(jqTemplate).loopCollectionLength = arrCollection.length;
 
         commonLength =
             Math.min(arrCollection.length * dynamicElementsPerArrayItem, domarrCurrentGeneratedElements.length);
@@ -477,6 +492,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     }
 
     function m2vProcessDynamicIfElements(jqTemplate, astYlcIf) {
+
         var ifExpressionValue = my.context.getValue(astYlcIf),
             domarrCurrentGeneratedElements = getGeneratedElements(jqTemplate),
             jqNewDynamicElement,
@@ -812,7 +828,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         );
     }
 
-    function preOrderTraversal(jqNode, listeners) {
+    function preOrderTraversal(jqNode, listeners, level) {
 
         var metadataObj = metadata.of(jqNode),
             childMetadata,
@@ -837,13 +853,15 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             }
         );
 
+        metadata.of(jqNode).level = level;
+        
         if (bMakeVirtual) {
             jqVirtualNode = virtualNodes.makeVirtual(jqNode);
         }
 
         jqNode.children().each(
             function() {
-                preOrderTraversal($(this), listeners);
+                preOrderTraversal($(this), listeners, level + 1);
                 childMetadata = metadata.of($(this));
                 realChildMetadata = metadata.of(virtualNodes.getOriginal($(this)));
                 bHasV2m |= (childMetadata.bHasV2m || realChildMetadata.bHasV2m);
@@ -912,7 +930,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     my.context = contextFactory.newContext(my.model, my.controller, my.controllerMethods);
 
     if (my.callbacks.domPreprocessors.length > 0) {
-        my.domView = preOrderTraversal(pDomView, my.callbacks.domPreprocessors).get(0);
+        my.domView = preOrderTraversal(pDomView, my.callbacks.domPreprocessors, 0).get(0);
     }
 
     setupViewForYlcTraversal();

@@ -39,47 +39,47 @@ test(
                     "getPublicApi"
                 );
 
-        // jqDynamicallyGeneratedElements = jqFixture.find("span");
-        // t.equal(
-        //     jqDynamicallyGeneratedElements.text(),
-        //     "item1item1item2item2",
-        //     "correctly generated elements after init"
-        // );
-        //
-        // publicApi.changeItems("i1", "i2");
-        // jqDynamicallyGeneratedElements = jqFixture.find("span");
-        // t.equal(
-        //     jqDynamicallyGeneratedElements.text(),
-        //     "i1i1i2i2",
-        //     "elements correctly processed if conditions not changed"
-        // );
-        //
-        // publicApi.switchConditions(false, false);
-        // jqDynamicallyGeneratedElements = jqFixture.find("span");
-        // t.equal(
-        //     jqDynamicallyGeneratedElements.text(),
-        //     "",
-        //     "elements correctly removed"
-        // );
-        //
-        // publicApi.changeItems("i3", "i4");
-        // publicApi.switchConditions(true, false);
-        // jqDynamicallyGeneratedElements = jqFixture.find("span");
-        // t.equal(
-        //     jqDynamicallyGeneratedElements.text(),
-        //     "i3i3",
-        //     "elements correctly restored according to new condition, correctly processed"
-        // );
-        //
-        // publicApi.switchConditions(false, true);
-        // jqDynamicallyGeneratedElements = jqFixture.find("span");
-        // t.equal(
-        //     jqDynamicallyGeneratedElements.text(),
-        //     "i4i4",
-        //     "elements correctly restored according to new condition, correctly processed"
-        // );
+        jqDynamicallyGeneratedElements = jqFixture.find("span");
+        t.equal(
+            jqDynamicallyGeneratedElements.text(),
+            "item1item1item2item2",
+            "correctly generated elements after init"
+        );
+
+        publicApi.changeItems("i1", "i2");
+        jqDynamicallyGeneratedElements = jqFixture.find("span");
+        t.equal(
+            jqDynamicallyGeneratedElements.text(),
+            "i1i1i2i2",
+            "elements correctly processed if conditions not changed"
+        );
+
+        publicApi.switchConditions(false, false);
+        jqDynamicallyGeneratedElements = jqFixture.find("span");
+        t.equal(
+            jqDynamicallyGeneratedElements.text(),
+            "",
+            "elements correctly removed"
+        );
+
+        publicApi.changeItems("i3", "i4");
+        publicApi.switchConditions(true, false);
+        jqDynamicallyGeneratedElements = jqFixture.find("span");
+        t.equal(
+            jqDynamicallyGeneratedElements.text(),
+            "i3i3",
+            "elements correctly restored according to new condition, correctly processed"
+        );
+
+        publicApi.switchConditions(false, true);
+        jqDynamicallyGeneratedElements = jqFixture.find("span");
+        t.equal(
+            jqDynamicallyGeneratedElements.text(),
+            "i4i4",
+            "elements correctly restored according to new condition, correctly processed"
+        );
         
-        //testUtil.removeFixture();
+        testUtil.removeFixture();
         
         t.end();
     }
