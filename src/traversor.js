@@ -783,6 +783,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                         adapterMethodArguments.push(argument);
                     });
 
+                    v2mProcessElement(my.domView);
+                    
                     returnValue = currentControllerMethod.code.apply(controller, adapterMethodArguments);
 
                     m2vProcessElement(

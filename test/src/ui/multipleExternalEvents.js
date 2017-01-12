@@ -37,12 +37,12 @@ test(
 
         jqFixture.children().first().yellowCode("getAdapter").setVariable1("This is value 1.");
         t.equal(submodel.variable1, "This is value 1.", "after 1st event, variable 1");
-        t.equal(submodel.variable2, undefined, "after 1st event, variable 2");
-        t.equal(submodel.variable3, undefined, "after 1st event, variable 3");
+        t.equal(submodel.variable2, "", "after 1st event, variable 2");
+        t.equal(submodel.variable3, "", "after 1st event, variable 3");
 
         jqFixture.children().first().yellowCode("getAdapter").setVariable3("This is value 3.");
         t.equal(submodel.variable1, "This is value 1.", "after 2nd event, variable 1");
-        t.equal(submodel.variable2, undefined, "after 2nd event, variable 2");
+        t.equal(submodel.variable2, "", "after 2nd event, variable 2");
         t.equal(submodel.variable3, "This is value 3.", "after 2nd event, variable 3");
 
         jqFixture.children().first().yellowCode("getAdapter").setVariable2("This is value 2.");

@@ -14,6 +14,11 @@ test(
             );
 
         var controller = {
+            
+            init: function(model) {
+                model.value = "";
+            },
+            
             setValue: function(model) {
                 model.value = "something";
             }
