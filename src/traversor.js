@@ -115,13 +115,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         while (true) {
             jqCurrentSibling = jqCurrentSibling.next();
 
-            if (jqCurrentSibling.length > 0 && virtualNodes.isVirtual(jqCurrentSibling)) {
-                if (metadata.of(virtualNodes.getOriginal(jqCurrentSibling)).level >= metadata.of(virtualNodes.getOriginal(jqTemplate)).level) {
-                    domarrResult.push(jqCurrentSibling.get(0));
-                    continue;
-                }
-            }
-
             if (jqCurrentSibling.length === 0 || !domTemplates.isDynamicallyGenerated(jqCurrentSibling.get(0))) {
                 break;
             }
@@ -129,8 +122,6 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             domarrResult.push(jqCurrentSibling.get(0));
         }
 
-        console.log(virtualNodes.getOriginal(jqTemplate), " -> ", domarrResult);
-        
         return domarrResult;
     }
 
