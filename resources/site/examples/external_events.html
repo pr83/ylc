@@ -12,13 +12,13 @@
 
     <div id="view">
         <ul>
-            <div data-ylcBind="text: variable1"></div>
-            <div data-ylcBind="text: variable2"></div>
-            <div data-ylcBind="text: variable3"></div>
+            <li data-ylcBind="text: variable1"></li>
+            <li data-ylcBind="text: variable2"></li>
+            <li data-ylcBind="text: variable3"></li>
         </ul>
     </div>
 
-    <button id="button">Send external event</button>
+    <button id="button">Call controller method</button>
 
     <script>
 
@@ -42,7 +42,7 @@
 
         $("#button").click(function() {
             var adapter = $("#view").yellowCode("getAdapter");
-            alert(adapter.myMethod("aaa", "bbb", "ccc"));
+            console.log(adapter.myMethod("aaa", "bbb", "ccc"));
         });
 
     </script>

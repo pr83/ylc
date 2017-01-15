@@ -56,9 +56,9 @@
                             <li><a href="#advancedFeatures_expressionEvaluation">Expression evaluation</a></li>
                             <li><a href="#advancedFeatures_writableExpression">Writable expression</a></li>
                             <li><a href="#advancedFeatures_conditionals">Conditional elements</a></li>
-                            <li><a href="#advancedFeatures_externalEvents">External events</a></li>
                             <li><a href="#advancedFeatures_asynchronousModelUpdate">Asynchronous model update</a></li>
                             <li><a href="#advancedFeatures_jqueryWithinYlc">Using a jQuery plugin from within the view</a></li>
+                            <li><a href="#advancedFeatures_externalEvents">Accessing controller from outside</a></li>
                         </ul>
                     </li>
                     <li>
@@ -127,66 +127,107 @@
                     To specify the event handler, add an attribute called
                     <code>data-ylcEvents</code> to the element which triggers
                     the event.
-                    <ul>
-                        <li>
-                            To the left of the colon specify the <em>event name</em>.
-                            The event name is the same as used by jQuery.
-                            That means that you can even specify your own event, such as
-                            <code>data-ylcEvents="myEvent:&nbsp;myHandler"</code>
-                            and trigger it via jQuery:
-                            <code>$("myElement").trigger("myEvent")</code>.
-                        </li>
-                        <li>
-                            To the right of the colon specify the <em>event handler</em>. That is just
-                            the name of the controller object property which contains
-                            the handler function.
-                        </li>
-                    </ul>
-                    You can specify more event mappings, simply separate them
-                    by semicolon:
-                    <code>data-ylcEvents="event1: handler1; event2: handler2"</code>
+                <ul>
+                    <li>
+                        To the left of the colon specify the <em>event name</em>.
+                        The event name is the same as used by jQuery.
+                        That means that you can even specify your own event, such as
+                        <code>data-ylcEvents="myEvent:&nbsp;myHandler"</code>
+                        and trigger it via jQuery:
+                        <code>$("myElement").trigger("myEvent")</code>.
+                    </li>
+                    <li>
+                        To the right of the colon specify the <em>event handler</em>. That is just
+                        the name of the controller object property which contains
+                        the handler function.
+                    </li>
+                </ul>
+                You can specify more event mappings, simply separate them
+                by semicolon:
+                <code>data-ylcEvents="event1: handler1; event2: handler2"</code>
                 </p>
 
-                <h3 id="basicExample_attributes">Attributes</h3>
+                <h3 id="basicExample_attributes">Mapping of model variables onto view elements</h3>
                 <p>
-                    To specify a mapping of an element attribute onto a model
+                    To bind a piece of HTML text to a model variable, put the following piece of
+                    code in place of the HTML text: <code>{{<em>modelVariableExpression</em>}}</code>.
+                    The <em>modelVariableExpression</em> bit is an expression defining the model variable
+                    (see <a href="#advancedFeatures_expressionEvaluation">expression&nbsp;evaluation</a> for details).
+                </p>
+                <p>
+                    This syntax can also be used to specify a binding of an HTML element attribute onto
+                    a model variable, e.g.:<br/>
+                    <code>&lt;p&nbsp;class="{{classToUse}}"&gt;hello&lt;p&gt;</code><br/>
+                    as in the following example:
+                </p>
+                <div class="jqExample" data-sourceUrl="examples/attributes_mapping.html">
+                </div>
+                
+                <p>
+                    Not all attributes can be specified this way though. If you try and specify
+                    for example a <code>src</code> attribute of an <code>img</code> element
+                    as <code>{{myUrl}}</code>, the browser will try to load the image from the URL
+                    <code>"{{myUrl}}"</code> before Yellow code gets a change to replace
+                    <code>{{myUrl}}</code> with the actual value of the variable <code>myUrl</code>.
+                    Even though this has no effect on the user experience, it will result in a useless
+                    HTTP request to a non-existing (and nonsensical) URL.
+                </p>
+                
+                <p>
+                    A similar problem will arise with the <code>css</code> attribute, because some
+                    browsers will try to parse it as a CSS definition
+                    before Yellow code gets a chance to preprocess it.
+                </p>
+                
+                <p>
+                    In all such cases, you can always use a more generic method of attributes binding:
+                    to specify a mapping of an element attribute onto a model
                     variable, add an attribute called <code>data-ylcBind</code>
                     to the element.
-                    <ul>
-                        <li>
-                            To the left of the colon specify the <em>attribute name</em>.
-                            The attribute name is the same as the name of the jQuery
-                            getter / setter for that attribute. So to map the inner text
-                            of the element, use <code>text</code>, to manipulate the
-                            value of an input field, use <code>val</code>, etc.
-                            For some attributes jQuery uses getters / setters with a fairly
-                            generic name and the the first argument of the
-                            getter / setter further specifies the exact attribute to change.
-                            (For example take
-                            <code><a href="http://api.jquery.com/css/" target="_blank">css</a></code>
-                            or
-                            <code><a href="http://api.jquery.com/attr/" target="_blank">attr</a></code>.)
-                            In Yellow code such attributes are defined using a dot notation:
-                            to the left of the dot is the getter / setter name and to the
-                            right there is the first argument passed to the getter / setter.
-                            So for example if your model contains a variable called
-                            <code>color</code> and you wish to map it to a paragraph color,
-                            your mapping will look like this:
-                            <code>
-                                data-ylcBind="css.color:&nbsp;color"
-                            </code>.
-                            <br />
-                            If you create a jQuery plugin which follows the standard jQuery
-                            getter / setter convention, you can refer to the associated property
-                            from the Yellow code bindings:
-                            <code>data-ylcBind="myProperty: myModelVariable"</code>. This means
-                            that you can easily extend Yellow code simply by extending jQuery.
-                        </li>
-                        <li>
-                            To the right of the colon is the model variable name.
-                        </li>
-                    </ul>
+                <ul>
+                    <li>
+                        To the left of the colon specify the <em>attribute name</em>.
+                        The attribute name is the same as the name of the jQuery
+                        getter/setter for that attribute. So to map the inner text
+                        of the element, use <code>text</code>, to manipulate the
+                        value of an input field, use <code>val</code>, etc.
+                        For some attributes jQuery uses getters/setters with a fairly
+                        generic name and the the first argument of the
+                        getter/setter further specifies the exact attribute to change.
+                        (As an example take
+                        <code><a href="http://api.jquery.com/css/" target="_blank">css</a></code>
+                        or
+                        <code><a href="http://api.jquery.com/attr/" target="_blank">attr</a></code>.)
+                        In Yellow code such attributes are defined using a dot notation:
+                        to the left of the dot is the getter/setter name and to the
+                        right there is the first argument passed to the getter/setter.
+                        So for example if your model contains a variable called
+                        <code>color</code> and you wish to map it to a paragraph color,
+                        your mapping will look like this:
+                        <code>
+                            data-ylcBind="css.color:&nbsp;color"
+                        </code>.
+                        <br />
+                        If you create a jQuery plugin which follows the standard jQuery
+                        getter/setter convention, you can refer to the associated property
+                        from the Yellow code bindings:
+                        <code>data-ylcBind="myProperty: myModelVariable"</code>. This means
+                        that you can easily extend Yellow code simply by extending jQuery.
+                    </li>
+                    <li>
+                        To the right of the colon is the model variable name.
+                    </li>
+                </ul>
                 </p>
+
+                <p>
+                    <strong>Tip:</strong>
+                    You can format the definition inside the <code>data-ylcBind</code> attribute
+                    making use of whitespace and C-style comments:
+                </p>
+
+                <div class="jqExample" data-sourceUrl="examples/whitespace.html">
+                </div>
 
                 <h3 id="basicExample_loops">Loops</h3>
                 <p>
@@ -288,54 +329,77 @@
                     <code>data-ylcIf="<em>condition</em>"</code>.
                 </p>
 
-                <h3 id="advancedFeatures_externalEvents">External events</h3>
-                <div class="jqExample" data-sourceUrl="examples/external_events.html">
+                <h3 id="advancedFeatures_parametrizedHandlerCalls">Parametrized handler calls</h3>
+                <p>
+                    The event handler specification (in <code>data-ylcEvents</code>) can contain
+                    parameters. The syntax is pretty standard - the parameters can be specified
+                    as a comma-separated list in round brackets immediately following the handler
+                    method name. The parameters will be passed to the controller method.
+                    Since the first parameter of the controller method is the model and the second
+                    one is the context, the first parameter specified in the <code>data-ylcEvents</code>
+                    handler specification will be passed as the third parameter of the controller
+                    method, the second parameter in the specification will be passed as the fourth
+                    controller method parameter, and so on.
+                </p>
+                <div class="jqExample" data-sourceUrl="examples/parametrizedHandlerCalls.html">
                 </div>
+
+                <h3 id="advancedFeatures_adHocExpressions">Ad hoc expressions</h3>
                 <p>
-                    Sometimes it's useful to read or update the model upon an event
-                    which is not triggered by any Yellow code view element.
-                    For example, if only a fraction of your page uses Yellow
-                    code and the rest uses conventional jQuery or plain JavaScript,
-                    it's useful if the parts outside the Yellow code view can
-                    somehow read and/or manipulate the model and refresh the
-                    view accordingly.
+                    Yellow code normally reports an error if an expression in the <code>data-ylcBind</code>
+                    references a non-existing variable/field. This is to prevent errors caused by typos.
                 </p>
                 <p>
-                    That's exactly what the concept of <em>external events</em> is for.
+                    Consider the expression <code>data-ylcBind="val: addresses[1].postcode"</code>.
+                    If the model doesn't contain any variable called <code>addresses</code>,
+                    Yellow code will complain:<br/>
+                    <code>Error: Left hand side of the '[]' operator must not be null/undefined.</code><br/>
+                    If, on the other hand, <code>addresses[1]</code> evaluates to <code>null</code>
+                    or <code>undefined</code>, Yellow code will complain:<br/>
+                    <code>Error: Left hand side of the '.' operator must not be null/undefined.</code><br/>
                 </p>
                 <p>
-                    To invoke an external event, first get so called <em>model adapter</em>.
-                    Model adapter is a JavaScript object which for every controller method
-                    contains exactly one method with the same name as the controller.
-                    The adapter method, however, doesn't take the two parameters that every controller
-                    method gets - neither <code>model</code> nor <code>context</code>.
+                    Sometimes, however, it might be quite tedious to initialize the data structure
+                    representing the model data, especially if it's supposed to contain nested
+                    objects. Luckily, you can use a feature called <em>ad-hoc expression evaluation</em>,
+                    which allows you to ignore <code>null</code>/<code>undefined</code> objects
+                    when reading the data from the model and even create these objects on the fly
+                    when writing to the model.
                 </p>
                 <p>
-                    Example: If the controller contains methods<br/>
-                    <code>myMethod1(model, context, additionalArg1, additionalArg2)</code> and<br/>
-                    <code>myMethod2(model, context, additionalArg1)</code>, the
-                    controller adapter object will contain methods<br/>
-                    <code>myMethod1(additionalArg1, additionalArg2)</code> and<br/>
-                    <code>myMethod2(additionalArg1)</code>.
+                    The <em>ad-hoc</em> object reference operator, <code>#</code>, can be used any time
+                    when a standard reference operator (the dot) would be used. The difference is that
+                    if we read from the model and the left hand side of <code>#</code>is
+                    <code>null</code>/<code>undefined</code>, the result will be
+                    <code>null</code>/<code>undefined</code> and no error will be thrown. Moreover, if we
+                    write to the model, the variable on the left hand side of <code>#</code> will be
+                    created (initialized to an empty object <code>{}</code>).
                 </p>
                 <p>
-                    If you call the adapter method, Yellow code will call the corresponding
-                    controller method on your behalf, passing it the up-to-date model
-                    and the context object. After the controller method finishes, Yellow code
-                    will automatically redraw the view and apply all the changes the
-                    controller method did to the model.
+                    The <em>ad-hoc</em> array reference operator, <code>@</code>, can be used any time
+                    when a standard reference operator (square brackets) would be used. The difference is that
+                    if we read from the model and the left hand side of <code>@</code>is
+                    <code>null</code>/<code>undefined</code>, the result will be
+                    <code>null</code>/<code>undefined</code> and no error will be thrown. Moreover, if we
+                    write to the model, the variable on the left hand side of <code>@</code> will be
+                    created (initialized to an empty array <code>[]</code>).
                 </p>
                 <p>
-                    If the controller method returns a value, this value will be also returned
-                    by the corresponding adapter method.
+                    Finally, the <em>null coalescing operator</em> is used to specify a default value
+                    of a primitive data type (string, number). The syntax is
+                    <code>modelExpression ||| defaultValue</code>. If <code>modelExpression</code>
+                    evaluates to <code>null</code>/<code>undefined</code>, the result of reading
+                    this expression will be <code>defaultValue</code> and no error will be thrown.
+                    The expression is writable (L-value); writing to it has the same effect as writing
+                    to <code>modelExpression</code> directly.
                 </p>
                 <p>
-                    To get the adapter object, call<br/>
-                    <code>$(<em>your_view_selector</em>).yellowCode("getAdapter")</code>
-                    passing the root element of the view <strong>after</strong> the
-                    Yellow code plugin was initialized on that element by passing it
-                    the controller.
+                    In the example below, there's no <code>init</code> method to create the model
+                    data structure. Yet, the data structure is automatically initialized as soon as it's
+                    needed by the <code>print</code> event handler.
                 </p>
+                <div class="jqExample" data-sourceUrl="examples/adHocExpressions.html">
+                </div>
 
                 <h3 id="advancedFeatures_asynchronousModelUpdate">Asynchronous model update</h3>
                 <div class="jqExample" data-sourceUrl="examples/asynch_update.html">
@@ -391,6 +455,81 @@
                     by the <code>datepicker</code> plugin.
                 </p>
 
+                <h3 id="advancedFeatures_externalEvents">Accessing controller from outside</h3>
+                <div class="jqExample" data-sourceUrl="examples/external_events.html">
+                </div>
+                <p>
+                    Sometimes it's useful to read or update the model upon an event
+                    which is not triggered by any Yellow code view element.
+                    For example, if only a fraction of your page uses Yellow
+                    code and the rest uses conventional jQuery or plain JavaScript,
+                    it's useful if the parts outside the Yellow code controller can
+                    somehow read and/or manipulate the model and refresh the
+                    view accordingly.
+                </p>
+                <p>
+                    To invoke a controller method from outside the controller, first get so called
+                    <em>model adapter</em>.
+                    Model adapter is a JavaScript object which for every controller method
+                    contains exactly one method with the same name as the controller.
+                    The adapter method, however, doesn't take the two parameters that every controller
+                    method gets - neither <code>model</code> nor <code>context</code>.
+                </p>
+                <p>
+                    Example: If the controller contains methods<br/>
+                    <code>myMethod1(model, context, additionalArg1, additionalArg2)</code> and<br/>
+                    <code>myMethod2(model, context, additionalArg1)</code>, the
+                    controller adapter object will contain methods<br/>
+                    <code>myMethod1(additionalArg1, additionalArg2)</code> and<br/>
+                    <code>myMethod2(additionalArg1)</code>.
+                </p>
+                <p>
+                    If you call the adapter method, Yellow code will call the corresponding
+                    controller method on your behalf, passing it the up-to-date model
+                    and the context object. After the controller method finishes, Yellow code
+                    will automatically redraw the view and apply all the changes the
+                    controller method did to the model.
+                </p>
+                <p>
+                    If the controller method returns a value, this value will be also returned
+                    by the corresponding adapter method.
+                </p>
+                <p>
+                    To get the adapter object, call<br/>
+                    <code>$(<em>your_view_selector</em>).yellowCode("getAdapter")</code>
+                    passing the root element of the view <strong>after</strong> the
+                    Yellow code plugin was initialized on that element by passing it
+                    the controller.
+                </p>
+
+                <h3>Public API</h3>
+                
+                <p>
+                    Alternatively, instead of using an adapter, you can use so called
+                    <em>public API</em> to access a controller method from outside the controller.
+                    The only difference between an adapter and
+                    a public API is that adapter exposes every single controller
+                    method to the outside world, whereas public API only exposes
+                    those controller methods which are marked as a part of the
+                    public API in the controller. To mark a controller method
+                    as a part of the public API, use the <code>@PublicApi</code>
+                    annotation. Instead of defining the method as a field of
+                    the controller, define a controller field called <code>"@PublicApi"</code>
+                    instead and put all publicly accessible methods as its fields,
+                    as the following example demonstrates.
+                </p>
+
+                <div class="jqExample" data-sourceUrl="examples/public_api.html">
+                </div>
+
+                <p>
+                    As you can see, to get the public API proxy object, call<br/>
+                    <code>$(<em>your_view_selector</em>).yellowCode("getPublicApi")</code>
+                    passing the root element of the view <strong>after</strong> the
+                    Yellow code plugin was initialized on that element by passing it
+                    the controller.
+                </p>
+                
                 <h2 id="moreExamples">More examples</h2>
 
                 <h3 id="moreExamples_nestedLoop">Nested loop</h3>
@@ -407,17 +546,17 @@
 
                 <h2 id="download">Download (version {{VERSION}})</h2>
                 <p>
-                    <ul>
-                        <li><a href="yellowCode.min.js" download>download minified</a></li>
-                        <li><a href="yellowCode.js" download>download full size</a></li>
-                    </ul>
+                <ul>
+                    <li><a href="yellowCode.min.js" download>download minified</a></li>
+                    <li><a href="yellowCode.js" download>download full size</a></li>
+                </ul>
                 </p>
 
                 <h2 id="sourceCodeRepository">Source code repository</h2>
                 <p>
                     The full source code can be checked out from
                     <a href="{{REPOSITORY_URL}}"> {{REPOSITORY_URL}}</a>.
-                </a>
+                    </a>
                 </p>
 
                 <h2 id="license">License</h2>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="../yellowCode.min.js"></script>
-
 </head>
 
 <body>
@@ -11,12 +11,12 @@
 <h1>Basic example</h1>
 <div id="dynamicList">
     <button data-ylcEvents="click: addElement">Add element</button>
-    <p data-ylcBind="text: greeting">Some greeting...</p>
+    <p>{{greeting}}</p>
     <ul>
         <li data-ylcLoop="element,status: list">
             <div data-ylcBind="css.color: color">
-                <span data-ylcBind="text: status.index"></span>:
-                <span data-ylcBind="text: element">Some dynamic element...</span>
+                <span>{{status.index}}</span>:
+                <span>{{element}}</span>
                 <a href="#" data-ylcEvents="click: deleteElement">
                     <small>(delete)</small>
                 </a>
@@ -44,8 +44,8 @@
 
         deleteElement: function(model, context) {
             model.list.splice(
-                    context.loopStatuses.status.index,
-                    1
+                context.loopStatuses.status.index,
+                1
             );
         }
     };
