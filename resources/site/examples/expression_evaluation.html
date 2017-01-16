@@ -73,8 +73,11 @@
     <dt>!(5 &gt; 2)</dt>
     <dd><span data-ylcBind="text: !(5 > 2)"></span></dd>
 
-    <dt>myFunction(1, 2, x, y)</dt>
-    <dd><span data-ylcBind="text: myFunction(1, 2, x, y)"></span></dd>
+    <dt>myControllerFunction(1, 2, x, y)</dt>
+    <dd><span data-ylcBind="text: myControllerFunction(1, 2, x, y)"></span></dd>
+
+    <dt>myModelFunction(100000)</dt>
+    <dd><span data-ylcBind="text: myModelFunction(100000)"></span></dd>
 
 </dl>
 
@@ -104,9 +107,13 @@
 
             model.x = 15;
             model.y = 17;
+            
+            model.myModelFunction = function(base) {
+                return base + model.x1 + model.x2 + model.x3 + model.x4;
+            };
         },
 
-        myFunction: function(arg1, arg2, arg3, arg4) {
+        myControllerFunction: function(arg1, arg2, arg3, arg4) {
             return  "arg1: " + arg1 + ", " +
                     "arg2: " + arg2 + ", " +
                     "arg3: " + arg3 + ", " +

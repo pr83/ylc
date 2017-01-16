@@ -56,6 +56,10 @@
                             <li><a href="#advancedFeatures_expressionEvaluation">Expression evaluation</a></li>
                             <li><a href="#advancedFeatures_writableExpression">Writable expression</a></li>
                             <li><a href="#advancedFeatures_conditionals">Conditional elements</a></li>
+
+                            <li><a href="#advancedFeatures_parametrizedHandlerCalls">Parametrized handler calls</a></li>
+                            <li><a href="#advancedFeatures_adHocExpressions">Ad hoc expressions</a></li>
+                            
                             <li><a href="#advancedFeatures_asynchronousModelUpdate">Asynchronous model update</a></li>
                             <li><a href="#advancedFeatures_jqueryWithinYlc">Using a jQuery plugin from within the view</a></li>
                             <li><a href="#advancedFeatures_externalEvents">Accessing controller from outside</a></li>
@@ -294,17 +298,29 @@
                 <h2 id="advancedFeatures">Advanced features</h2>
 
                 <h3 id="advancedFeatures_expressionEvaluation">Expression evaluation</h3>
-                <div class="jqExample" data-sourceUrl="examples/expression_evaluation.html">
-                </div>
                 <p>
                     An element attribute can be bound not only to a model variable,
                     but to an expression consisting of model variables.
-                    The example above illustrates what kinds of operators may be used.
+                    The example below illustrates what kinds of operators may be used.
                 </p>
                 <p>
-                    Note that if you need to define a custom utility function, that must
-                    go to the controller, not to the model.
+                    Note that you can define your custom function to refer to
+                    from the view expressions. It is possible to define such functions both
+                    as the fields of the controller as well as the fields of the model.
+                <p>
+                    Unlike the event handlers, such controller field functions do <em>not</em> take
+                    the model and the context as their first parameters - the number and order of
+                    the parameters is the same as you would like to have in the view expression.
+                    See <code>myControllerFunction</code>  in the example below.
                 </p>
+                <p>
+                    Functions defined as controller fields, however, can't refer to the
+                    model variables. If you need your custom function to have access to
+                    the model variables, define it as a field of the model instead.
+                    See <code>myModelFunction</code> in the example below.
+                </p>
+                <div class="jqExample" data-sourceUrl="examples/expression_evaluation.html">
+                </div>
 
                 <h3 id="advancedFeatures_writableExpression">Writable expression</h3>
                 <div class="jqExample" data-sourceUrl="examples/writable_expression.html">
@@ -342,6 +358,25 @@
                     controller method parameter, and so on.
                 </p>
                 <div class="jqExample" data-sourceUrl="examples/parametrizedHandlerCalls.html">
+                </div>
+
+                <h3 id="advancedFeatures_eventObject">Event object and event handler return value</h3>
+                <p>
+                    The JavaScript event object is accessible to the controller event handler under
+                    <code>context.eventObject</code> (where <code>context</code> is the second parameter
+                    of the controller method).
+                </p>
+                <p>
+                    The event handler can return <code>false</code> to indicate that a default action
+                    should be suppressed and that the event should not bubble up.
+                </p>
+                <p>
+                    Both the event object and the return value are demonstrated in the following example;
+                    the event object is used to get the coordinates of where the user clicked within
+                    the clickable area. The handler returns <code>false</code> to suppress redirecting
+                    the user to the URL specified by <code>href</code>:
+                </p>
+                <div class="jqExample" data-sourceUrl="examples/eventObject.html">
                 </div>
 
                 <h3 id="advancedFeatures_adHocExpressions">Ad hoc expressions</h3>
