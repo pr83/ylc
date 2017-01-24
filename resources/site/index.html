@@ -58,16 +58,23 @@
                             <li><a href="#advancedFeatures_conditionals">Conditional elements</a></li>
 
                             <li><a href="#advancedFeatures_parametrizedHandlerCalls">Parametrized handler calls</a></li>
+
+                            <li><a href="#advancedFeatures_eventObject">Event object and event handler return value</a></li>
+                            
                             <li><a href="#advancedFeatures_adHocExpressions">Ad hoc expressions</a></li>
                             
                             <li><a href="#advancedFeatures_asynchronousModelUpdate">Asynchronous model update</a></li>
                             <li><a href="#advancedFeatures_jqueryWithinYlc">Using a jQuery plugin from within the view</a></li>
                             <li><a href="#advancedFeatures_externalEvents">Accessing controller from outside</a></li>
+
+                            <li><a href="#advancedFeatures_controllerMixins">Controller mixins</a></li>
+                            <li><a href="#advancedFeatures_i18n">Localization</a></li>
                         </ul>
                     </li>
                     <li>
                         <a href="#moreExamples">More examples</a>
                         <ul class="nav nav-stacked">
+                            <li><a href="#moreExamples_nestedViews">Nested views</a></li>
                             <li><a href="#moreExamples_nestedLoop">Nested loop</a></li>
                             <li><a href="#moreExamples_dynamicSum">Dynamic sum</a></li>
                             <li><a href="#moreExamples_passwordStrength">Password strength</a></li>
@@ -564,6 +571,88 @@
                     Yellow code plugin was initialized on that element by passing it
                     the controller.
                 </p>
+
+                <h3 id="advancedFeatures_controllerMixins">Controller mixins</h3>
+                <p>
+                    Yellow code allows you to reuse controller code via the mixin concept.
+                    If multiple Yellow code controllers in your project contain the same
+                    methods (be it event handlers or custom functions), you may wish to 
+                    factor the common pieces out into a separate object. Such an object
+                    is called a <em>mixin</em>.
+                </p>
+                <p>
+                    There are two ways how to make the mixin methods accessible to a Yellow code view:
+                </p>
+                <ul>
+                    <li>
+                        <p>
+                            Locally for a single view - when binding the view and the controller
+                            via <code>$(...).yellowCode(...)</code>, instead of passing a single
+                            controller to Yellow code, pass an array where the first element is
+                            the controller and the remaining elements are one or more mixins:
+                            <br/>
+                            <code>$("#viewId").yellowCode([controller, mixin1, mixin2, ...]);</code>
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            Globally for the whole page - this will make the mixin automatically accessible
+                            to all views:
+                            <br/>
+                            <code>$.yellowCode.standardMixins = [mixin1, mixin2, ...];</code>
+                        </p>
+                    </li>
+                </ul>
+                <p>
+                    The effect of making the mixins accessible to the view is the same as if you
+                    copy-pasted the methods of all the mixins and appended them to the existing methods
+                    of the controller.
+                </p>
+                <p>
+                    The example below also shows how to access the mixin methods from the controller.
+                    The <code>context</code> object contains a field called <code>controllerMethods</code>,
+                    which is an object with all the methods defined in any of the mixins made accessible
+                    (locally or globally).
+                </p>
+                <div class="jqExample" data-sourceUrl="examples/mixins.html">
+                </div>
+
+                <h3 id="advancedFeatures_i18n">Localization</h3>
+                <p>
+                    In the Yellow code view you can use the following syntax to define a localizable
+                    text:
+                    <code>@{{key, arg0, arg1, arg2, ...}}</code>
+                </p>
+                <p>
+                    Parameter <code>key</code> is the key of the localized message (without quotes),
+                    the additional arguments are the expressions which will be evaluated by Yellow code
+                    and passed to the translation function.
+                    Any valid expression which can be used in <code>data-ylcBind</code> mapping
+                    or in <code>{{...}}</code> is also valid here.
+                </p>
+                <p>
+                    Example:
+                    <code>@{{key.of.localizable.message, 55, modelObject.field1 + modelObject.field2, 'cool'}}</code>
+                </p>
+                <p>
+                    Yellow code itself doesn't define the translation function. For the localizable strings
+                    to work, the controller has to define a function called
+                    <code>translate</code>, which takes the message key as its first parameter
+                    and the values of the expressions (after evaluation) as its additional parameters.
+                    Typically, the <code>translate</code> function will be placed to the global
+                    mixing so that it's available to all views.
+                </p>
+                <p>
+                    The example below shows a "poor man's" <code>translate</code> function
+                    implementation. For production consider using some mature library such
+                    as <a target="_blank" href="https://github.com/yahoo/intl-messageformat">intl-messageformat</a>.
+                    In essence it is very straightforward to integrate any localization library
+                    with Yellow code: simply define a global mixin with the <code>translate</code>
+                    method which will pass its arguments to your chosen localization library
+                    and return the result.
+                </p>
+                <div class="jqExample" data-sourceUrl="examples/i18n.html">
+                </div>
                 
                 <h2 id="moreExamples">More examples</h2>
 
