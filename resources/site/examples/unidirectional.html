@@ -9,16 +9,13 @@
 <body>
 <h1>Unidirectional mappings</h1>
 <div id="unidirectional">
-    <h2>Wrong:</h2>
+    <h2>Wrong</h2>
     <label>
         Name:
         <input data-ylcBind="val: person1.name" data-ylcEvents="keyup:" />
-        <input data-ylcBind="val: person1.surname" data-ylcEvents="keyup:" />
     </label>
     <p>
-        Hello
-        <span data-ylcBind="text: person1.name"></span>
-        <span data-ylcBind="text: person1.surname"></span>!
+        Hello <span data-ylcBind="text: person1.name"></span>!
     </p>
     
     <hr />
@@ -26,15 +23,11 @@
     <h2>Correct</h2>
 
     <label>
-        Name:
-        <input data-ylcBind="val -> person2.name" data-ylcEvents="keyup:" />
-        <input data-ylcBind="val -> person2.surname" data-ylcEvents="keyup:" />
+        Name: <input data-ylcBind="val -> person2.name" data-ylcEvents="keyup:" />
     </label>
 
     <p>
-        Hello
-        <span data-ylcBind="text <- person2.name"></span>
-        <span data-ylcBind="text <- person2.surname"></span>!
+        Hello <span data-ylcBind="text <- person2.name"></span>!
     </p>
     
 </div>
