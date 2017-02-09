@@ -69,8 +69,9 @@
 
                             <li><a href="#advancedFeatures_controllerMixins">Controller mixins</a></li>
                             <li><a href="#advancedFeatures_i18n">Localization</a></li>
-
+                            <li><a href="#onlySync">On event only synchronize</a></li>
                             <li><a href="#unidirectional">Unidirectional mappings</a></li>
+                            <li><a href="#prefield">Prefield</a>
                         </ul>
                     </li>
                     <li>
@@ -656,6 +657,34 @@
                 <div class="jqExample" data-sourceUrl="examples/i18n.html">
                 </div>
 
+                <h3 id="onlySync">On event only synchronize</h3>
+                <p>
+                    Normally the changes in the view are propagated to the model just before
+                    the event handler is run and the changes in the model are propagated to the
+                    view just after the handler is run.
+                </p>
+                <p>
+                    Yellow code permits a special syntax of the <code>data-ylcEvents</code>
+                    attribute to specify that upon a certain event only the view-to-model
+                    and model-to-view synchronization should be done, but no actual event handler
+                    should be called - to the left of the colon specify the name of the event as
+                    usual, but leave the right hand side empty, e.g.:<br/>
+                    <code>data-ylcEvents="click:"</code>
+                </p>
+                <p>
+                    The example below demonstrates what it might be useful for. We have a model
+                    variable <code>n</code> which represents a number the user entered. We would
+                    like to show the square of this number and update the square as soon as the
+                    user enters a different number. We detect user entering a number by listening
+                    to the <code>keyup</code> event. We could define a handler for that event, but
+                    it is easier to just bind the <code>n*n</code> expression with the
+                    text of the <code>&lt;span&gt;</code> where the square is supposed to be shown
+                    and tell Yellow code to synchronize the view with the model upon the <code>keyup</code>
+                    event.
+                </p>
+                <div class="jqExample" data-sourceUrl="examples/onlySync.html">
+                </div>
+                
                 <h3 id="unidirectional">Unidirectional mappings</h3>
                 <p>
                     Try to run the following example and type something to the "Name" field:
@@ -694,6 +723,46 @@
                     For the input field we only need to propagate the change in the view
                     (user typing something) to the model. For the paragraph text we only
                     need to propagate the change in the model to the view.
+                </p>
+
+                <h3 id="prefield">Prefield</h3>
+                <p>
+                    Some input fields on the page are often automatically pre-populated by the browser
+                    when the page loads (username and password being the typical examples).
+                    When using Yellow code, you may sometime notice that these pre-populated
+                    fields are deleted immediately after Yellow code initializes the view.
+                    See the below example "Wrong" section:
+                </p>
+                <div class="jqExample" data-sourceUrl="examples/prefield.html">
+                </div>
+                <p>
+                    The reason is that after the controller <code>init</code> method is
+                    called, Yellow code updates the view according to what has been set
+                    in the model by <code>init</code>. If <code>init</code> sets a model
+                    variable to some value and that model variable is referenced from
+                    such a browser-populated input field, the browser-populated value
+                    will be overwritten by the model value. Similarly, if <code>init</code>
+                    doesn't set that model variable at all, the browser-populated field
+                    will be effectively erased.
+                </p>
+                <p>
+                    To overcome this problem, Yellow code introduces the concept called
+                    <em>prefields</em> (a pun on "pre-filled" and "field"). In the example
+                    in the "Correct" section you can see that <code>init</code> sets
+                    the model variable to <code>context.PREFIELD</code>. The effect is
+                    that after <code>init</code> is called and Yellow code updates
+                    the view according to the model for the first time, the model variables
+                    with value <code>context.PREFIELD</code> will be ignored and their
+                    corresponding view fields will be left intact. From that point on,
+                    however, the field will be treated as usual: When an event occurs
+                    and Yellow code will need to update the model according to the view
+                    (before passing control to the controller event handler), it will copy
+                    the field value (which might still have the same browser-populated value
+                    or it might have been changed by the user) to the model. After the event handler
+                    finishes, the value of the corresponding model variable will be copied
+                    over to the view again. So basically it's a normal bidirectional mapping,
+                    the only difference being that no model-to-view synchronization is done
+                    immediately after <code>init</code> is called.
                 </p>
                 
                 <h2 id="moreExamples">More examples</h2>

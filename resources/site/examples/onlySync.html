@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../yellowCode.min.js"></script>
+</head>
+
+<body>
+<h1>On event only synchronize</h1>
+<div id="onlySync">
+    <label>
+        n =
+        <input data-ylcBind="val: n" data-ylcEvents="keyup:" />
+    </label>
+    <p>
+        n<sup>2</sup> = <span>{{n * n}}</span>
+    </p>
+</div>
+
+<script>
+
+    $("#onlySync").yellowCode({
+        init: function(model) {
+            model.n = 0;
+        }
+    });
+
+</script>
+
+</body>
+
+</html>
