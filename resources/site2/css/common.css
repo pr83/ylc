@@ -1,0 +1,98 @@
+@font-face {
+    font-family: "Lato Regular";
+    src:
+        local('Lato Regular'),
+        url('../font/Lato-Regular.ttf');
+}
+
+@font-face {
+    font-family: "Lato Heavy";
+    src:
+        local('Lato Heavy'),
+        url(../font/Lato-Heavy.ttf)
+}
+
+body {
+    font-family: "Lato Regular", sans-serif;
+    font-size: 14pt;
+    margin: 2em 3em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Lato Heavy", sans-serif;
+}
+
+h1 {
+    font-size: 3.4em;
+    margin-bottom: 0.9em;
+}
+
+h2 {
+    font-size: 2.8em;
+    margin-bottom: 0.7em;
+    border-bottom: solid 1px;
+}
+
+p {
+    margin-bottom: 0.68em;
+}
+
+.menu {
+    display: inline-block;
+    width: 30%;
+    margin: 0;
+}
+
+.contents {
+    display: inline-block;
+    width: 70%;
+    margin: 0;
+}
+
+code {
+    font-family: monospace;
+    color: darkgreen;
+}
+
+pre {
+    font-family: monospace;
+}
+
+ul {
+    list-style-type: square;
+    margin-left: 10%;
+}
+
+.example {
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+.example .preWrapper {
+    background-color: #F0F0F0;
+    border-radius: 0.25em;
+    border: solid black 1px;
+}
+
+.example .preWrapper pre {
+    margin: 0 0.25em 0 0;
+    padding: 1em 2em;
+    max-height: 350px;
+    overflow-y: scroll;
+}
+
+.example button {
+    margin-left: auto;
+    margin-right: 0;
+
+    margin-top: 1em;
+    width: 8em;
+    height: 2.5em;
+    display: block;
+    border-radius: 0.25em;
+    
+    background-color: darkgreen;
+    font: 1.1em "Lato Heavy";
+    border: none;
+    color: white;
+}

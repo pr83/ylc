@@ -35,6 +35,8 @@
 
     "jsep": "~0.3.0",
 
-    "grunt-contrib-watch": "~0.6.1"
+    "grunt-contrib-watch": "~0.6.1",
+
+    "grunt-includes": "~1.0.0"
   }
 }

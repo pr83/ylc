@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+    <script src="../yellowCode.min.js"></script>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/black-tie/jquery-ui.css" />
+
+</head>
+
+<body>
+<h1>Using a jQuery plugin from within the view</h1>
+<div id="form">
+    <button data-ylcEvents="click: addElement">+</button><br />
+    <div data-ylcLoop="dynamicInput,dynamicInputStatus: dynamicInputs">
+        <input
+                data-ylcBind="val: dynamicInput.value"
+                data-ylcEvents="ylcElementInitialized: installDatePicker" />
+        <button data-ylcEvents="click: remove">-</button>
+    </div>
+</div>
+
+<script>
+
+    var controller = {
+        init: function(model) {
+            model.dynamicInputs = [];
+            model.sum = 0;
+        },
+
+        addElement: function(model) {
+            model.dynamicInputs.push({});
+        },
+
+        remove: function(model, context) {
+            var index = context.loopStatuses["dynamicInputStatus"].index;
+            model.dynamicInputs.splice(index, 1);
+        },
+
+        installDatePicker: function(model, context) {
+            $(context.domElement).datepicker({
+                onSelect: function() {
+                    context.updateModel(function(model, context) {
+                        this.dateSelected(model, context);
+                    });
+                }
+            });
+        },
+
+        dateSelected: function(model, context) {
+            var value = model.dynamicInputs[context.loopStatuses.dynamicInputStatus.index];
+            alert(value.value);
+        }
+
+    };
+
+    $("#form").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

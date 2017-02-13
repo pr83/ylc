@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../yellowCode.min.js"></script>
+</head>
+
+<body>
+
+<h1>Parametrized handler calls</h1>
+<div id="parametrizedHandlerCalls">
+    <div>
+        <div data-ylcLoop="label,status: sequence">
+            <button data-ylcEvents="
+                click:
+                    doSomething('button clicked', status.index, label)
+            ">{{label}}</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var controller = {
+        init: function(model) {
+            model.sequence = ["one", "two", "three", "four", "five"];
+        },
+
+        doSomething: function(model, context, message, index, label) {
+            alert(message + "; index: " + index + "; label: " + label);
+        }
+    };
+
+    $("#parametrizedHandlerCalls").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

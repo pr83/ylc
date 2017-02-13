@@ -64,7 +64,37 @@ module.exports = function(grunt) {
             flatten: true,
             src: ["resources/site/examples/*"],
             dest: "dist/site/examples"
-          }
+          },
+            
+            
+            // site 2
+            {
+                expand: true,
+                flatten: true,
+                src: ["resources/site2/examples/*"],
+                dest: "dist/site2/examples"
+            },
+
+            {
+                expand: true,
+                flatten: true,
+                src: ["resources/site2/js/*"],
+                dest: "dist/site2/js"
+            },
+
+            {
+                expand: true,
+                flatten: true,
+                src: ["resources/site2/css/*"],
+                dest: "dist/site2/css"
+            },
+
+            {
+                expand: true,
+                flatten: true,
+                src: ["tmp/yellowCode.min.js", "tmp/yellowCode.js"],
+                dest: "dist/site2"
+            }
         ]
       },
       dummyUglify: {
@@ -76,6 +106,15 @@ module.exports = function(grunt) {
         ]
       }
     },
+      
+      includes: {
+          files: {
+              src: ["resources/site2/*.html"],
+              dest: "dist/site2",
+              flatten: true,
+              cwd: '.'
+          }
+      },
 
     replace: {
       dist: {
@@ -164,6 +203,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-banner');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-includes');
 
   grunt.registerTask(
       'default',
@@ -176,7 +216,8 @@ module.exports = function(grunt) {
         'copy',
         'replace',
         'clean:after_dist',
-        'browserify:tests'
+        'browserify:tests', 
+        'includes'
       ]
   );
 

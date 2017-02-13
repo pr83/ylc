@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../yellowCode.min.js"></script>
+</head>
+
+<body>
+
+<h1>Whitespace</h1>
+<div id="whitespace">
+    <div data-ylcBind="
+        /* this is a comment */
+        text:
+            person.name + ' ' + person.surname;
+        attr.style:
+            'color: ' + color;
+    "></div>
+</div>
+
+<script>
+
+    var controller = {
+        init: function(model) {
+            model.person = {
+                name: "John",
+                surname: "Smith"
+            };
+            model.color = "green";
+        }
+    };
+
+    $("#whitespace").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

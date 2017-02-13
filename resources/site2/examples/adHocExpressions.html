@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../yellowCode.min.js"></script>
+</head>
+
+<body>
+
+<h1>Ad-hoc navigation</h1>
+<div id="adHocExpressions">
+    
+    <div>
+        <h2>address 1</h2>
+        <label>
+            line2:
+            <input data-ylcBind="val: (addresses@0)#line2" />
+        </label>
+        <label>
+            city:
+            <input data-ylcBind="val: (addresses@0)#city" />
+        </label>
+        <label>
+            postcode:
+            <input data-ylcBind="val: (addresses@0)#postcode" />
+        </label>
+    </div>
+    
+    <div>
+        <h2>address 2</h2>
+        <label>
+            line2:
+            <input data-ylcBind="val: (addresses@1)#line2" />
+        </label>
+        <label>
+            city:
+            <input data-ylcBind="val: (addresses@1)#city" />
+        </label>
+        <label>
+            postcode:
+            <input data-ylcBind="val: (addresses@1)#postcode" />
+        </label>
+    </div>
+    
+    <label>
+        name:
+        <input data-ylcBind="val: name ||| 'John'" />
+    </label>
+    
+    <button data-ylcEvents="click: print">Print</button>
+    
+</div>
+
+<script>
+
+    var controller = {
+        print: function(model, context) {
+            alert(JSON.stringify(model));
+        }
+    };
+
+    $("#adHocExpressions").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

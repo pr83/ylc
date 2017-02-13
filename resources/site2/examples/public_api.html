@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../yellowCode.min.js"></script>
+
+</head>
+
+<body>
+
+<h1>Public API</h1>
+
+    <div id="view">
+        <ul>
+            <li data-ylcBind="text: variable1"></li>
+            <li data-ylcBind="text: variable2"></li>
+            <li data-ylcBind="text: variable3"></li>
+        </ul>
+    </div>
+
+    <button id="button">Call public controller method</button>
+
+    <script>
+
+        var controller = {
+            init: function(model) {
+                model.variable1 = "";
+                model.variable2 = "";
+                model.variable3 = "";
+            },
+
+            myPrivateMethod: function(model, context) {
+            },
+            
+            "@Public": {
+                myPublicMethod1: function(model, context, arg1, arg2, arg3) {
+                    model.variable1 = arg1;
+                    model.variable2 = arg2;
+                    model.variable3 = arg3;
+
+                    return "OK1";
+                },
+
+                myPublicMethod2: function(model, context, arg1, arg2, arg3) {
+                    model.variable1 = arg1;
+                    model.variable2 = arg2;
+                    model.variable3 = arg3;
+
+                    return "OK2";
+                }
+            }
+            
+        };
+
+        $("#view").yellowCode(controller);
+
+        $("#button").click(function() {
+            var api = $("#view").yellowCode("getPublicApi");
+            console.log(api.myPublicMethod2("aaa", "bbb", "ccc"));
+        });
+
+    </script>
+
+
+</body>
+
+</html>

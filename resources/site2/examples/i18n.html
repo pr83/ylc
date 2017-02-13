@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../yellowCode.min.js"></script>
+
+</head>
+
+<body>
+<h1>Localization</h1>
+<div id="localization">
+    <h2>@{{main.page.headline}}</h2>
+    <p>@{{main.page.intro}}</p>
+    <hr />
+    <p>@{{main.page.youhavephotos, person.name, person.surname, nPhotos}}</p>
+</div>
+
+<script>
+
+    var translations = {
+        "main.page.headline": "Photos",
+        "main.page.intro": "Welcome!",
+        "main.page.youhavephotos": "Hello {0} {1}, you have {2} photos!"
+    };
+
+    function replaceAll(string, search, replacement) {
+        return string.split(search).join(replacement);
+    }
+    
+    function findInTranslationTable(translations, key, arg0, arg1, arg2) {
+        var result = translations[key];
+        result = replaceAll(result, "{0}", arg0);
+        result = replaceAll(result, "{1}", arg1);
+        result = replaceAll(result, "{2}", arg2);
+        return result;
+    }
+    
+    $("#localization").yellowCode({
+        init: function(model) {
+            model.person = {
+                name: "Peter",
+                surname: "Brown"
+            };
+            model.nPhotos = 10;
+        },
+        
+        translate: function(key, arg0, arg1, arg2) {
+            return findInTranslationTable(translations, key, arg0, arg1, arg2);
+        }
+    });
+
+</script>
+
+</body>
+
+</html>

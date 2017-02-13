@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../yellowCode.min.js"></script>
+
+</head>
+
+<body>
+
+<h1>Asynchronous model update</h1>
+
+<div id="view">
+    <p>data: <span data-ylcBind="text: variable"></span></p>
+    <button data-ylcEvents="click: callAjax">Get value!</button>
+</div>
+
+<script>
+
+    var controller = {
+        init: function(model) {
+            model.variable = "";
+        },
+
+        callAjax: function(model, context) {
+            model.variable = "(please wait)";
+            setTimeout(
+                    function() {
+                        context.updateModel(function(model) {
+                            model.variable = Math.random();
+                        });
+                    },
+                    800
+            );
+        }
+    };
+
+    $("#view").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

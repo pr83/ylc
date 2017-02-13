@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../yellowCode.min.js"></script>
+
+</head>
+
+<body>
+<h1>Prefield</h1>
+<div id="prefield">
+    <h2>Wrong</h2>
+    <label>
+        Username:
+        <input data-ylcBind="val: field1" value="prePopulatedByBrowser" />
+    </label>
+    
+    <hr />
+    
+    <h2>Correct</h2>
+
+    <label>
+        Username:
+        <input data-ylcBind="val: field2" value="prePopulatedByBrowser" />
+    </label>
+    
+</div>
+
+<script>
+
+    $("#prefield").yellowCode({
+        init: function(model, context) {
+            model.field2 = context.PREFIELD;
+        }
+    });
+
+</script>
+
+</body>
+
+</html>
