@@ -44,8 +44,8 @@ test(
         jqFixture.find('button:contains("1")').click();
         jqFixture.find('button:contains("2")').click();
 
-        t.equals(spy.args[0][0], "1", "first button correct arg passed");
-        t.equals(spy.args[1][0], "2", "second button correct arg passed");
+        t.equals(spy.args[0][0], 1, "first button correct arg passed");
+        t.equals(spy.args[1][0], 2, "second button correct arg passed");
 
         testUtil.removeFixture();
 

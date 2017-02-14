@@ -1,5 +1,6 @@
 var errorUtil = require('./errorUtil'),
-    sanityCheck = require('./sanityCheck');
+    sanityCheck = require('./sanityCheck'),
+    conversions = require('./conversions');
 
 module.exports = {};
 
@@ -423,12 +424,23 @@ module.exports.newContext = function newContext(
         }
     ];
 
+    function tryConversionToTypeOfCurrentModelValue(valueToSet, matchingEvaluator, ast) {
+        var currentModelValue;
+        
+        try {
+            currentModelValue = matchingEvaluator.getter.call(null, ast);
+            return conversions.tryConversionToSameType(valueToSet, currentModelValue);
+            
+        } catch (error) {
+            return valueToSet;
+        }
+    }
+    
     function gsAstValue(ast, valueToSet, adHocValue, forceSet) {
 
         var evaluatorIndex,
             currentEvaluator,
-            matchingEvaluator,
-            valueToReturn;
+            matchingEvaluator;
 
         for (evaluatorIndex = 0; evaluatorIndex < AST_EVALUATORS.length; evaluatorIndex += 1) {
             currentEvaluator = AST_EVALUATORS[evaluatorIndex];
@@ -446,7 +458,12 @@ module.exports.newContext = function newContext(
             return matchingEvaluator.getter.call(currentEvaluator, ast, adHocValue);
 
         } else if (matchingEvaluator.setter) {
-            matchingEvaluator.setter.call(currentEvaluator, ast, valueToSet, forceSet);
+            matchingEvaluator.setter.call(
+                currentEvaluator,
+                ast,
+                tryConversionToTypeOfCurrentModelValue(valueToSet, matchingEvaluator, ast),
+                forceSet
+            );
         }
 
         /*
