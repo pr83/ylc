@@ -1,0 +1,58 @@
+@import 'skin.scss';
+
+body {
+  font-family: $font-stack-body;
+  font-size: $basic-font-size;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-stack-header;
+}
+
+h1, h2 {
+  color: white;
+}
+
+h1 {
+  font-size: 4em;
+  font-family: "Lato Hairline", sans-serif;
+  display: block;
+  margin-bottom: 0.7rem;
+}
+
+h2 {
+  font-size: 1.2em;
+}
+
+h3 {
+  font-size: 2.2em;
+  margin-bottom: 0.7em;
+  border-bottom: solid 1px;
+}
+
+p {
+  margin-bottom: 0.68em;
+}
+
+code {
+  font-family: monospace;
+  color: $code-color;
+  background-color: $code-background-color;
+  border-radius: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+pre {
+  font-family: monospace;
+}
+
+ul {
+  list-style-type: square;
+  margin-left: 3em;
+}
+
+a {
+  text-decoration: none;
+  color: $link-color;
+}

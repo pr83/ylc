@@ -1,0 +1,18 @@
+.navigation {
+  list-style-type: none;
+  margin: 0;
+  li {
+
+    a {
+      display: block;
+      width: calc(100% - 2 * 0.3rem);
+      padding: 0.3rem;
+      background-color: white;
+    },
+    a:hover {
+      color: white;
+      background-color: darkgreen;
+      border-radius: 0.25em;
+    }
+  }
+}

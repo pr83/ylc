@@ -1,0 +1,48 @@
+.topWrapper {
+  width: 100%;
+  background-color: $top-background-color;
+}
+
+@mixin vertical-top {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+@mixin vertical-main {
+  margin-top: 2.5em;
+  margin-bottom: 2.5em;
+}
+
+@mixin horizontal-main {
+  display: inline-block;
+  width: calc(70% - 2.5em - 2.5em);
+  margin: 0 2.5em;
+  vertical-align: top;
+}
+
+@mixin horizontal-side {
+  display: inline-block;
+  width: calc(30% - 2.5em - 2.5em);
+  margin: 0 2.5em;
+  vertical-align: top;
+}
+
+.topMain {
+  @include horizontal-main;
+  @include vertical-top;
+}
+
+.topSide {
+  @include horizontal-side;
+  @include vertical-top;
+}
+
+.contents {
+  @include horizontal-main;
+  @include vertical-main;
+}
+
+.navigationPanel {
+  @include horizontal-side;
+  @include vertical-main;
+}

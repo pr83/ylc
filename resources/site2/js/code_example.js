@@ -123,7 +123,7 @@
 
                     buttonElement = $(domElement).find("button");
                     buttonElement.append(
-                        '<span class="glyphicon glyphicon-play"></span> Play'
+                        '<i class="fa fa-play" aria-hidden="true"></i>&nbsp;Play'
                     );
                     buttonElement.addClass("btn");
                     buttonElement.addClass("btn-primary");

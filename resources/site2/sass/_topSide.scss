@@ -1,0 +1,40 @@
+@import "buttonSkin";
+
+.topSide a {
+  @include buttonSkin;
+  display: flex;
+  align-items: center;
+  padding: 0.5em;
+  width: calc(100% - 2 * 0.5em);
+  margin-bottom: 0.5em;
+  border: 3px solid white;
+  color: white;
+  .fa {
+    font-size: 2rem;
+    padding-right: 1rem;
+  }
+}
+
+.topSide a.download {
+  background-color: cornsilk;
+  border-color: cornsilk;
+  color: darkgreen;
+}
+
+.topSide a.download:hover {
+  background-color: burlywood;
+  border-color: burlywood;
+  color: darkgreen;
+}
+
+.topSide a.github {
+  background-color: gold;
+  border-color: gold;
+  color: darkgreen;
+}
+
+.topSide a.github:hover {
+  background-color: orange;
+  border-color: orange;
+  color: darkgreen;
+}
