@@ -1,0 +1,6 @@
+@import "globalScheme";
+
+@mixin buttonSkin {
+  border-radius: $borderRadius;
+  font: 1.1em "Lato Heavy";
+}

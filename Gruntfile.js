@@ -154,6 +154,40 @@ module.exports = function (grunt) {
                         to: "<%= pkg.repository.url %>"
                     }
                 ]
+            },
+            site2: {
+                src: ["dist/site2/*.*"],
+                overwrite: true,
+                replacements: [
+                    {
+                        from: /\{\{VERSION\}\}/g,
+                        to: "<%= pkg.version %>"
+                    },
+                    {
+                        from: /\{\{YEAR\}\}/g,
+                        to: "2014-<%= grunt.template.today('yyyy') %>"
+                    },
+                    {
+                        from: /\{\{AUTHOR\}\}/g,
+                        to: "<%= pkg.author.name %>"
+                    },
+                    {
+                        from: /\{\{LICENSE_URL\}\}/g,
+                        to: "<%= pkg.ylc.licenseUrl %>"
+                    },
+                    {
+                        from: /\{\{LICENSE_NAME\}\}/g,
+                        to: "<%= pkg.ylc.licenseName %>"
+                    },
+                    {
+                        from: /\{\{EMAIL\}\}/g,
+                        to: "<%= pkg.author.email %>"
+                    },
+                    {
+                        from: /\{\{REPOSITORY_URL\}\}/g,
+                        to: "<%= pkg.repository.url %>"
+                    }
+                ]
             }
         },
 
@@ -237,6 +271,6 @@ module.exports = function (grunt) {
         ]
     );
 
-    grunt.registerTask("site2", ["copy:site2", "includes", "sass", "zip"]);
+    grunt.registerTask("site2", ["copy:site2", "includes", "sass", "zip", "replace:site2"]);
 
 };

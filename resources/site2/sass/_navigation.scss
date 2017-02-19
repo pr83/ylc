@@ -1,18 +1,21 @@
+@import "globalScheme";
+@import "rightSpacing";
+
+$topBottomPadding: 0.4rem;
+
 .navigation {
   list-style-type: none;
   margin: 0;
   li {
-
     a {
       display: block;
-      width: calc(100% - 2 * 0.3rem);
-      padding: 0.3rem;
-      background-color: white;
-    },
+      width: calc(100% - 2 * $rightSidePaddingLeftrem);
+      padding: $topBottomPadding $rightSidePaddingLeft;
+    }
     a:hover {
       color: white;
       background-color: darkgreen;
-      border-radius: 0.25em;
+      border-radius: $borderRadius;
     }
   }
 }

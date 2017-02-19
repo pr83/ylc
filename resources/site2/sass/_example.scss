@@ -1,4 +1,5 @@
-@import "buttonSkin";
+@import "globalScheme";
+@import "buttonScheme";
 
 .example {
 
@@ -7,10 +8,10 @@
 
   .preWrapper {
     background-color: #F0F0F0;
-    border-radius: 0.25em;
+    border-radius: $borderRadius;
     border: solid black 1px;
     pre {
-      margin: 0 0.25em 0 0;
+      margin: 0 $borderRadius 0 0;
       padding: 1em 2em;
       max-height: 350px;
       overflow-y: scroll;
@@ -28,6 +29,10 @@
     background-color: $button-color;
     border: none;
     color: $button-text;
+  }
+  
+  button:hover {
+    background-color: lighten($button-color, $buttonHoverLightenAmount);
   }
   
 }
