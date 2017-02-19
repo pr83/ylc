@@ -1,13 +1,21 @@
 @import "buttonSkin";
+@import "topSpacing";
+
+$downloadButtonColor: forestgreen;
+$downloadButtonColorHover: lighten($downloadButtonColor, 10%);
+$githubButtonColor: brown;
+$githubButtonColorHover: lighten($githubButtonColor, 10%);
+
+$buttonsPadding: 1rem;
 
 .topSide a {
   @include buttonSkin;
   display: flex;
   align-items: center;
-  padding: 0.5em;
+  padding: $buttonsPadding;
   width: calc(100% - 2 * 0.5em);
-  margin-bottom: 0.5em;
-  border: 3px solid white;
+  height: ($buttonsHeight - 2 * $buttonsPadding);
+  margin-bottom: $buttonsSpaceBetween;
   color: white;
   .fa {
     font-size: 2rem;
@@ -16,25 +24,25 @@
 }
 
 .topSide a.download {
-  background-color: cornsilk;
-  border-color: cornsilk;
-  color: darkgreen;
+  background-color: $downloadButtonColor;
+  border-color: $downloadButtonColor;
+  color: white;
 }
 
 .topSide a.download:hover {
-  background-color: burlywood;
-  border-color: burlywood;
-  color: darkgreen;
+  background-color: $downloadButtonColorHover;
+  border-color: $downloadButtonColorHover;
+  color: white;
 }
 
 .topSide a.github {
-  background-color: gold;
-  border-color: gold;
-  color: darkgreen;
+  background-color: $githubButtonColor;
+  border-color: $githubButtonColor;
+  color: white;
 }
 
 .topSide a.github:hover {
-  background-color: orange;
-  border-color: orange;
-  color: darkgreen;
+  background-color: $githubButtonColorHover;
+  border-color: $githubButtonColorHover;
+  color: white;
 }

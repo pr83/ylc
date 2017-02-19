@@ -1,0 +1,12 @@
+@import "topSpacing";
+
+h1 {
+  font-size: $h1Size;
+  font-family: "Lato Hairline", sans-serif;
+  display: block;
+  margin-bottom: $h1MarginBottom;
+}
+
+h2 {
+  font-size: $h2Size;
+}

@@ -1,0 +1,6 @@
+$h1Size: 6rem;
+$h1MarginBottom: 0.7rem;
+$h2Size: 1.2rem;
+
+$buttonsSpaceBetween: 0.5rem;
+$buttonsHeight: ($h1Size + $h1MarginBottom + $h2Size - $buttonsSpaceBetween) / 2;
