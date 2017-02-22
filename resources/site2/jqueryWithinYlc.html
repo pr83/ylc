@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Using a jQuery plugin from within the view</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Using a jQuery plugin from within the view</h3>
+        <div class="jqExample" data-sourceUrl="examples/jquery_within_ylc.html">
+        </div>
+        <p>
+            The above example shows how to install the
+            <code>datepicker</code> jQuery plugin
+            as soon as a (potentially dynamic) view element becomes visible.
+            First, mark the element with the following attribute:<br/>
+            <code>data-ylcEvents="ylcElementInitialized: <em>controller_method</em>"</code>.
+            <br/>
+            The <code>ylcElementInitialized</code> is a special Yellow code
+            event which will be triggered just when the view element is
+            initialized. For static element this happens after installing
+            the Yellow code plugin, for dynamic elements (elements within
+            loops and conditional elements) this happens when they are added
+            to the view and become visible. Replace <code><em>controller_method</em></code>
+            with the name of the controller method which will install your desired
+            jQuery plugin. To install the plugin the controller method needs the DOM
+            element. It will get it through the context object (passed to it as its
+            second parameter):
+            <code>context.domElement</code>.
+        </p>
+        <p>
+            Also note that the controller method in the above example makes
+            use of asynchronous events to react to an event which is triggered
+            by the <code>datepicker</code> plugin.
+        </p>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

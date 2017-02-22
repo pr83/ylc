@@ -18,4 +18,9 @@ $topBottomPadding: 0.4rem;
       border-radius: $borderRadius;
     }
   }
+  li.separator {
+    display: block;
+    height: 0.6rem;
+    padding: 0;
+  }
 }

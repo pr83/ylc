@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Writable expression</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Writable expression</h3>
+        <div class="jqExample" data-sourceUrl="examples/writable_expression.html">
+        </div>
+        <p>
+            This example shows that the value of the view element attribute
+            may be not only computed from an expression, but that the value
+            may also be assigned to that expression. If the values of the
+            above input fields are changed, their values will be assigned
+            to the corresponding expressions. Not all expressions are
+            assignable. One may write a value to the expression
+            <code>persons[0].name</code>, but not to
+            <code>"Mrs. " + persons[0].name + " " + persons[0].surname</code>.
+        </p>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

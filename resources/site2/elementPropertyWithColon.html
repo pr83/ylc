@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Element property with colon</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Element property with colon</h3>
+        <p>
+            Sometimes it's needed to bind an attribute which contains a colon it its name.
+            This is uncommon in HTML, but can happen in SVG. Since colon is used by the
+            <code>data-ylcBind</code> syntax, the colon needs to be escaped by putting
+            the backslash character just in front of it, as shown in the example:
+        </p>
+        <div class="jqExample" data-sourceUrl="examples/elementPropertyWithColon.html">
+        </div>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

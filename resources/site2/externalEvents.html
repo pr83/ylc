@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Accessing controller from outside</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Accessing controller from outside</h3>
+        <div class="jqExample" data-sourceUrl="examples/external_events.html">
+        </div>
+        <p>
+            Sometimes it's useful to read or update the model upon an event
+            which is not triggered by any Yellow code view element.
+            For example, if only a fraction of your page uses Yellow
+            code and the rest uses conventional jQuery or plain JavaScript,
+            it's useful if the parts outside the Yellow code controller can
+            somehow read and/or manipulate the model and refresh the
+            view accordingly.
+        </p>
+        <p>
+            To invoke a controller method from outside the controller, first get so called
+            <em>model adapter</em>.
+            Model adapter is a JavaScript object which for every controller method
+            contains exactly one method with the same name as the controller.
+            The adapter method, however, doesn't take the two parameters that every controller
+            method gets - neither <code>model</code> nor <code>context</code>.
+        </p>
+        <p>
+            Example: If the controller contains methods<br/>
+            <code>myMethod1(model, context, additionalArg1, additionalArg2)</code> and<br/>
+            <code>myMethod2(model, context, additionalArg1)</code>, the
+            controller adapter object will contain methods<br/>
+            <code>myMethod1(additionalArg1, additionalArg2)</code> and<br/>
+            <code>myMethod2(additionalArg1)</code>.
+        </p>
+        <p>
+            If you call the adapter method, Yellow code will call the corresponding
+            controller method on your behalf, passing it the up-to-date model
+            and the context object. After the controller method finishes, Yellow code
+            will automatically redraw the view and apply all the changes the
+            controller method did to the model.
+        </p>
+        <p>
+            If the controller method returns a value, this value will be also returned
+            by the corresponding adapter method.
+        </p>
+        <p>
+            To get the adapter object, call<br/>
+            <code>$(<em>your_view_selector</em>).yellowCode("getAdapter")</code>
+            passing the root element of the view <strong>after</strong> the
+            Yellow code plugin was initialized on that element by passing it
+            the controller.
+        </p>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

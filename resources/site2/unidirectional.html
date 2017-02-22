@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Unidirectional mappings</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Unidirectional mappings</h3>
+        <p>
+            Try to run the following example and type something to the "Name" field:
+        </p>
+        <div class="jqExample" data-sourceUrl="examples/unidirectional.html">
+        </div>
+        <p>
+            Did you notice that you were unable to enter anything to the field
+            in the section labeled "Wrong"? Whenever you typed something,
+            the contents of the text field was deleted.
+        </p>
+        <p>
+            The trouble is that below the input fields we have a paragraph of text
+            which also contains a binding to the model variable <code>name</code>:<br/>
+            <code>data-ylcBind="text: person1.name"</code>.
+            So when Yellow code synchronizes the changes in the view into the model,
+            it first encounters the text field, picks the text you have just typed in
+            and changes the model variable <code>name</code>, but in a while it encounters
+            the text paragraph, it picks the text it contains (which is an empty string)
+            and changes the model variable <code>name</code> again - to an empty string!
+        </p>
+        <p>
+            What we <em>really</em> want Yellow code to do is to change the text paragraph
+            to what the model contains, but do not change the model to what the paragraph
+            contains.
+        </p>
+        <p>
+            Luckily this is pretty easy to do. In the section labeled "Correct"
+            we have the same input field and the same paragraph as in the
+            section labeled "Wrong"; the only difference is that the bindings now
+            contain the "arrow" symbols <code>-&gt;</code> and <code>&lt;-</code>
+            between the attribute name and the binding expression, instead of the
+            colon. Whereas the colon specifies a 2-way binding, the arrows
+            define a unidirectional mapping: either a "view-to-model-mapping"
+            (<code>-&gt;</code>) or a "model-to-view-mapping" (<code>&lt;-</code>).
+            For the input field we only need to propagate the change in the view
+            (user typing something) to the model. For the paragraph text we only
+            need to propagate the change in the model to the view.
+        </p>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

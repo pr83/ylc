@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - On event only synchronize</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>On event only synchronize</h3>
+        <p>
+            Normally the changes in the view are propagated to the model just before
+            the event handler is run and the changes in the model are propagated to the
+            view just after the handler is run.
+        </p>
+        <p>
+            Yellow code permits a special syntax of the <code>data-ylcEvents</code>
+            attribute to specify that upon a certain event only the view-to-model
+            and model-to-view synchronization should be done, but no actual event handler
+            should be called - to the left of the colon specify the name of the event as
+            usual, but leave the right hand side empty, e.g.:<br/>
+            <code>data-ylcEvents="click:"</code>
+        </p>
+        <p>
+            The example below demonstrates what it might be useful for. We have a model
+            variable <code>n</code> which represents a number the user entered. We would
+            like to show the square of this number and update the square as soon as the
+            user enters a different number. We detect user entering a number by listening
+            to the <code>keyup</code> event. We could define a handler for that event, but
+            it is easier to just bind the <code>n*n</code> expression with the
+            text of the <code>&lt;span&gt;</code> where the square is supposed to be shown
+            and tell Yellow code to synchronize the view with the model upon the <code>keyup</code>
+            event.
+        </p>
+        <div class="jqExample" data-sourceUrl="examples/onlySync.html">
+        </div>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

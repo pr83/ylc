@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Parametrized handler calls</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Parametrized handler calls</h3>
+        <p>
+            The event handler specification (in <code>data-ylcEvents</code>) can contain
+            parameters. The syntax is pretty standard - the parameters can be specified
+            as a comma-separated list in round brackets immediately following the handler
+            method name. The parameters will be passed to the controller method.
+            Since the first parameter of the controller method is the model and the second
+            one is the context, the first parameter specified in the <code>data-ylcEvents</code>
+            handler specification will be passed as the third parameter of the controller
+            method, the second parameter in the specification will be passed as the fourth
+            controller method parameter, and so on.
+        </p>
+        <div class="jqExample" data-sourceUrl="examples/parametrizedHandlerCalls.html">
+        </div>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Basic Example</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Basic Example</h3>
+
+        This is an example of a simple page using Yellow code:
+        
+        <div class="jqExample" data-sourceUrl="examples/basic_example.html">
+        </div>
+
+        <h4 id="basicExample_controller">Controller</h4>
+        <p>
+            All the model manipulation is done from within
+            the <em>controller</em>. The controller is a plain JavaScript
+            object which consists of methods.
+        </p>
+        <p>
+            The <code>init</code> method is called automatically when the
+            plugin initializes. Its task is to initialize the model.
+            It takes the model as its first parameter.
+        </p>
+        <p>
+            The other methods are event handlers. They are called when an
+            event is triggered. Their task is to update the model accordingly.
+            The event handlers also take the model as their first parameter.
+        </p>
+
+        <h4 id="basicExample_events">Events</h4>
+        
+        <p>
+            To specify the event handler, add an attribute called
+            <code>data-ylcEvents</code> to the element which triggers
+            the event.
+        </p>
+        <ul>
+            <li>
+                To the left of the colon specify the <em>event name</em>.
+                The event name is the same as used by jQuery.
+                That means that you can even specify your own event, such as
+                <code>data-ylcEvents="myEvent:&nbsp;myHandler"</code>
+                and trigger it via jQuery:
+                <code>$("myElement").trigger("myEvent")</code>.
+            </li>
+            <li>
+                To the right of the colon specify the <em>event handler</em>. That is just
+                the name of the controller object property which contains
+                the handler function.
+            </li>
+        </ul>
+        
+        <p>
+        You can specify more event mappings, simply separate them
+        by semicolon:
+        <code>data-ylcEvents="event1: handler1; event2: handler2"</code>
+        </p>
+
+        <h4 id="basicExample_attributes">Mapping of model variables onto view elements</h4>
+        <p>
+            To bind a piece of HTML text to a model variable, put the following piece of
+            code in place of the HTML text: <code>{{<em>modelVariableExpression</em>}}</code>.
+            The <em>modelVariableExpression</em> bit is an expression defining the model variable
+            (see <a href="expressionEvaluation.html">expression&nbsp;evaluation</a> for details).
+        </p>
+        <p>
+            This syntax can also be used to specify a binding of an HTML element attribute onto
+            a model variable, e.g.:<br/>
+            <code>&lt;p&nbsp;class="{{classToUse}}"&gt;hello&lt;p&gt;</code><br/>
+            as in the following example:
+        </p>
+        <div class="jqExample" data-sourceUrl="examples/attributes_mapping.html">
+        </div>
+
+        <p>
+            Not all attributes can be specified this way though. If you try and specify
+            for example a <code>src</code> attribute of an <code>img</code> element
+            as <code>{{myUrl}}</code>, the browser will try to load the image from the URL
+            <code>"{{myUrl}}"</code> before Yellow code gets a change to replace
+            <code>{{myUrl}}</code> with the actual value of the variable <code>myUrl</code>.
+            Even though this has no effect on the user experience, it will result in a useless
+            HTTP request to a non-existing (and nonsensical) URL.
+        </p>
+
+        <p>
+            A similar problem will arise with the <code>css</code> attribute, because some
+            browsers will try to parse it as a CSS definition
+            before Yellow code gets a chance to preprocess it.
+        </p>
+
+        <p>
+            In all such cases, you can always use a more generic method of attributes binding:
+            to specify a mapping of an element attribute onto a model
+            variable, add an attribute called <code>data-ylcBind</code>
+            to the element.
+        </p>
+        <ul>
+            <li>
+                To the left of the colon specify the <em>attribute name</em>.
+                The attribute name is the same as the name of the jQuery
+                getter/setter for that attribute. So to map the inner text
+                of the element, use <code>text</code>, to manipulate the
+                value of an input field, use <code>val</code>, etc.
+                For some attributes jQuery uses getters/setters with a fairly
+                generic name and the the first argument of the
+                getter/setter further specifies the exact attribute to change.
+                (As an example take
+                <code><a href="http://api.jquery.com/css/" target="_blank">css</a></code>
+                or
+                <code><a href="http://api.jquery.com/attr/" target="_blank">attr</a></code>.)
+                In Yellow code such attributes are defined using a dot notation:
+                to the left of the dot is the getter/setter name and to the
+                right there is the first argument passed to the getter/setter.
+                So for example if your model contains a variable called
+                <code>color</code> and you wish to map it to a paragraph color,
+                your mapping will look like this:
+                <code>
+                    data-ylcBind="css.color:&nbsp;color"
+                </code>.
+                <br />
+                If you create a jQuery plugin which follows the standard jQuery
+                getter/setter convention, you can refer to the associated property
+                from the Yellow code bindings:
+                <code>data-ylcBind="myProperty: myModelVariable"</code>. This means
+                that you can easily extend Yellow code simply by extending jQuery.
+            </li>
+            <li>
+                To the right of the colon is the model variable name.
+            </li>
+        </ul>
+
+        <p>
+            <strong>Tip:</strong>
+            You can format the definition inside the <code>data-ylcBind</code> attribute
+            making use of whitespace and C-style comments:
+        </p>
+
+        <div class="jqExample" data-sourceUrl="examples/whitespace.html">
+        </div>
+
+        <h4 id="basicExample_loops">Loops</h4>
+        <p>
+            Yellow code allows you to generate some of the DOM elements
+            dynamically. In the example above the model contains an array
+            and we want to have one <code>&lt;li&gt;</code>
+            element (with children) for each array element.
+        </p>
+        <p>
+            To specify that an element should be generated for each model
+            array element, add an attribute
+            <code>data-ylcLoop="element,status:&nbsp;list"</code>
+            to the corresponding view element. The <code>status</code>
+            variable is optional, you don't have to specify it:
+            <code>data-ylcLoop="element:&nbsp;list"</code>.
+        </p>
+        <dl>
+            <dt><code>list</code></dt>
+            <dd>
+                Replace this with the name of the model variable which
+                represents the array to iterate through.
+            </dd>
+
+            <dt><code>element</code></dt>
+            <dd>
+                Replace this with the name of the variable which will refer
+                to the current element. This is <em>not</em> the model
+                variable, but it can be used anywhere where a model variable
+                would be used (such as in the <code>data-ylcBind</code> binding).
+                The variable is writable - changing it will change the corresponding
+                array element.
+            </dd>
+
+            <dt><code>status</code></dt>
+            <dd>
+                Replace this with the name of the variable which will refer
+                to the current iteration status. This is <em>not</em> the model
+                variable, but it can be used anywhere where a model variable
+                would be used (such as in the <code>data-ylcBind</code> binding).
+                The variable is read-only. It encapsulates the iteration index,
+                which can be accessed like this: <code>status.index</code>.
+                <br/>
+                Also note that the status variable is accessible from within
+                the controller method. The second parameter passed to the controller
+                method is the <em>context</em>, which contains a field called
+                <code>loopStatuses</code>. Because our status variable defined
+                in the view is called <code>status</code>, we can access the status object
+                like this: <code>context.loopStatuses.status</code>. The value of the status
+                object will be the iteration status valid for the element which triggered
+                the event. Note that <code>context.loopStatuses</code> may contain
+                multiple status objects - this will happen if you have a nested loop
+                in your view and both the parent and the child loop define a status
+                variable.
+            </dd>
+        </dl>
+
+        <h4 id="basicExample_puttingItAllTogether">Putting it all together</h4>
+        <p>
+            Once you have your view and controller ready, initialize
+            the plugin by calling:<br/>
+            <code>$("<em>your_view_selector</em>").yellowCode(controller);</code>.<br/>
+        </p>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

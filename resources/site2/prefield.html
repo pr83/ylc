@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Prefield</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3 id="prefield">Prefield</h3>
+        <p>
+            Some input fields on the page are often automatically pre-populated by the browser
+            when the page loads (username and password being the typical examples).
+            When using Yellow code, you may sometime notice that these pre-populated
+            fields are deleted immediately after Yellow code initializes the view.
+            See the below example "Wrong" section:
+        </p>
+        <div class="jqExample" data-sourceUrl="examples/prefield.html">
+        </div>
+        <p>
+            The reason is that after the controller <code>init</code> method is
+            called, Yellow code updates the view according to what has been set
+            in the model by <code>init</code>. If <code>init</code> sets a model
+            variable to some value and that model variable is referenced from
+            such a browser-populated input field, the browser-populated value
+            will be overwritten by the model value. Similarly, if <code>init</code>
+            doesn't set that model variable at all, the browser-populated field
+            will be effectively erased.
+        </p>
+        <p>
+            To overcome this problem, Yellow code introduces the concept called
+            <em>prefields</em> (a pun on "pre-filled" and "field"). In the example
+            in the "Correct" section you can see that <code>init</code> sets
+            the model variable to <code>context.PREFIELD</code>. The effect is
+            that after <code>init</code> is called and Yellow code updates
+            the view according to the model for the first time, the model variables
+            with value <code>context.PREFIELD</code> will be ignored and their
+            corresponding view fields will be left intact. From that point on,
+            however, the field will be treated as usual: When an event occurs
+            and Yellow code will need to update the model according to the view
+            (before passing control to the controller event handler), it will copy
+            the field value (which might still have the same browser-populated value
+            or it might have been changed by the user) to the model. After the event handler
+            finishes, the value of the corresponding model variable will be copied
+            over to the view again. So basically it's a normal bidirectional mapping,
+            the only difference being that no model-to-view synchronization is done
+            immediately after <code>init</code> is called.
+        </p>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

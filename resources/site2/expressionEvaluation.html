@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Expression evaluation</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Expression evaluation</h3>
+        <p>
+            An element attribute can be bound not only to a model variable,
+            but to an expression consisting of model variables.
+            The example below illustrates what kinds of operators may be used.
+        </p>
+        <p>
+            Note that you can define your custom function to refer to
+            from the view expressions. It is possible to define such functions both
+            as the fields of the controller as well as the fields of the model.
+        <p>
+            Unlike the event handlers, such controller field functions do <em>not</em> take
+            the model and the context as their first parameters - the number and order of
+            the parameters is the same as you would like to have in the view expression.
+            See <code>myControllerFunction</code>  in the example below.
+        </p>
+        <p>
+            Functions defined as controller fields, however, can't refer to the
+            model variables. If you need your custom function to have access to
+            the model variables, define it as a field of the model instead.
+            See <code>myModelFunction</code> in the example below.
+        </p>
+        <div class="jqExample" data-sourceUrl="examples/expression_evaluation.html">
+        </div>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

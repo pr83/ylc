@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Yellow code - controller mixins</title>
+    <title>Yellow code - Controller mixins</title>
     include "inc/head.html"
 </head>
 
@@ -12,54 +12,53 @@
         include "inc/top.html"
     </div>
 
-    <div>
 
-        <div class="contents">
-            
-            <h3>Controller mixins</h3>
-            <p>
-                Yellow code allows you to reuse controller code via the mixin concept.
-                If multiple Yellow code controllers in your project contain the same
-                methods (be it event handlers or custom functions), you may wish to
-                factor the common pieces out into a separate object. Such an object
-                is called a <em>mixin</em>.
-            </p>
-            <p>
-                There are two ways how to make the mixin methods accessible to a Yellow code view:
-            </p>
-            <ul>
-                <li>
-                    <p>
-                        Locally for a single view - when binding the view and the controller
-                        via <code>$(...).yellowCode(...)</code>, instead of passing a single
-                        controller to Yellow code, pass an array where the first element is
-                        the controller and the remaining elements are one or more mixins:
-                        <br/>
-                        <code>$("#viewId").yellowCode([controller, mixin1, mixin2, ...]);</code>
-                    </p>
-                </li>
-                <li>
-                    <p>
-                        Globally for the whole page - this will make the mixin automatically accessible
-                        to all views:
-                        <br/>
-                        <code>$.yellowCode.standardMixins = [mixin1, mixin2, ...];</code>
-                    </p>
-                </li>
-            </ul>
-            <p>
-                The effect of making the mixins accessible to the view is the same as if you
-                copy-pasted the methods of all the mixins and appended them to the existing methods
-                of the controller.
-            </p>
-            <p>
-                The example below also shows how to access the mixin methods from the controller.
-                The <code>context</code> object contains a field called <code>controllerMethods</code>,
-                which is an object with all the methods defined in any of the mixins made accessible
-                (locally or globally).
-            </p>
-            <div class="jqExample" data-sourceUrl="examples/mixins.html">
-            </div>
+    <div class="contents">
+        
+        <h3>Controller mixins</h3>
+        <p>
+            Yellow code allows you to reuse controller code via the mixin concept.
+            If multiple Yellow code controllers in your project contain the same
+            methods (be it event handlers or custom functions), you may wish to
+            factor the common pieces out into a separate object. Such an object
+            is called a <em>mixin</em>.
+        </p>
+        <p>
+            There are two ways how to make the mixin methods accessible to a Yellow code view:
+        </p>
+        <ul>
+            <li>
+                <p>
+                    Locally for a single view - when binding the view and the controller
+                    via <code>$(...).yellowCode(...)</code>, instead of passing a single
+                    controller to Yellow code, pass an array where the first element is
+                    the controller and the remaining elements are one or more mixins:
+                    <br/>
+                    <code>$("#viewId").yellowCode([controller, mixin1, mixin2, ...]);</code>
+                </p>
+            </li>
+            <li>
+                <p>
+                    Globally for the whole page - this will make the mixin automatically accessible
+                    to all views:
+                    <br/>
+                    <code>$.yellowCode.standardMixins = [mixin1, mixin2, ...];</code>
+                </p>
+            </li>
+        </ul>
+        <p>
+            The effect of making the mixins accessible to the view is the same as if you
+            copy-pasted the methods of all the mixins and appended them to the existing methods
+            of the controller.
+        </p>
+        <p>
+            The example below also shows how to access the mixin methods from the controller.
+            The <code>context</code> object contains a field called <code>controllerMethods</code>,
+            which is an object with all the methods defined in any of the mixins made accessible
+            (locally or globally).
+        </p>
+        <div class="jqExample" data-sourceUrl="examples/mixins.html">
+        </div>
     
     </div><!--
     

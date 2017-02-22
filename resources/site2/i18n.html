@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Localization</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Localization</h3>
+        <p>
+            In the Yellow code view you can use the following syntax to define a localizable
+            text:
+            <code>@{{key, arg0, arg1, arg2, ...}}</code>
+        </p>
+        <p>
+            Parameter <code>key</code> is the key of the localized message (without quotes),
+            the additional arguments are the expressions which will be evaluated by Yellow code
+            and passed to the translation function.
+            Any valid expression which can be used in <code>data-ylcBind</code> mapping
+            or in <code>{{...}}</code> is also valid here.
+        </p>
+        <p>
+            Example:
+            <code>@{{key.of.localizable.message, 55, modelObject.field1 + modelObject.field2, 'cool'}}</code>
+        </p>
+        <p>
+            Yellow code itself doesn't define the translation function. For the localizable strings
+            to work, the controller has to define a function called
+            <code>translate</code>, which takes the message key as its first parameter
+            and the values of the expressions (after evaluation) as its additional parameters.
+            Typically, the <code>translate</code> function will be placed to the global
+            mixing so that it's available to all views.
+        </p>
+        <p>
+            The example below shows a "poor man's" <code>translate</code> function
+            implementation. For production consider using some mature library such
+            as <a target="_blank" href="https://github.com/yahoo/intl-messageformat">intl-messageformat</a>.
+            In essence it is very straightforward to integrate any localization library
+            with Yellow code: simply define a global mixin with the <code>translate</code>
+            method which will pass its arguments to your chosen localization library
+            and return the result.
+        </p>
+        <div class="jqExample" data-sourceUrl="examples/i18n.html">
+        </div>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

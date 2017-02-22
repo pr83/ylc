@@ -14,13 +14,14 @@ h1, h2 {
 }
 
 h3 {
-  font-size: 2.2em;
+  font-size: 2.6em;
   margin-bottom: 0.7em;
-  border-bottom: solid 1px;
 }
 
-p {
-  margin-bottom: 0.68em;
+h4 {
+  font-size: 1.4em;
+  margin-top: 1.3em;
+  margin-bottom: 0.5em;
 }
 
 code {
@@ -36,9 +37,32 @@ pre {
   font-family: monospace;
 }
 
+p {
+  margin-bottom: 0.68em;
+}
+
 ul {
   list-style-type: square;
   margin-left: 3em;
+  margin-bottom: 0.68em;
+}
+
+p + ul {
+  margin-top: -0.68em;
+}
+
+li {
+  padding-top: 0.4em;
+}
+
+dt {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+dd {
+  margin-left: 3em;
+  margin-bottom: 0.68em;
 }
 
 a {

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Conditional elements</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Conditional elements</h3>
+        <div class="jqExample" data-sourceUrl="examples/conditionals.html">
+        </div>
+        <p>
+            To show an element only if a certain condition is fulfilled,
+            add the following attribute:
+            <code>data-ylcIf="<em>condition</em>"</code>.
+        </p>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

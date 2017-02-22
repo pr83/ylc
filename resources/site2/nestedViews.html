@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Example: Nested views</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+        
+        <h3>Example: Nested views</h3>
+        <p>
+            The following example demonstrates that a Yellow code view can be nested
+            inside another Yellow code view and each view can have its own model
+            and controller.
+        </p>
+        <p>
+            The first view is a simple color picker. It is actually wrapped inside
+            a simple jQuery plugin called <code>colorWidget</code>. This plugin
+            transforms a DIV it is applied to into a colored rectangle which, when clicked,
+            opens a color picker and when the user selects a color in the color picker,
+            the color of the rectangle is changed and the picker is closed. The plugin
+            further defines a jQuery-style getter/setter to read/change the current
+            color programmatically:
+        <ul>
+            <li><code>$(...).colorWidget("color")</code> to read the current color,</li>
+            <li><code>$(...).colorWidget("color", "green")</code> to change the current color.</li>
+        </ul>
+        </p>
+        <p>
+            Since Yellow code understands the jQuery getter/setter convention, the color of the
+            rectangle can be bound to the model like this:
+            <code>&lt;div data-ylcBind="colorWidget.color: color"&gt;</code>
+            This binding is defined by the outer Yellow code view. The outer view
+            simply defines a couple of rectangles in various colors. The colorful
+            rectangles are DIVs onto which the <code>colorWidget</code> has been
+            applied as soon as the DIVs became initialized.
+        </p>
+        <div class="jqExample" data-sourceUrl="examples/nestingViews.html">
+        </div>
+    
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

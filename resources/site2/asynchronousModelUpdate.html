@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Asynchronous model update</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Asynchronous model update</h3>
+        <div class="jqExample" data-sourceUrl="examples/asynch_update.html">
+        </div>
+        <p>
+            Normally the view is redrawn as soon as the controller method exits.
+            Sometimes, however, the controller method can't update the model
+            before it exists, and in that case the changes to the model
+            would not be reflected in the view. The most notable example
+            is an AJAX call. If the controller method calls AJAX and
+            updates the model according to the result of the call,
+            the model will be updated long after the controller method exists.
+        </p>
+        <p>
+            That's exactly the problem the asynchronous model solves.
+            In the above example we simulate an AJAX call. In the controller method
+            we synchronously set a model variable value to "(please wait)" and
+            trigger an asynchronous event. Upon that event we can't simply change
+            the model, because it's too late. The changes would not be reflected
+            in the view. Instead, we call <code>context.updateModel</code>
+            (remember <code>context</code> is the second parameter passed to
+            every controller method). We pass an updater function to it.
+            The updater function takes the same parameters as the controller
+            methods do. When it exists, changes in the model it makes will be
+            propagated to the view.
+        </p>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

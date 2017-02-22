@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Ad hoc expressions</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Ad hoc expressions</h3>
+        <p>
+            Yellow code normally reports an error if an expression in the <code>data-ylcBind</code>
+            references a non-existing variable/field. This is to prevent errors caused by typos.
+        </p>
+        <p>
+            Consider the expression <code>data-ylcBind="val: addresses[1].postcode"</code>.
+            If the model doesn't contain any variable called <code>addresses</code>,
+            Yellow code will complain:<br/>
+            <code>Error: Left hand side of the '[]' operator must not be null/undefined.</code><br/>
+            If, on the other hand, <code>addresses[1]</code> evaluates to <code>null</code>
+            or <code>undefined</code>, Yellow code will complain:<br/>
+            <code>Error: Left hand side of the '.' operator must not be null/undefined.</code><br/>
+        </p>
+        <p>
+            Sometimes, however, it might be quite tedious to initialize the data structure
+            representing the model data, especially if it's supposed to contain nested
+            objects. Luckily, you can use a feature called <em>ad-hoc expression evaluation</em>,
+            which allows you to ignore <code>null</code>/<code>undefined</code> objects
+            when reading the data from the model and even create these objects on the fly
+            when writing to the model.
+        </p>
+        <p>
+            The <em>ad-hoc</em> object reference operator, <code>#</code>, can be used any time
+            when a standard reference operator (the dot) would be used. The difference is that
+            if we read from the model and the left hand side of <code>#</code>is
+            <code>null</code>/<code>undefined</code>, the result will be
+            <code>null</code>/<code>undefined</code> and no error will be thrown. Moreover, if we
+            write to the model, the variable on the left hand side of <code>#</code> will be
+            created (initialized to an empty object <code>{}</code>).
+        </p>
+        <p>
+            The <em>ad-hoc</em> array reference operator, <code>@</code>, can be used any time
+            when a standard reference operator (square brackets) would be used. The difference is that
+            if we read from the model and the left hand side of <code>@</code>is
+            <code>null</code>/<code>undefined</code>, the result will be
+            <code>null</code>/<code>undefined</code> and no error will be thrown. Moreover, if we
+            write to the model, the variable on the left hand side of <code>@</code> will be
+            created (initialized to an empty array <code>[]</code>).
+        </p>
+        <p>
+            Finally, the <em>null coalescing operator</em> is used to specify a default value
+            of a primitive data type (string, number). The syntax is
+            <code>modelExpression ||| defaultValue</code>. If <code>modelExpression</code>
+            evaluates to <code>null</code>/<code>undefined</code>, the result of reading
+            this expression will be <code>defaultValue</code> and no error will be thrown.
+            The expression is writable (L-value); writing to it has the same effect as writing
+            to <code>modelExpression</code> directly.
+        </p>
+        <p>
+            In the example below, there's no <code>init</code> method to create the model
+            data structure. Yet, the data structure is automatically initialized as soon as it's
+            needed by the <code>print</code> event handler.
+        </p>
+        <div class="jqExample" data-sourceUrl="examples/adHocExpressions.html">
+        </div>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Event object and event handler return value</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Event object and event handler return value</h3>
+        <p>
+            The JavaScript event object is accessible to the controller event handler under
+            <code>context.eventObject</code> (where <code>context</code> is the second parameter
+            of the controller method).
+        </p>
+        <p>
+            The event handler can return <code>false</code> to indicate that a default action
+            should be suppressed and that the event should not bubble up.
+        </p>
+        <p>
+            Both the event object and the return value are demonstrated in the following example;
+            the event object is used to get the coordinates of where the user clicked within
+            the clickable area. The handler returns <code>false</code> to suppress redirecting
+            the user to the URL specified by <code>href</code>:
+        </p>
+        <div class="jqExample" data-sourceUrl="examples/eventObject.html">
+        </div>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>

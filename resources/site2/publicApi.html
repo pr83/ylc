@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Yellow code - Public API</title>
+    include "inc/head.html"
+</head>
+
+<body>
+
+    <div class="topWrapper">
+        include "inc/top.html"
+    </div>
+
+    <div class="contents">
+
+        <h3>Public API</h3>
+        <p>
+            Alternatively, instead of using an adapter, you can use so called
+            <em>public API</em> to access a controller method from outside the controller.
+            The only difference between an adapter and
+            a public API is that adapter exposes every single controller
+            method to the outside world, whereas public API only exposes
+            those controller methods which are marked as a part of the
+            public API in the controller. To mark a controller method
+            as a part of the public API, use the <code>@PublicApi</code>
+            annotation. Instead of defining the method as a field of
+            the controller, define a controller field called <code>"@PublicApi"</code>
+            instead and put all publicly accessible methods as its fields,
+            as the following example demonstrates.
+        </p>
+
+        <div class="jqExample" data-sourceUrl="examples/public_api.html">
+        </div>
+
+        <p>
+            As you can see, to get the public API proxy object, call<br/>
+            <code>$(<em>your_view_selector</em>).yellowCode("getPublicApi")</code>
+            passing the root element of the view <strong>after</strong> the
+            Yellow code plugin was initialized on that element by passing it
+            the controller.
+        </p>
+        
+    </div><!--
+    
+    --><div class="navigationPanel">
+        include "inc/navigationPanel.html"
+    </div>
+        
+    <script>
+        $(".jqExample").codeExample();
+    </script>
+
+</body>
+</html>
