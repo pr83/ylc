@@ -1,0 +1,46 @@
+<div class="previousNextLinks">
+    <div class="previous">
+        <a href="#">
+            <i class="fa fa-angle-double-left" aria-hidden="true"></i>&nbsp;
+            <span></span>
+        </a>
+    </div><!--
+    --><div class="next">
+        <a href="#">
+            <span></span>
+            <i class="fa fa-angle-double-right" aria-hidden="true"></i>&nbsp;
+        </a>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(setUpPreviousNextLinks);
+
+    function setUpPreviousNextLinks() {
+        var navigationContext =
+                window.ylcSite.domUtil.prevNext(
+                    $("ul.navigation").find("li:not(.separator)").find("a"),
+                    function (element) {
+                        return $(element).attr("href")
+                    },
+                    function (href) {
+                        return location.pathname.indexOf(href) > -1;
+                    }
+                );
+
+        var jqNextPreviousLinks = $(".previousNextLinks");
+        copyAnchor(navigationContext.previous, jqNextPreviousLinks.find(".previous").find("a"));
+        copyAnchor(navigationContext.next, jqNextPreviousLinks.find(".next").find("a"));
+    }
+
+    function copyAnchor(domSource, jqTarget) {
+        if (domSource) {
+            jqTarget.attr("href", $(domSource).attr("href"));
+            jqTarget.find("span").text($(domSource).text());
+        } else {
+            jqTarget.hide();
+        }
+    }
+
+</script>

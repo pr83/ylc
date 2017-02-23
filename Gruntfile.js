@@ -20,6 +20,11 @@ module.exports = function (grunt) {
                 options: {
                     transform: ['brfs']
                 }
+            },
+            site: {
+                files: {
+                    "dist/site2/js/main.js": "resources/site2/js-src/main.js"
+                }
             }
         },
 
@@ -271,6 +276,6 @@ module.exports = function (grunt) {
         ]
     );
 
-    grunt.registerTask("site2", ["copy:site2", "includes", "sass", "zip", "replace:site2"]);
+    grunt.registerTask("site2", ["copy:site2", "includes", "sass", "zip", "replace:site2", "browserify:site"]);
 
 };
