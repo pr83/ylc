@@ -60,6 +60,18 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         flatten: true,
+                        src: ["tmp/yellowCode.zip"],
+                        dest: "dist/site2/dist"
+                    },
+                    {
+                        expand: true,
+                        flatten: true,
+                        src: ["tmp/yellowCode.min.js"],
+                        dest: "dist/site2/js"
+                    },
+                    {
+                        expand: true,
+                        flatten: true,
                         src: ["resources/site/*", "tmp/yellowCode.min.js", "tmp/yellowCode.js"],
                         dest: "dist/site"
                     },
@@ -112,11 +124,29 @@ module.exports = function (grunt) {
             }
         },
 
-        zip: {
-            "dist/site2/yellowCode.zip": ["tmp/yellowCode.min.js", "tmp/yellowCode.js"]
+        compress: {
+            main: {
+                options: {
+                    archive: "tmp/yellowCode.zip",
+                    mode: "zip"
+                },
+                files: [
+                    {
+                        cwd: "tmp",
+                        expand: true,
+                        src: ["yellowCode.min.js", "yellowCode.js"]
+                    }
+                ]
+            }
         },
 
         includes: {
+            examples: {
+                src: ["resources/site2/examples/*.html"],
+                dest: "dist/site2/examples",
+                flatten: true,
+                cwd: '.'
+            },
             files: {
                 src: ["resources/site2/*.html"],
                 dest: "dist/site2",
@@ -258,7 +288,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-includes');
     grunt.loadNpmTasks('grunt-sass');
-    grunt.loadNpmTasks('grunt-zip');
+    grunt.loadNpmTasks('grunt-contrib-compress');
 
     grunt.registerTask(
         'default',
@@ -268,14 +298,16 @@ module.exports = function (grunt) {
             'uglify',
             //'copy:dummyUglify',
             'usebanner',
+            "compress",
             'copy',
             'replace',
-            'clean:after_dist',
             'browserify:tests',
-            'includes'
+            'includes',
+            "copy:site2", "includes", "sass","replace:site2", "browserify:site"/*,
+            'clean:after_dist'*/
         ]
     );
 
-    grunt.registerTask("site2", ["copy:site2", "includes", "sass", "zip", "replace:site2", "browserify:site"]);
+    grunt.registerTask("site2", ["copy:site2", "includes", "sass", "compress", "replace:site2", "browserify:site"]);
 
 };

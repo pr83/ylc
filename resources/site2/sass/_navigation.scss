@@ -9,7 +9,7 @@ $topBottomPadding: 0.4rem;
   li {
     a {
       display: block;
-      width: calc(100% - 2 * $rightSidePaddingLeftrem);
+      width: calc(100% - 2 * #{$rightSidePaddingLeft});
       padding: $topBottomPadding $rightSidePaddingLeft;
     }
     a:hover {
