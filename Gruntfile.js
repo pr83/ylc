@@ -23,7 +23,7 @@ module.exports = function (grunt) {
             },
             site: {
                 files: {
-                    "dist/site2/js/main.js": "resources/site2/js-src/main.js"
+                    "dist/site/js/main.js": "resources/site/js-src/main.js"
                 }
             }
         },
@@ -61,56 +61,44 @@ module.exports = function (grunt) {
                         expand: true,
                         flatten: true,
                         src: ["tmp/yellowCode.zip"],
-                        dest: "dist/site2/dist"
+                        dest: "dist/site/dist"
                     },
                     {
                         expand: true,
                         flatten: true,
                         src: ["tmp/yellowCode.min.js"],
-                        dest: "dist/site2/js"
-                    },
-                    {
-                        expand: true,
-                        flatten: true,
-                        src: ["resources/site/*", "tmp/yellowCode.min.js", "tmp/yellowCode.js"],
-                        dest: "dist/site"
-                    },
+                        dest: "dist/site/js"
+                    }
+                ]
+            },
+            site: {
+                files: [
                     {
                         expand: true,
                         flatten: true,
                         src: ["resources/site/examples/*"],
                         dest: "dist/site/examples"
-                    }
-                ]
-            },
-            site2: {
-                files: [
-                    {
-                        expand: true,
-                        flatten: true,
-                        src: ["resources/site2/examples/*"],
-                        dest: "dist/site2/examples"
                     },
 
                     {
                         expand: true,
                         flatten: true,
-                        src: ["resources/site2/js/*"],
-                        dest: "dist/site2/js"
+                        src: ["resources/site/js/*"],
+                        dest: "dist/site/js"
                     },
 
                     {
                         expand: true,
                         flatten: true,
-                        src: ["resources/site2/css/*"],
-                        dest: "dist/site2/css"
+                        src: ["resources/site/css/*"],
+                        dest: "dist/site/css"
                     },
 
                     {
-                        cwd: "resources/site2/font",
+                        cwd: "resources/site/font",
                         expand: true,
                         src: "**/*",
-                        dest: "dist/site2/font"
+                        dest: "dist/site/font"
                     }
                 ]
             },
@@ -142,56 +130,22 @@ module.exports = function (grunt) {
 
         includes: {
             examples: {
-                src: ["resources/site2/examples/*.html"],
-                dest: "dist/site2/examples",
+                src: ["resources/site/examples/*.html"],
+                dest: "dist/site/examples",
                 flatten: true,
                 cwd: '.'
             },
             files: {
-                src: ["resources/site2/*.html"],
-                dest: "dist/site2",
+                src: ["resources/site/*.html"],
+                dest: "dist/site",
                 flatten: true,
                 cwd: '.'
             }
         },
 
         replace: {
-            dist: {
+            site: {
                 src: ["dist/site/*.*"],
-                overwrite: true,
-                replacements: [
-                    {
-                        from: /\{\{VERSION\}\}/g,
-                        to: "<%= pkg.version %>"
-                    },
-                    {
-                        from: /\{\{YEAR\}\}/g,
-                        to: "2014-<%= grunt.template.today('yyyy') %>"
-                    },
-                    {
-                        from: /\{\{AUTHOR\}\}/g,
-                        to: "<%= pkg.author.name %>"
-                    },
-                    {
-                        from: /\{\{LICENSE_URL\}\}/g,
-                        to: "<%= pkg.ylc.licenseUrl %>"
-                    },
-                    {
-                        from: /\{\{LICENSE_NAME\}\}/g,
-                        to: "<%= pkg.ylc.licenseName %>"
-                    },
-                    {
-                        from: /\{\{EMAIL\}\}/g,
-                        to: "<%= pkg.author.email %>"
-                    },
-                    {
-                        from: /\{\{REPOSITORY_URL\}\}/g,
-                        to: "<%= pkg.repository.url %>"
-                    }
-                ]
-            },
-            site2: {
-                src: ["dist/site2/*.*"],
                 overwrite: true,
                 replacements: [
                     {
@@ -261,7 +215,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: {
-                    'dist/site2/css/main.css': 'resources/site2/sass/main.scss'
+                    'dist/site/css/main.css': 'resources/site/sass/main.scss'
                 }
             }
         },
@@ -303,11 +257,8 @@ module.exports = function (grunt) {
             'replace',
             'browserify:tests',
             'includes',
-            "copy:site2", "includes", "sass","replace:site2", "browserify:site"/*,
-            'clean:after_dist'*/
+            "copy:site", "includes", "sass","replace:site", 'clean:after_dist'
         ]
     );
-
-    grunt.registerTask("site2", ["copy:site2", "includes", "sass", "compress", "replace:site2", "browserify:site"]);
 
 };
