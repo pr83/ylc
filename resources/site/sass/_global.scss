@@ -39,6 +39,7 @@ pre {
 
 p {
   margin-bottom: 0.68em;
+  line-height: 120%;
 }
 
 ul {
@@ -53,6 +54,7 @@ p + ul {
 
 li {
   padding-top: 0.4em;
+  line-height: 120%;
 }
 
 dt {
@@ -63,9 +65,18 @@ dt {
 dd {
   margin-left: 3em;
   margin-bottom: 0.68em;
+  line-height: 120%;
 }
 
 a {
   text-decoration: none;
   color: $link-color;
+}
+
+strong {
+  font-weight: bold;
+}
+
+em {
+  font-style: italic;
 }

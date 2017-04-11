@@ -22,11 +22,12 @@
             <code>datepicker</code> jQuery plugin
             as soon as a (potentially dynamic) view element becomes visible.
             First, mark the element with the following attribute:<br/>
-            <code>data-ylcEvents="ylcElementInitialized: <em>controller_method</em>"</code>.
+            <code>data-ylcElementInit="<em>controller_method</em>"</code>.
             <br/>
-            The <code>ylcElementInitialized</code> is a special Yellow code
-            event which will be triggered just when the view element is
-            initialized. For static element this happens after installing
+            The controller method specified as the value of the
+            <code>data-ylcElementInit</code> attribute will be called
+            just when the view element is
+            initialized. For static elements this happens after installing
             the Yellow code plugin, for dynamic elements (elements within
             loops and conditional elements) this happens when they are added
             to the view and become visible. Replace <code><em>controller_method</em></code>
