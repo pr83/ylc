@@ -15,4 +15,4 @@
     <li>Support for nesting 3rd party jQuery plugins into the views.</li>
 </ul>
 
-Please see the official documentation at http://any3w.com/ylc.
+Please see the official documentation at http://any3w.com/ylc/index.html.
