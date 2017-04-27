@@ -9,6 +9,11 @@ module.exports = function (grunt) {
                 files: {
                     'tmp/yellowCode.js': ['src/yellowCode.js'],
                     'tmp/nakedYellowCode.js': ['src/nakedYellowCode.js']
+                },
+                options: {
+                    plugin: [
+                        [ "browserify-derequire" ]
+                    ]
                 }
             },
             tests: {
@@ -68,6 +73,12 @@ module.exports = function (grunt) {
                         flatten: true,
                         src: ["tmp/yellowCode.min.js"],
                         dest: "dist/site/js"
+                    },
+                    {
+                        cwd: "tmp",
+                        expand: true,
+                        src: ["yellowCode.min.js", "yellowCode.js"],
+                        dest: "dist/js"
                     }
                 ]
             },
