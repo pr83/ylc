@@ -1,5 +1,8 @@
 @import 'globalScheme';
 
+$paragraphSpaceAfter: 0.68em;
+$roundedCornerBorderRadius: 5px;
+
 body {
   font-family: $font-stack-body;
   font-size: $basic-font-size;
@@ -28,9 +31,9 @@ code {
   font-family: monospace;
   color: $code-color;
   background-color: $code-background-color;
-  border-radius: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
+  border-radius: $roundedCornerBorderRadius;
+  padding-left: $roundedCornerBorderRadius;
+  padding-right: $roundedCornerBorderRadius;
 }
 
 pre {
@@ -38,18 +41,18 @@ pre {
 }
 
 p {
-  margin-bottom: 0.68em;
+  margin-bottom: $paragraphSpaceAfter;
   line-height: 120%;
 }
 
 ul {
   list-style-type: square;
   margin-left: 3em;
-  margin-bottom: 0.68em;
+  margin-bottom: $paragraphSpaceAfter;
 }
 
 p + ul {
-  margin-top: -0.68em;
+  margin-top: -$paragraphSpaceAfter;
 }
 
 li {
@@ -64,7 +67,7 @@ dt {
 
 dd {
   margin-left: 3em;
-  margin-bottom: 0.68em;
+  margin-bottom: $paragraphSpaceAfter;
   line-height: 120%;
 }
 
