@@ -17,15 +17,20 @@
 
     $(document).ready(setUpPreviousNextLinks);
 
+    function onIndexPage() {
+        var currentPath = location.pathname;
+        return currentPath[currentPath.length - 1] === "/";
+    }
+    
     function setUpPreviousNextLinks() {
         var navigationContext =
                 window.ylcSite.domUtil.prevNext(
                     $("ul.navigation").find("li:not(.separator)").find("a"),
                     function (element) {
-                        return $(element).attr("href")
+                        return $(element).attr("href");
                     },
                     function (href) {
-                        return location.pathname.indexOf(href) > -1;
+                        return (location.pathname.indexOf(href) > -1) || (onIndexPage() && href === "index.html");
                     }
                 );
 
