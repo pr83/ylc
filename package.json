@@ -19,35 +19,35 @@
   },
 
   "devDependencies": {
-    "grunt": "~0.4.5",
-    "grunt-browserify": "~3.6.0",
-    "grunt-contrib-uglify": "~0.8.1",
-    "grunt-contrib-clean": "~0.6.0",
-    "grunt-contrib-copy": "~0.8.0",
-    "grunt-text-replace": "~0.4.0",
-    "grunt-banner": "~0.3.1",
-    "grunt-contrib-compress": "~1.4.1",
+    "lodash": "~4.17.4",
+    "glob": "~7.1.1",
     
+    "gulp": "~3.9.1",
+    "vinyl-source-stream": "~1.1.0",
+    "vinyl-buffer": "~1.0.0",
+    "browserify": "~14.3.0",
+    "watchify": "~3.9.0",
     "browserify-derequire": "~0.9.4",
+    "gulp-sourcemaps": "~2.6.0",
+    "gulp-uglify": "~2.1.2",
+    "gulp-rename": "~1.2.2",
+    "gulp-zip": "~4.0.0",
+    "gulp-include": "~2.3.1",
+    "gulp-sass": "~3.1.0",
+    "gulp-replace": "~0.5.4",
+    "gulp-header": "~1.8.8",
 
     "tape": "~2.13.1",
     "tape-dom": "~0.0.10",
     "jquery": "~3.0.0",
     "sinon": "~1.17.4",
     "brfs": "~1.4.3",
-
     "jsep": "~0.3.0",
-
-    "grunt-contrib-watch": "~0.6.1",
-
-    "grunt-includes": "~1.0.0",
-    "grunt-sass": "~2.0.0",
-    
     "bottlejs": "~1.5.0"
   },
 
   "scripts": {
-    "build": "npm install && grunt"
+    "build": "npm install && gulp"
   },
 
   "files": [
