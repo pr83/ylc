@@ -71,6 +71,8 @@ module.exports.newContext = function newContext(
                 } else {
                     throw errorUtil.createError("Invalid model variable: " + strName);
                 }
+            } else {
+                valueToReturn = my.model[strName];
             }
         }
 

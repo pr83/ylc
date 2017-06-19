@@ -18,7 +18,8 @@ const
     include = require('gulp-include'),
     sass = require('gulp-sass'),
     gulpReplace = require('gulp-replace'),
-    gulpHeader = require('gulp-header');
+    gulpHeader = require('gulp-header'),
+    yargs = require('yargs');
 
 const
     PKG = JSON.parse(fs.readFileSync('./package.json')),
@@ -41,13 +42,22 @@ const BROWSERIFY_OPTIONS = {
 gulp.task(
     'compileTestsJs',
     function() {
+        getTestPaths();
         return browserifyModule(
-            resolveGlobPaths(['./test/src/unit/*.js', './test/src/ui/*.js']),
+            getTestPaths(),
             'test/dest',
             'all.js'
         );
     }
 );
+
+function getTestPaths() {
+    if (yargs.argv.test) {
+        return ['./test/src/' + yargs.argv.test + '.js'];
+    } else {
+        return resolveGlobPaths(['./test/src/unit/*.js', './test/src/ui/*.js']);
+    }
+}
 
 gulp.task(
     'compileDistributionJs',
@@ -121,20 +131,20 @@ gulp.task('default', ['compileTestsJs', 'compileDistributionJs', 'compileSiteJs'
 
 function resolveGlobPaths(globPaths) {
     var allFiles = [];
-    
+
     _.forEach(
         globPaths,
         function(globPath) {
             allFiles = allFiles.concat(allFiles, glob.sync(globPath));
         }
     );
-    
+
     return allFiles;
 }
 
 function browserifyModule(entryFilePath, destinationDirectory, destinationFileName) {
     var browserifyBundler =
-            browserify(entryFilePath, BROWSERIFY_OPTIONS)
+        browserify(entryFilePath, BROWSERIFY_OPTIONS)
             .transform("brfs")
             .on('error', console.error.bind(console))
             .on('update', bundle);
