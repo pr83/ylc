@@ -216,15 +216,13 @@ module.exports.newContext = function newContext(
 
                 sanityCheck.checkArraySanity(objectValue);
 
-                if (hasValue(objectValue[indexValue])) {
-                    return objectValue[indexValue];
-
-                } else if (adHocValue !== undefined) {
+                if (!hasValue(objectValue[indexValue]) && adHocValue !== undefined) {
                     return (objectValue[indexValue] = adHocValue);
-
+                    
                 } else {
-                    return undefined;
+                    return objectValue[indexValue];
                 }
+
             },
 
             setter: function(ast, value, forceSet) {
@@ -285,15 +283,13 @@ module.exports.newContext = function newContext(
 
                 sanityCheck.checkObjectSanity(objectValue);
 
-                if (hasValue(objectValue[ast.property.name])) {
-                    return objectValue[propertyName];
-
-                } else if (adHocValue !== undefined) {
+                if (!hasValue(objectValue[propertyName]) && adHocValue !== undefined) {
                     return (objectValue[propertyName] = adHocValue);
-
+                    
                 } else {
-                    return undefined;
+                    return objectValue[propertyName];
                 }
+
             },
 
             setter: function(ast, value, forceSet) {
@@ -360,7 +356,6 @@ module.exports.newContext = function newContext(
 
                 } else {
                     return gsAstValue(ast.left, undefined, gsAstValue(ast.right));
-
                 }
             },
             setter: function(ast, value) {

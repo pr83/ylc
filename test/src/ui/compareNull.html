@@ -1,3 +1,7 @@
 <div>
-    <span data-ylcBind="text: toCompare == null ? 'is null' : 'is not null'"></span>
+    <span id="top" data-ylcBind="text: toCompare == null ? 'is null' : 'is not null'"></span>
+    <span id="child" data-ylcBind="text: parentObject.toCompare == null ? 'is null' : 'is not null'"></span>
+    <span id="childAdHoc" data-ylcBind="text: parentObject#toCompare == null ? 'is null' : 'is not null'"></span>
+    <span id="array" data-ylcBind="text: array[0] == null ? 'is null' : 'is not null'"></span>
+    <span id="arrayAdHoc" data-ylcBind="text: (array@0) == null ? 'is null' : 'is not null'"></span>
 </div>
