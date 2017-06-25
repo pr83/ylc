@@ -835,7 +835,11 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         $.each(
             listeners,
             function (idx, listener) {
-                preprocessingResult = listener.nodeStart(jqNode, metadataObj);
+                try {
+                    preprocessingResult = listener.nodeStart(jqNode, metadataObj);
+                } catch (error) {
+                    throw errorUtil.elementToError(error, jqNode.get(0));
+                }
                 if ($.isPlainObject(preprocessingResult)) {
                     bMakeVirtual |= preprocessingResult.bMakeVirtual;
                     bHasV2m |= preprocessingResult.bHasV2m;
