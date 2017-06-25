@@ -43,7 +43,7 @@ test(
         );
 
         var publicApi = jqFixture.children().first().yellowCode("getPublicApi");
-        t.equal(Object.keys(publicApi).length, 2, "only public methods")
+        t.equal(Object.keys(publicApi).length, 2, "only public methods");
 
         publicApi.public1("p1");
         publicApi.public2("p2");

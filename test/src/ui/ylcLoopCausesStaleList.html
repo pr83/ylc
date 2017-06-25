@@ -1,0 +1,12 @@
+<div>
+    <button data-ylcEvents="click: updateValue">Set value to "New"</button>
+
+    <div data-ylcLoop="element: result">
+        <div data-ylcLoop="dummy: dummyCollection">
+            <a href="#"
+               data-ylcBind="text <- element.name"
+               data-ylcEvents="click: reportName(element)"></a>
+        </div>
+    </div>
+
+</div>

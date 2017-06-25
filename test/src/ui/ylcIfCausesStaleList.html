@@ -1,0 +1,10 @@
+<div>
+    <button data-ylcEvents="click: updateValue">Set value to "New"</button>
+
+    <div data-ylcLoop="element: result">
+        <a href="#" data-ylcIf="!(element.someFlag)"
+           data-ylcBind="text <- element.name"
+           data-ylcEvents="click: reportName(element)"></a>
+    </div>
+
+</div>
