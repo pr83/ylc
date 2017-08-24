@@ -577,39 +577,20 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
         index = 0;
 
-        var nMutations = 0;
-        pushDomMutationCallback(
-            function() {
-                nMutations += 1;
+        while (index < jqsetChildren.length) {
+            domChild = jqsetChildren[index];
+
+            try {
+                index +=
+                    m2vProcessElement(
+                        domChild,
+                        bFirstVisit,
+                        bBindEvents
+                    );
+
+            } catch (err) {
+                throw errorUtil.elementToError(err, domChild);
             }
-        );
-
-        try {
-
-            while (index < jqsetChildren.length) {
-                domChild = jqsetChildren[index];
-
-                try {
-
-                    index +=
-                        m2vProcessElement(
-                            domChild,
-                            bFirstVisit,
-                            bBindEvents
-                        );
-
-                }
-                catch (err) {
-                    throw errorUtil.elementToError(err, domChild);
-                }
-            }
-
-            if (nMutations > 0) {
-                onDomChanged(domElement);
-            }
-
-        } finally {
-            popDomMutationCallback();
         }
 
     }
@@ -754,31 +735,49 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
         var nElementsProcessed;
 
-        if (domTemplates.isTemplate(domElement)) {
-            nElementsProcessed = m2vProcessDynamicElements($(domElement), bBindEvents);
+        var nMutations = 0;
+        pushDomMutationCallback(
+            function() {
+                nMutations += 1;
+            }
+        );
 
-        } else if (domElement !== my.domView && domAnnotator.isViewRoot($(domElement))) {
-            nElementsProcessed = 1;
-
-        } else if ((metadata.of($(domElement)).bHasM2v === 0) && !bFirstVisit && !bBindEvents) {
-            nElementsProcessed = 1;
-
-        } else {
-            if (bFirstVisit) {
-                onElementInit(domElement);
+        try {
+        
+            if (domTemplates.isTemplate(domElement)) {
+                nElementsProcessed = m2vProcessDynamicElements($(domElement), bBindEvents);
+    
+            } else if (domElement !== my.domView && domAnnotator.isViewRoot($(domElement))) {
+                nElementsProcessed = 1;
+    
+            } else if ((metadata.of($(domElement)).bHasM2v === 0) && !bFirstVisit && !bBindEvents) {
+                nElementsProcessed = 1;
+    
+            } else {
+                if (bFirstVisit) {
+                    onElementInit(domElement);
+                }
+    
+                if (bBindEvents) {
+                    m2vBindEvents(domElement);
+                }
+    
+                m2vSetValues(domElement);
+                m2vProcessChildren(domElement, bFirstVisit, bBindEvents);
+    
+                nElementsProcessed = 1;
             }
 
-            if (bBindEvents) {
-                m2vBindEvents(domElement);
+            if (nMutations > 0) {
+                onDomChanged(domElement);
             }
+            
+            return nElementsProcessed;
 
-            m2vSetValues(domElement);
-            m2vProcessChildren(domElement, bFirstVisit, bBindEvents);
-
-            nElementsProcessed = 1;
+        } finally {
+            popDomMutationCallback();
         }
-
-        return nElementsProcessed;
+        
     }
     
     function afterElementAddElement(jqAfterWhat, jqWhat) {
