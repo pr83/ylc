@@ -2,7 +2,8 @@ var domTemplates = require("../domTemplates"),
     stringUtil = require("../stringUtil"),
     ylcBindParser = require("../parser/ylcBind"),
     errorUtil = require("../errorUtil"),
-    virtualNodes = require("../virtualNodes");
+    virtualNodes = require("../virtualNodes"),
+    conversions = require("../conversions");
 
 var PREFIELD = {};
 
@@ -39,8 +40,9 @@ function createM2v(currentYlcBinding) {
                 existingValue =
                     fnGetterSetter.call(jqNode, currentYlcBinding.strSubpropertyName);
             }
-
-            if (value !== existingValue) {
+            
+            if (value !== conversions.tryConversionToSameType(existingValue, value)) {
+                
                 if (currentYlcBinding.strSubpropertyName === undefined) {
                     fnGetterSetter.call(jqNode, value);
 
@@ -51,8 +53,12 @@ function createM2v(currentYlcBinding) {
                         value
                     );
                 }
+                
+                return true;
             }
         }
+        
+        return false;
 
     }
 }

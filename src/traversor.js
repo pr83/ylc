@@ -257,7 +257,9 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             $.each(
                 m2v,
                 function (idx, m2v) {
-                    m2v(domElement, my.context);
+                    if (m2v(domElement, my.context)) {
+                        domMutated();
+                    }
                 }
             );
         }
@@ -332,27 +334,42 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     }
 
     function onElementInit(domElement) {
-
         var jqElement = $(domElement),
-            listeners = metadata.of(jqElement).listeners,
-            publicContext = createPublicContext(domElement);
+            listeners = metadata.of(jqElement).listeners;
 
         if (listeners && listeners.ylcLifecycle.elementInitialized) {
-            var immediateCallArguments = [my.model, publicContext];
-            if (listeners.ylcLifecycle.elementInitialized.arrArgumentsAsts) {
-                Array.prototype.push.apply(
-                    immediateCallArguments,
-                    evaluateArguments(
-                        listeners.ylcLifecycle.elementInitialized.arrArgumentsAsts,
-                        my.context.getLoopContextMemento()
-                    )
-                );
-            }
-            getHandler(
-                "element initialized",
-                listeners.ylcLifecycle.elementInitialized.strMethodName
-            ).apply(my.controller, immediateCallArguments);
+            callLifecycleHandler(
+                listeners.ylcLifecycle.elementInitialized.strMethodName,
+                listeners.ylcLifecycle.elementInitialized.arrArgumentsAsts,
+                createPublicContext(domElement),
+                "element initialized"
+            );
         }
+    }
+
+    function onDomChanged(domElement) {
+        var jqElement = $(domElement),
+            listeners = metadata.of(jqElement).listeners;
+
+        if (listeners && listeners.ylcLifecycle.domChanged) {
+            callLifecycleHandler(
+                listeners.ylcLifecycle.domChanged.strMethodName,
+                listeners.ylcLifecycle.domChanged.arrArgumentsAsts,
+                createPublicContext(domElement),
+                "DOM changed"
+            );
+        }
+    }
+    
+    function callLifecycleHandler(strMethodName, arrArgumentsAsts, publicContext, strHandlerDescription) {
+        var immediateCallArguments = [my.model, publicContext];
+        if (arrArgumentsAsts) {
+            Array.prototype.push.apply(
+                immediateCallArguments,
+                evaluateArguments(arrArgumentsAsts, my.context.getLoopContextMemento())
+            );
+        }
+        getHandler(strHandlerDescription, strMethodName).apply(my.controller, immediateCallArguments);
     }
 
     function addExtraElements(
@@ -405,11 +422,11 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
             if (metadata.of(virtualNodes.getOriginal(jqTemplate)).bRemoveTag) {
                 jqNewDynamicElement.children().each(function() {
-                    jqLastElement.after($(this));
+                    afterElementAddElement(jqLastElement, $(this));
                     jqLastElement = $(this);
                 });
             } else {
-                jqLastElement.after(jqNewDynamicElement);
+                afterElementAddElement(jqLastElement, jqNewDynamicElement);
                 jqLastElement = jqNewDynamicElement;
             }
 
@@ -475,7 +492,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             for (index = idxFirstToDelete;
                  index < domarrCurrentGeneratedElements.length;
                  index += 1) {
-                $(domarrCurrentGeneratedElements[index]).remove();
+                removeElement($(domarrCurrentGeneratedElements[index]));
             }
         }
 
@@ -503,11 +520,11 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             if (metadata.of(virtualNodes.getOriginal(jqTemplate)).bRemoveTag) {
                 jqLastElement = jqTemplate;
                 jqNewDynamicElement.children().each(function() {
-                    jqLastElement.after($(this));
+                    afterElementAddElement(jqLastElement, $(this));
                     jqLastElement = $(this);
                 });
             } else {
-                jqTemplate.after(jqNewDynamicElement);
+                afterElementAddElement(jqTemplate, jqNewDynamicElement);
             }
 
         } else if (domarrCurrentGeneratedElements.length > 0) {
@@ -524,7 +541,7 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                 $.each(
                     domarrCurrentGeneratedElements,
                     function(idx, domCurrentGeneratedElement) {
-                        $(domCurrentGeneratedElement).remove();
+                        removeElement($(domCurrentGeneratedElement));
                     }
                 );
             }
@@ -560,21 +577,39 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
         index = 0;
 
-        while (index < jqsetChildren.length) {
-            domChild = jqsetChildren[index];
-
-            try {
-
-                index +=
-                    m2vProcessElement(
-                        domChild,
-                        bFirstVisit,
-                        bBindEvents
-                    );
-
-            } catch (err) {
-                throw errorUtil.elementToError(err, domChild);
+        var nMutations = 0;
+        pushDomMutationCallback(
+            function() {
+                nMutations += 1;
             }
+        );
+
+        try {
+
+            while (index < jqsetChildren.length) {
+                domChild = jqsetChildren[index];
+
+                try {
+
+                    index +=
+                        m2vProcessElement(
+                            domChild,
+                            bFirstVisit,
+                            bBindEvents
+                        );
+
+                }
+                catch (err) {
+                    throw errorUtil.elementToError(err, domChild);
+                }
+            }
+
+            if (nMutations > 0) {
+                onDomChanged(domElement);
+            }
+
+        } finally {
+            popDomMutationCallback();
         }
 
     }
@@ -744,6 +779,33 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         }
 
         return nElementsProcessed;
+    }
+    
+    function afterElementAddElement(jqAfterWhat, jqWhat) {
+        jqAfterWhat.after(jqWhat);
+        domMutated();
+    }
+    
+    function removeElement(jqElement) {
+        jqElement.remove();
+        domMutated();
+    }
+
+    function domMutated() {
+        $.each(
+            my.domMutationCallbacks,
+            function(index, fnCallback) {
+                fnCallback();
+            }
+        );
+    }
+    
+    function pushDomMutationCallback(fnCallback) {
+        my.domMutationCallbacks.push(fnCallback);
+    }
+    
+    function popDomMutationCallback() {
+        my.domMutationCallbacks.pop();
     }
 
     function getProperties(object) {
@@ -917,6 +979,8 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         afterEvent: [],
         domPreprocessors: []
     };
+    
+    my.domMutationCallbacks = [];
 
     my.controllerMethods =
         extractControllerMethods(

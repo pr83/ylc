@@ -46,14 +46,24 @@ module.exports = {
 
                 var ylcElementInit = stringUtil.strGetData(jqNode, "ylcElementInit");
                 if (ylcElementInit) {
-                    var objHandlerCall = ylcEventsParser.parseEventHandlerCall(ylcElementInit);
+                    var objElementInitHandlerCall = ylcEventsParser.parseEventHandlerCall(ylcElementInit);
                     metadata.listeners.ylcLifecycle.elementInitialized =
                         {
-                            strMethodName: objHandlerCall.strMethodName,
-                            arrArgumentsAsts: objHandlerCall.arrArgumentAsts
+                            strMethodName: objElementInitHandlerCall.strMethodName,
+                            arrArgumentsAsts: objElementInitHandlerCall.arrArgumentAsts
                         };
                 }
                 jqNode.removeAttr("data-ylcElementInit");
+
+                var ylcDomChanged = stringUtil.strGetData(jqNode, "ylcDomChanged");
+                if (ylcDomChanged) {
+                    var objDomChangedHandlerCall = ylcEventsParser.parseEventHandlerCall(ylcDomChanged);
+                    metadata.listeners.ylcLifecycle.domChanged =
+                        {
+                            strMethodName: objDomChangedHandlerCall.strMethodName,
+                            arrArgumentsAsts: objDomChangedHandlerCall.arrArgumentAsts
+                        };
+                }
 
                 return false;
             },
