@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="../js/yellowCode.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"/>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+</head>
+
+<body>
+
+<h1>DOM change plugin re-init</h1>
+<div id="domChangePluginReinit">
+
+    <table data-ylcIf="rows !== undefined" data-ylcDomChanged="installDataTables">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Height</th>
+            </tr>
+        </thead>
+        <tr data-ylcLoop="row: rows">
+            <td>{{row.name}}</td>
+            <td>{{row.height}}</td>
+        </tr>
+    </table>
+
+</div>
+
+<script>
+
+    var controller = {
+        init: function(model, context) {
+            setTimeout(
+                function() {
+                    context.updateModel(function(model, context) {
+                        model.rows = [
+                            mountain("Mount Everest", 8848),
+                            mountain("K2", 8611),
+                            mountain("Kangchenjunga", 8586),
+                            mountain("Lhotse", 8516),
+                            mountain("Makalu", 8485),
+                            mountain("Cho Oyu", 8188),
+                            mountain("Dhaulagiri I", 8167),
+                            mountain("Manaslu", 8163),
+                            mountain("Nanga Parbat", 8126),
+                            mountain("Annapurna I", 8091)
+                        ];
+                    });
+                },
+                200
+            );
+        },
+
+        installDataTables: function(model, context) {
+            if (model.rows) {
+                $(context.domElement).DataTable();
+            }
+        }
+    };
+
+    function mountain(name, height) {
+        return {
+            name: name,
+            height: height
+        };
+    }
+
+    $("#domChangePluginReinit").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

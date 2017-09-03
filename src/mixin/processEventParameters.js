@@ -55,6 +55,17 @@ module.exports = {
                 }
                 jqNode.removeAttr("data-ylcElementInit");
 
+                var ylcElementInitDone = stringUtil.strGetData(jqNode, "ylcElementInitDone");
+                if (ylcElementInitDone) {
+                    var objYlcElementInitDoneHandlerCall = ylcEventsParser.parseEventHandlerCall(ylcElementInitDone);
+                    metadata.listeners.ylcLifecycle.elementInitDone =
+                        {
+                            strMethodName: objYlcElementInitDoneHandlerCall.strMethodName,
+                            arrArgumentsAsts: objYlcElementInitDoneHandlerCall.arrArgumentAsts
+                        };
+                }
+                jqNode.removeAttr("data-ylcElementInitDone");
+
                 var ylcDomChanged = stringUtil.strGetData(jqNode, "ylcDomChanged");
                 if (ylcDomChanged) {
                     var objDomChangedHandlerCall = ylcEventsParser.parseEventHandlerCall(ylcDomChanged);
@@ -64,6 +75,7 @@ module.exports = {
                             arrArgumentsAsts: objDomChangedHandlerCall.arrArgumentAsts
                         };
                 }
+                jqNode.removeAttr("data-ylcDomChanged");
 
                 return false;
             },

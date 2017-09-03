@@ -22,7 +22,10 @@
         try {
 
             if (parameter1 instanceof Object) {
-                model = {};
+                model = {
+                    _ylcFlash: {}
+                };
+                
                 controller = parameter1;
 
                 if ($.isArray(controller)) {

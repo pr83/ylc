@@ -134,3 +134,38 @@ test(
     }
 
 );
+
+test(
+    "unit: process data-ylcElementInitDone",
+    function (t) {
+
+        var jqNode =
+                $("<div data-ylcElementInitDone='initDone(7)'></div>"),
+            metadata = {};
+
+        processEventParameters["@DomPreprocessorFactory"]().nodeStart(jqNode, metadata);
+
+        t.deepEqual(
+            metadata.listeners,
+            {
+                "ylcLifecycle": {
+                    "elementInitDone": {
+                        "strMethodName": "initDone",
+                        "arrArgumentsAsts": [
+                            {
+                                "type": "Literal",
+                                "value": 7,
+                                "raw": "7"
+                            }
+                        ]
+                    }
+                },
+                "jsEvents": {}
+            },
+            "correctly parsed"
+        );
+
+        t.end();
+    }
+
+);

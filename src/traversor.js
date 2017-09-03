@@ -1,6 +1,4 @@
 var errorUtil = require('./errorUtil'),
-    stringUtil = require('./stringUtil'),
-    parseUtil = require('./parseUtil'),
     domTemplates = require('./domTemplates'),
     domAnnotator = require('./domAnnotator'),
     contextFactory = require('./contextFactory'),
@@ -12,8 +10,7 @@ var errorUtil = require('./errorUtil'),
     micM2v = require('./mixin/m2v'),
     micV2m = require('./mixin/v2m'),
     processMoustacheBindings = require('./mixin/processMoustacheBindings'),
-    metadata = require('./metadata'),
-    expressionParser = require('./expressionParser');
+    metadata = require('./metadata');
 
 module.exports = {};
 
@@ -162,9 +159,16 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
         } else if (domElement !== my.domView && domAnnotator.isViewRoot($(domElement))) {
             nElementsProcessed = 1;
 
+        } else if (metadata.localOf($(domElement)).flashElementProcessed) {
+            nElementsProcessed = 1;
+
         } else {
             v2mSetValues(domElement);
             v2mProcessChildren(domElement);
+            
+            if (metadata.of($(domElement)).flashIdDefined) {
+                metadata.localOf($(domElement)).flashElementProcessed = true;
+            }
             nElementsProcessed = 1;
         }
 
@@ -344,6 +348,21 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                 createPublicContext(domElement),
                 "element initialized"
             );
+        }
+
+        if (listeners && listeners.ylcLifecycle.elementInitDone) {
+            setTimeout(
+                function () {
+                    callLifecycleHandler(
+                        listeners.ylcLifecycle.elementInitDone.strMethodName,
+                        listeners.ylcLifecycle.elementInitDone.arrArgumentsAsts,
+                        createPublicContext(domElement),
+                        "element initialization done"
+                    );
+                },
+                0
+            );
+            
         }
     }
 
@@ -716,8 +735,30 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
 
         publicContext.domElement = domElement;
         publicContext.loopStatuses = my.context.getLoopStatusesSnapshot();
+        
         publicContext.updateModel = function (fnUpdateMethod) {
             return callModelUpdatingMethod(publicContext, fnUpdateMethod);
+        };
+        
+        publicContext.flash = function() {
+            var flashIds = arguments,
+                index;
+            
+            for (index = 0; index < flashIds.length; index += 1) {
+                my.model._ylcFlash[flashIds[index]] = true;
+            };
+            
+
+            setTimeout(
+                function() {
+                    publicContext.updateModel(function(model) {
+                        for (index = 0; index < flashIds.length; index += 1) {
+                            model._ylcFlash[flashIds[index]] = false;
+                        };
+                    });
+                },
+                0
+            );
         };
 
         publicContext.controllerMethods = {};
@@ -752,7 +793,10 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     
             } else if ((metadata.of($(domElement)).bHasM2v === 0) && !bFirstVisit && !bBindEvents) {
                 nElementsProcessed = 1;
-    
+
+            } else if (metadata.localOf($(domElement)).flashElementProcessed) {
+                nElementsProcessed = 1;
+                
             } else {
                 if (bFirstVisit) {
                     onElementInit(domElement);
@@ -764,6 +808,10 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
     
                 m2vSetValues(domElement);
                 m2vProcessChildren(domElement, bFirstVisit, bBindEvents);
+
+                if (metadata.of($(domElement)).flashIdDefined) {
+                    metadata.localOf($(domElement)).flashElementProcessed = true;
+                }
     
                 nElementsProcessed = 1;
             }

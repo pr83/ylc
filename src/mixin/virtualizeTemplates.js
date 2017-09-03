@@ -1,9 +1,9 @@
 var errorUtil = require('../errorUtil'),
     parseUtil = require('../parseUtil'),
-    domTemplates = require("../domTemplates"),
     ylcLoopParser = require('../parser/ylcLoop'),
     stringUtil = require("../stringUtil"),
-    expressionParser = require('../expressionParser');
+    expressionParser = require('../expressionParser'),
+    combineIfAndFlashId = require("../parser/combineIfAndFlashId");
 
 module.exports = {
 
@@ -13,6 +13,7 @@ module.exports = {
 
                 var strYlcLoop = stringUtil.strGetData(jqNode, "ylcLoop"),
                     strYlcIf = stringUtil.strGetData(jqNode, "ylcIf"),
+                    strYlcFlashId = stringUtil.strGetData(jqNode, "ylcFlashId"),
                     bRemoveTag = (stringUtil.strGetData(jqNode, "ylcRemoveTag") !== undefined);
 
                 if (strYlcLoop && strYlcIf) {
@@ -37,15 +38,23 @@ module.exports = {
                             jqNode
                         );
                     }
-                    
-                    return false;
+                }
+
+                if (strYlcFlashId) {
+                    metadata.astYlcIf = combineIfAndFlashId.combine(strYlcFlashId, metadata.astYlcIf);
+                    metadata.flashIdDefined = true;
                 }
 
                 metadata.bRemoveTag = bRemoveTag;
                 
                 jqNode.removeAttr("data-ylcLoop");
                 jqNode.removeAttr("data-ylcIf");
+                jqNode.removeAttr("data-ylcFlashId");
 
+                if (!metadata.ylcLoop && !metadata.astYlcIf) {
+                    return false;
+                }
+                
                 return {
                     bMakeVirtual: true,
                     bHasV2m: false,

@@ -81,6 +81,7 @@ test(
         t.equal(
             JSON.stringify(spy.args[0][0]),
             JSON.stringify({
+                _ylcFlash:{},
                 persons: [
                     null,
                     null,
