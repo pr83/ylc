@@ -136,11 +136,11 @@ test(
 );
 
 test(
-    "unit: process data-ylcElementInitDone",
+    "unit: process data-ylcChildrenInit",
     function (t) {
 
         var jqNode =
-                $("<div data-ylcElementInitDone='initDone(7)'></div>"),
+                $("<div data-ylcChildrenInit='initDone(7)'></div>"),
             metadata = {};
 
         processEventParameters["@DomPreprocessorFactory"]().nodeStart(jqNode, metadata);
@@ -149,7 +149,7 @@ test(
             metadata.listeners,
             {
                 "ylcLifecycle": {
-                    "elementInitDone": {
+                    "childrenInit": {
                         "strMethodName": "initDone",
                         "arrArgumentsAsts": [
                             {

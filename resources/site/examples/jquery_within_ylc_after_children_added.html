@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--=include "inc/head.html" -->
+    <script src="//code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/black-tie/jquery-ui.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"/>
+    <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    
+    <style>
+        .column {
+            display: inline-block;
+            width: calc(50% - 4em);
+            vertical-align: top;
+            padding: 0;
+            margin: 0;
+        }
+
+        .column:first-child {
+            padding-right: 2em;
+        }
+
+        .column:last-child {
+            padding-left: 2em;
+            border-left: dotted 3px;
+        }
+    </style>
+</head>
+
+<body>
+<h1>Using a jQuery plugin from within the view - after element children added</h1>
+
+<div id="form">
+    
+    <div class="column">
+    
+        <h2>Wrong</h2>
+    
+        <table data-ylcElementInit="installDataTables">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Height</th>
+                </tr>
+            </thead>
+            <tr data-ylcLoop="row: rows">
+                <td>{{row.name}}</td>
+                <td>{{row.height}}</td>
+            </tr>
+        </table>
+
+    </div><!--
+
+    --><div class="column">
+    
+        <h2>Correct</h2>
+        
+        <table data-ylcChildrenInit="installDataTables">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Height</th>
+                </tr>
+            </thead>
+            <tr data-ylcLoop="row: rows">
+                <td>{{row.name}}</td>
+                <td>{{row.height}}</td>
+            </tr>
+        </table>
+        
+    </div>
+    
+</div>
+
+<script>
+
+    var controller = {
+        init: function(model) {
+            model.rows = [
+                mountain("Mount Everest", 8848),
+                mountain("K2", 8611),
+                mountain("Kangchenjunga", 8586),
+                mountain("Lhotse", 8516),
+                mountain("Makalu", 8485)
+            ];
+        },
+
+        installDataTables: function(model, context) {
+            $(context.domElement).DataTable({
+                searching: false
+            });
+        }
+
+    };
+
+    function mountain(name, height) {
+        return {
+            name: name,
+            height: height
+        };
+    }
+
+    $("#form").yellowCode(controller);
+
+</script>
+
+</body>
+
+</html>

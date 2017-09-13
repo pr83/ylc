@@ -350,19 +350,19 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
             );
         }
 
-        if (listeners && listeners.ylcLifecycle.elementInitDone) {
-            setTimeout(
-                function () {
-                    callLifecycleHandler(
-                        listeners.ylcLifecycle.elementInitDone.strMethodName,
-                        listeners.ylcLifecycle.elementInitDone.arrArgumentsAsts,
-                        createPublicContext(domElement),
-                        "element initialization done"
-                    );
-                },
-                0
+    }
+
+    function onChildrenInit(domElement) {
+        var jqElement = $(domElement),
+            listeners = metadata.of(jqElement).listeners;
+
+        if (listeners && listeners.ylcLifecycle.childrenInit) {
+            callLifecycleHandler(
+                listeners.ylcLifecycle.childrenInit.strMethodName,
+                listeners.ylcLifecycle.childrenInit.arrArgumentsAsts,
+                createPublicContext(domElement),
+                "element initialization done"
             );
-            
         }
     }
 
@@ -812,7 +812,11 @@ module.exports.setupTraversal = function(pModel, pDomView, pController, pMixins)
                 if (metadata.of($(domElement)).flashIdDefined) {
                     metadata.localOf($(domElement)).flashElementProcessed = true;
                 }
-    
+
+                if (bFirstVisit) {
+                    onChildrenInit(domElement);
+                }
+                
                 nElementsProcessed = 1;
             }
 

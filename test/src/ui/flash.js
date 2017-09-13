@@ -58,41 +58,30 @@ test(
 
         t.equal(
             jqFixture.find("span").attr(MARKER_ATTRIBUTE),
-            MARKER_ATTRIBUTE_INITIAL_VALUE,
-            "plugin not installed until DOM processed"
+            MARKER_ATTRIBUTE_SET_BY_PLUGIN,
+            "plugin installed when DOM processed"
         );
-        
+
+        jqFixture.children().first().yellowCode("getPublicApi").changeTextValueWithoutFlash();
+
+        t.equal(
+            jqFixture.find("span").text(),
+            TEXT_VALUE_INITIAL,
+            "should not modify flashable element"
+        );
+
+        jqFixture.children().first().yellowCode("getPublicApi").changeTextValueWithFlash();
+
         setTimeout(
             function() {
                 t.equal(
-                    jqFixture.find("span").attr(MARKER_ATTRIBUTE),
-                    MARKER_ATTRIBUTE_SET_BY_PLUGIN,
-                    "plugin installed when DOM processed"
-                );
-
-                jqFixture.children().first().yellowCode("getPublicApi").changeTextValueWithoutFlash();
-
-                t.equal(
                     jqFixture.find("span").text(),
-                    TEXT_VALUE_INITIAL,
-                    "should not modify flashable element"
+                    TEXT_VALUE_MODIFIED_WITH_FLASH,
+                    "should modify flashable element with flash"
                 );
 
-                jqFixture.children().first().yellowCode("getPublicApi").changeTextValueWithFlash();
-
-                setTimeout(
-                    function() {
-                        t.equal(
-                            jqFixture.find("span").text(),
-                            TEXT_VALUE_MODIFIED_WITH_FLASH,
-                            "should modify flashable element with flash"
-                        );
-
-                        testUtil.removeFixture();
-                        t.end();
-                    },
-                    0
-                );
+                testUtil.removeFixture();
+                t.end();
             },
             0
         );

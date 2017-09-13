@@ -43,6 +43,145 @@
             by the <code>datepicker</code> plugin.
         </p>
 
+        <h4>Install plugin after element children are initialized</h4>
+        
+        <p>
+            In the above example we used the <code>datepicker</code> plugin, which is very simple in a sense that it
+            operates on a single <code>input</code> element (which has no children).
+        </p>
+        
+        <p>
+            In the example below we are trying to use a much more complex plugin &ndash; DataTables. The DataTables
+            plugin operates not only on a single HTML element, but on a whole tree of HTML elements with
+            <code>table</code> at the root and elements such as <code>tr</code>, <code>th</code> or <code>td</code>
+            as its children.
+        </p>
+        
+        <p>
+            If you run the example, in the left half of the window you will see that using
+            <code>data-ylcElementInit</code> doesn't work. The reason is that the handler for
+            <code>data-ylcElementInit</code> is called after the
+            <code>table</code> element is processed by YLC, but before the loop inside was processed and the child
+            elements (<code>tr</code>, <code>td</code>, etc.) have been inserted to the DOM. DataTables expects all the
+            HTML for the table to be present before it is installed.
+        </p>
+        
+        <p>
+            It can be fixed by using <code>data-ylcChildrenInit</code> instead. The handler for
+            <code>data-ylcChildrenInit</code> is invoked just after the root <code>table</code> element
+            <em>and</em> all its children have been processed by YLC. That is just in time for DataTables
+            to see all the elements it needs. The result can be seen in the right half of the example window.
+        </p>
+        
+        <div class="jqExample" data-sourceUrl="examples/jquery_within_ylc_after_children_added.html">
+        </div>
+
+        
+        <h4>Install plugin after element data are available</h4>
+        
+        <p>
+            Sometimes installing the plugin as soon as the root element and its children are initialized is too early.
+            This can happen for example when the data to be shown in the table is retrieved asynchronously using an AJAX
+            call. In the example below we simulate an AJAX request using the <code>setTimeout</code> function. The data
+            for the table is available roughly 100&nbsp;ms after YLC is installed. If you run the example, in the left
+            half of the window you will see that installing DataTables in the handler of the
+            <code>data-ylcChildrenInit</code> attribute doesn't work, because by the time the data has become available,
+            the DataTables plugin has been already installed.
+        </p>
+        
+        <p>
+            It can be fixed by using the <code>data-ylcDomChanged</code> attribute instead. The handler specified in
+            this attribute is called when the DOM subtree whose root is the element with <code>data-ylcDomChanged</code>
+            is somehow modified &ndash; when elements are added to it, removed from it or when the
+            attribute or text values are changed. In our example, the DOM subtree with the <code>table</code> element
+            as root is not changed when we install YLC, because it only references the <code>rows</code> model variable,
+            which is empty. When the data becomes available and we call <code>context.updateModel</code>, the DOM
+            subtree is modified, therefore the <code>data-ylcDomChanged</code> handler is called; but now the
+            <code>table</code> element contains all the data and it's safe to install DataTables. You can see the result
+            in the right half of the window.
+        </p>
+
+        <div class="jqExample" data-sourceUrl="examples/jquery_within_ylc_after_data_available.html">
+        </div>
+
+        <h4>Re-install plugin after element data change (DOM flashing)</h4>
+        
+        <p>
+            The above example works fine, but it has a serious flaw &ndash; if the data in the <code>rows</code> model
+            variable changes again, Yellow code all of a sudden stops working, as demonstrated in the example below.
+            First, a function wrapped in a <code>setTimeout</code> call modifies the <code>rows</code> model variable
+            and adds some elements to it. So far so good. But try clicking the Add More button. The <code>click</code>
+            event handler adds a couple of more elements, but they do not appear in the table.
+        </p>
+
+        <div class="jqExample" data-sourceUrl="examples/jquery_within_ylc_reinstall_wrong.html">
+        </div>
+        
+        <p>
+            If you inspect the browser console, you will notice a nasty JavaScript error. The reason for that is that
+            once the DataTables plugin is installed, it hijacks the part of the DOM corresponding to the table and
+            makes changes to it which Yellow code can't handle.
+        </p>
+
+        <p>
+            To fix this issue, Yellow code implements a mechanism called <em>DOM flashing</em>. DOM flashing essentially
+            means that if there is a plugin installed in a part of the DOM and this part of the DOM is also managed by
+            Yellow code, whenever we need to update that part of the DOM, we need to tell Yellow code to remove that
+            part of the DOM, re-insert it exactly as it was when the page loaded, re-apply any changes in the model
+            and re-install the given jQuery plugin. See the example below.
+        </p>
+        
+        <div class="jqExample" data-sourceUrl="examples/jquery_within_ylc_reinstall_correct.html">
+        </div>
+        
+        <p>
+            The example differs from the previous one at two places. First, the <code>table</code> element to which we
+            would like to install DataTables is wrapped in a <code>div</code> with an attribute
+            <code>data-ylcFlashId="myDataTable"</code>. This attributes tells Yellow code to only make a view-to-model
+            synchronization once on that <code>div</code>. Once Yellow code processes the <code>div</code>, it ignores
+            it from that point on (so even if we install an incompatible plugin to it, Yellow code will not crash).
+            The only way how to update the table if the <code>rows</code> model variable is
+            changed is to explicitly tell Yellow code to perform the flash operation on it. That's done by calling
+            <code>context.flash("myDataTable");</code> The attribute passed to <code>context.flash</code> must have
+            the same value as the attribute <code>data-ylcFlashId</code> of the wrapping <code>div</code>, but other
+            than that the value can be arbitrary, but unique withing the view.
+        </p>
+        
+        <p>
+            Now clicking Add More works fine, but bear in mind that under the hood the whole table is removed from
+            the DOM and re-inserted.
+        </p>
+
+        <p>
+            To flash multiple DOM elements, simply pass multiple parameters (flash IDs), e.g.
+            <code>context.flash("myDataTable1", "myDataTable2")</code>.
+        </p>
+
+        <h4>Preserving plugin state after DOM flashing</h4>
+
+        <p>
+            As mentioned in the previous paragraph, upon flashing the <code>table</code> element, the table is removed
+            and re-initialized. One of the consequences is that the DataTables plugin installed to the table loses its
+            state. Try the previous example and change the page to 2 or 3. Then click the Add More button.
+            What happens? New records are inserted, but the current page is reverted to 1.
+        </p>
+        
+        <p>
+            The proper solution of this problem requires a knowledge of the plugin used, in this case DataTables. The
+            basic idea is to save the current page in the Yellow code model whenever the page changes; later, when the
+            <code>table</code> element is re-initialized and we install the plugin, use the DataTables API to set the
+            current page to the value remembered in the model.
+        </p>
+        
+        <p>
+            DataTables allows us to listen to the page change event using the API method
+            <code>.on("page", function() {...})</code>. The page can then be changed by calling its API method
+            <code>.page(...).draw("page")</code>. See the end result below.
+        </p>
+        
+        <div class="jqExample" data-sourceUrl="examples/jquery_within_ylc_memento.html">
+        </div>
+        
         <!--=include "inc/previousNextLinks.html" -->
         
     </div><!--

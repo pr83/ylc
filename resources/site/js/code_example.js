@@ -129,7 +129,12 @@
                     buttonElement.addClass("btn-primary");
                     buttonElement.addClass("pull-right");
                     buttonElement.click(function () {
-                        openPopup(sourceUrl, "Example", 650, 450);
+                        var screenSizeRatio = 0.7;
+                        openPopup(
+                            sourceUrl,
+                            "Example",
+                            screen.width * screenSizeRatio, screen.height * screenSizeRatio
+                        );
                     });
 
                 }, "text");
