@@ -2,7 +2,7 @@
   "name": "ylc",
   "description": "Yellow code - a jQuery plugin for 2-way data binding",
   "homepage": "http://any3w.com/ylc/index.html",
-  "version": "0.99.21",
+  "version": "0.99.22",
   "licence": "BSD-2-Clause",
   "author": {
     "name": "Pavel Rimsky",
